@@ -90,8 +90,8 @@ export default function Login() {
           </Link>
         </div>
 
-        {/* Tarjeta Raycast (Ink #07080a, Hairline #363739, 16px radius) */}
-        <div className="rounded-[16px] bg-[#07080a] border border-[#363739] p-6 sm:p-8 shadow-2xl key-shadow">
+        {/* Tarjeta Raycast Titanium Curved (24px radius rounded-3xl) */}
+        <div className="cockpit-panel rounded-3xl border border-white/[0.08] p-6 sm:p-8 shadow-2xl key-shadow">
           {/* Cabecera con Logotipo Oficial */}
           <div className="flex flex-col items-center text-center mb-6">
             <img
@@ -99,7 +99,7 @@ export default function Login() {
               alt="VIP CAR Huancayo"
               className="h-10 sm:h-11 w-auto object-contain mb-3 filter drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]"
             />
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/40 text-[10px] font-mono font-medium uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/40 text-[10px] font-mono font-medium uppercase tracking-wider mb-2">
               <Lock className="w-3 h-3" />
               <span>Acceso Restringido • Gerencia</span>
             </div>
@@ -113,7 +113,7 @@ export default function Login() {
 
           {/* Banner de Error si falló la autenticación */}
           {(localError || authError) && (
-            <div className="mb-5 p-3 rounded-[8px] bg-[#2d0e14] border border-[#ff6363]/50 flex items-start gap-2.5 text-xs text-[#ff6363]">
+            <div className="mb-5 p-3.5 rounded-2xl bg-[#2d0e14] border border-[#ff6363]/50 flex items-start gap-2.5 text-xs text-[#ff6363]">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div className="flex-1">
                 <span className="font-semibold">{localError || authError}</span>
@@ -129,7 +129,7 @@ export default function Login() {
                 Correo o Usuario Corporativo
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#6a6b6c]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6a6b6c]">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -138,7 +138,7 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="gerencia@vipcar.pe"
                   required
-                  className="w-full pl-9 pr-3 py-2 rounded-[8px] bg-[#111214] border border-[#363739] text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] transition-colors font-sans"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-full telemetry-well border border-white/[0.08] text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] transition-colors font-sans"
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ export default function Login() {
                 </span>
               </div>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#6a6b6c]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6a6b6c]">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -163,23 +163,23 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
                   required
-                  className="w-full pl-9 pr-10 py-2 rounded-[8px] bg-[#111214] border border-[#363739] text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] transition-colors font-sans"
+                  className="w-full pl-10 pr-10 py-2.5 rounded-full telemetry-well border border-white/[0.08] text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] transition-colors font-sans"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#6a6b6c] hover:text-white"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#6a6b6c] hover:text-white"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Botón Principal Raycast Mist: Iniciar Sesión (#e6e6e6, #454647, 8px radius) */}
+            {/* Botón Principal Raycast Mist Capsule: Iniciar Sesión */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-2.5 px-4 rounded-[8px] bg-[#e6e6e6] hover:bg-white text-[#454647] hover:text-[#1a1a1a] font-medium text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full mt-2 py-3.5 px-5 rounded-full bg-[#e6e6e6] hover:bg-white text-[#454647] hover:text-[#1a1a1a] font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loading ? (
                 <>
@@ -199,28 +199,28 @@ export default function Login() {
           {/* Separador */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#363739]" />
+              <div className="w-full border-t border-white/[0.08]" />
             </div>
             <div className="relative flex justify-center text-[10px] uppercase font-mono">
-              <span className="bg-[#07080a] px-2 text-[#6a6b6c]">
+              <span className="bg-[#07080a] px-3 text-[#6a6b6c]">
                 Acceso de Demostración & Auditoría
               </span>
             </div>
           </div>
 
           {/* Caja de Acceso Rápido para Demostración */}
-          <div className="p-3.5 rounded-[8px] bg-[#111214] border border-[#363739] text-xs space-y-2.5">
+          <div className="p-4 rounded-2xl bg-[#111214] border border-white/[0.08] text-xs space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-[11px]">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Credenciales de Gerencia</span>
               </div>
-              <span className="px-1.5 py-0.2 rounded text-[9px] bg-amber-400/10 text-amber-300 border border-amber-400/20 font-mono">
+              <span className="px-2 py-0.5 rounded-full text-[9px] bg-amber-400/10 text-amber-300 border border-amber-400/20 font-mono">
                 Bypass Operación
               </span>
             </div>
 
-            <div className="font-mono text-[11px] text-[#9c9c9d] bg-[#07080a] p-2 rounded-[6px] border border-[#363739] space-y-0.5">
+            <div className="font-mono text-[11px] text-[#9c9c9d] bg-[#07080a] p-2.5 rounded-xl border border-white/[0.08] space-y-0.5">
               <div className="flex justify-between">
                 <span className="text-[#6a6b6c]">Usuario:</span>
                 <span className="text-white">gerencia@vipcar.pe</span>
@@ -235,7 +235,7 @@ export default function Login() {
               type="button"
               onClick={handleDemoAccess}
               disabled={loading}
-              className="btn-raycast-secondary w-full py-1.5 px-3 rounded-[6px] text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              className="btn-raycast-secondary w-full py-2.5 px-4 rounded-full text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
               <span>Autocompletar e Ingresar como Gerencia</span>
               <ArrowRight className="w-3 h-3" />

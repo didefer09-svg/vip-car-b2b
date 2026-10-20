@@ -87,17 +87,17 @@ export default function SolicitudCotizacion() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* 1. Datos Empresa */}
-        <div className="bg-[#07080a] border border-[#363739] p-6 rounded-[16px] space-y-4">
-          <div className="flex items-center gap-2 pb-2.5 border-b border-[#363739]">
+        <div className="cockpit-panel p-6 sm:p-7 rounded-3xl border border-white/[0.08] shadow-xl space-y-4">
+          <div className="flex items-center gap-2 pb-2.5 border-b border-white/[0.08]">
             <Building2 className="w-4 h-4 text-[#ff6363]" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#ffffff]">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#ffffff] font-mono">
               1. Datos de la Empresa Minera / Constructora
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#626773] mb-1 font-mono uppercase">
                 Razón Social *
               </label>
               <input
@@ -105,12 +105,12 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.empresa}
                 onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#626773] mb-1 font-mono uppercase">
                 RUC (11 dígitos) *
               </label>
               <input
@@ -118,12 +118,12 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.ruc}
                 onChange={(e) => setFormData({ ...formData, ruc: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#626773] mb-1 font-mono uppercase">
                 Contacto Responsable / Cargo *
               </label>
               <input
@@ -131,12 +131,12 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.contacto}
                 onChange={(e) => setFormData({ ...formData, contacto: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#626773] mb-1 font-mono uppercase">
                 Email Corporativo *
               </label>
               <input
@@ -144,24 +144,24 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
               />
             </div>
           </div>
         </div>
 
         {/* 2. Requerimiento Técnico */}
-        <div className="bg-[#07080a] border border-[#363739] p-6 rounded-[16px] space-y-4">
-          <div className="flex items-center gap-2 pb-2.5 border-b border-[#363739]">
+        <div className="cockpit-panel p-6 sm:p-7 rounded-3xl border border-white/[0.08] shadow-xl space-y-4">
+          <div className="flex items-center gap-2 pb-2.5 border-b border-white/[0.08]">
             <Truck className="w-4 h-4 text-[#ff6363]" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#ffffff]">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#ffffff] font-mono">
               2. Requerimiento de Flota
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1 font-mono uppercase">
                 Cantidad de Pickups *
               </label>
               <input
@@ -171,46 +171,46 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.cantidadVehiculos}
                 onChange={(e) => setFormData({ ...formData, cantidadVehiculos: Number(e.target.value) })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs font-bold text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs font-bold text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1 font-mono uppercase">
                 Gama / Modelo *
               </label>
               <select
                 value={formData.modeloPreferido}
                 onChange={(e) => setFormData({ ...formData, modeloPreferido: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363] cursor-pointer"
               >
-                <option value="Toyota Hilux 4x4 SRV Minera">Toyota Hilux 4x4 SRV Minera</option>
-                <option value="Ford Ranger 4x4 XLT Biturbo">Ford Ranger 4x4 XLT Biturbo</option>
-                <option value="Mitsubishi L200 4x4 High Power">Mitsubishi L200 4x4 High Power</option>
-                <option value="Nissan Frontier PRO-4X">Nissan Frontier PRO-4X</option>
-                <option value="Isuzu D-Max 4x4 Crew Cab">Isuzu D-Max 4x4 Crew Cab</option>
+                <option value="Toyota Hilux 4x4 SRV Minera" className="bg-[#0c0e12]">Toyota Hilux 4x4 SRV Minera</option>
+                <option value="Ford Ranger 4x4 XLT Biturbo" className="bg-[#0c0e12]">Ford Ranger 4x4 XLT Biturbo</option>
+                <option value="Mitsubishi L200 4x4 High Power" className="bg-[#0c0e12]">Mitsubishi L200 4x4 High Power</option>
+                <option value="Nissan Frontier PRO-4X" className="bg-[#0c0e12]">Nissan Frontier PRO-4X</option>
+                <option value="Isuzu D-Max 4x4 Crew Cab" className="bg-[#0c0e12]">Isuzu D-Max 4x4 Crew Cab</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1 font-mono uppercase">
                 Certificación *
               </label>
               <select
                 value={formData.tipoAmbiente}
                 onChange={(e) => setFormData({ ...formData, tipoAmbiente: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363] cursor-pointer"
               >
-                <option value="Socavón & Superficie">Socavón & Superficie</option>
-                <option value="Solo Superficie / Obras">Solo Superficie / Obras Civiles</option>
-                <option value="Transporte de Personal">Transporte de Personal</option>
+                <option value="Socavón & Superficie" className="bg-[#0c0e12]">Socavón & Superficie</option>
+                <option value="Solo Superficie / Obras" className="bg-[#0c0e12]">Solo Superficie / Obras Civiles</option>
+                <option value="Transporte de Personal" className="bg-[#0c0e12]">Transporte de Personal</option>
               </select>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1 font-mono uppercase">
                 Ubicación del Servicio / Proyecto *
               </label>
               <input
@@ -218,12 +218,12 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.minaDestino}
                 onChange={(e) => setFormData({ ...formData, minaDestino: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#626773] mb-1 font-mono uppercase">
                 Fecha Inicio *
               </label>
               <input
@@ -231,12 +231,12 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.fechaInicio}
                 onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+              <label className="block text-[11px] font-bold text-[#626773] mb-1 font-mono uppercase">
                 Fecha Fin *
               </label>
               <input
@@ -244,17 +244,17 @@ export default function SolicitudCotizacion() {
                 required
                 value={formData.fechaFin}
                 onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
-                className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363]"
               />
             </div>
           </div>
         </div>
 
         {/* 3. Equipamiento Minero */}
-        <div className="bg-[#07080a] border border-[#363739] p-6 rounded-[16px] space-y-4">
-          <div className="flex items-center gap-2 pb-2.5 border-b border-[#363739]">
+        <div className="cockpit-panel p-6 sm:p-7 rounded-3xl border border-white/[0.08] shadow-xl space-y-4">
+          <div className="flex items-center gap-2 pb-2.5 border-b border-white/[0.08]">
             <ShieldCheck className="w-4 h-4 text-[#ff6363]" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#ffffff]">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#ffffff] font-mono">
               3. Equipamiento de Seguridad Requerido para el Proyecto / Obra
             </h2>
           </div>
@@ -272,17 +272,17 @@ export default function SolicitudCotizacion() {
               <label
                 key={item.key}
                 onClick={() => toggleEquip(item.key)}
-                className={`flex items-center gap-2 p-2.5 rounded-[8px] border cursor-pointer text-xs transition-colors ${
+                className={`flex items-center gap-2 p-3 rounded-full border cursor-pointer text-xs font-mono transition-colors ${
                   formData.equipamiento[item.key]
-                    ? 'bg-[#1b1c1e] border-[#ff6363]/50 text-[#ffffff] font-semibold'
-                    : 'bg-[#111214] border-[#363739] text-[#9c9c9d] hover:border-[#6a6b6c]'
+                    ? 'bg-[#ff6363]/15 border-[#ff6363]/60 text-[#ffffff] font-bold shadow-sm'
+                    : 'telemetry-well border-white/[0.08] text-[#949aa6] hover:border-white/20'
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={formData.equipamiento[item.key]}
                   onChange={() => {}}
-                  className="rounded-[4px] border-[#363739] text-[#ff6363] focus:ring-0"
+                  className="rounded-full border-white/20 text-[#ff6363] focus:ring-0 ml-1"
                 />
                 <span className="text-[11px]">{item.label}</span>
               </label>
@@ -290,24 +290,24 @@ export default function SolicitudCotizacion() {
           </div>
 
           <div>
-            <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1">
+            <label className="block text-[11px] font-bold text-[#626773] mb-1 font-mono uppercase">
               Notas Técnicas Adicionales
             </label>
             <textarea
               rows={2}
               value={formData.comentarios}
               onChange={(e) => setFormData({ ...formData, comentarios: e.target.value })}
-              className="w-full bg-[#111214] border border-[#363739] rounded-[8px] p-2.5 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+              className="w-full telemetry-well border border-white/[0.08] rounded-2xl p-3 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363] font-mono"
             />
           </div>
         </div>
 
-        {/* Botón Submit Raycast Mist */}
+        {/* Botón Submit Cockpit Action en Cápsula */}
         <button
           type="submit"
-          className="btn-raycast-primary w-full py-3.5 flex items-center justify-center gap-2 text-sm uppercase tracking-wide key-shadow rounded-[8px] active:scale-98"
+          className="btn-cockpit-action w-full py-4 px-6 flex items-center justify-center gap-2 text-sm uppercase font-bold tracking-wider rounded-full active:scale-98 cursor-pointer shadow-xl font-mono"
         >
-          <Send className="w-4 h-4 stroke-[2.5]" />
+          <Send className="w-4 h-4 text-black stroke-[2.5]" />
           <span>ENVIAR REQUERIMIENTO CORPORATIVO</span>
         </button>
       </form>

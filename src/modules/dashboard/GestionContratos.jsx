@@ -67,7 +67,7 @@ export default function GestionContratos() {
       {/* Header Gerencial */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] bg-[#2d0e14] text-[#ff6363] text-[10px] font-mono font-medium mb-1 border border-[#ff6363]/40">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d0e14] text-[#ff6363] text-[10px] font-mono font-medium mb-1 border border-[#ff6363]/40">
             ADMINISTRACIÓN CENTRAL • ACCESO EXCLUSIVO GERENCIA
           </div>
           <h1 className="text-2xl sm:text-3xl font-medium text-white tracking-tight font-sans flex items-center gap-2.5">
@@ -80,7 +80,7 @@ export default function GestionContratos() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <div className="px-3.5 py-1.5 rounded-[8px] bg-[#07080a] border border-[#363739] text-xs font-mono">
+          <div className="px-4 py-2 rounded-full bg-[#07080a] border border-[#363739] text-xs font-mono">
             <span className="text-[#6a6b6c]">Total Facturación: </span>
             <span className="text-[#59d499] font-bold font-mono">
               ${facturacionTotalUSD.toLocaleString()} USD/mes
@@ -89,79 +89,79 @@ export default function GestionContratos() {
         </div>
       </div>
 
-      {/* KPI Cards: Raycast Dark Palette */}
+      {/* KPI Cards: Industrial Telemetry Metric Cluster */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="raycast-card p-4 rounded-[16px] space-y-1 bg-[#07080a] border border-[#363739]">
+        <div className="cockpit-panel p-5 rounded-3xl border border-white/[0.08] space-y-1 relative overflow-hidden">
           <div className="flex items-center justify-between text-[#6a6b6c]">
-            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">Contratos Totales</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">[SYS // CONTRATOS]</span>
             <FileText className="w-4 h-4 text-[#ff6363]" />
           </div>
           <div className="text-2xl font-bold text-white font-mono">{totalContratos}</div>
-          <div className="text-[11px] text-[#6a6b6c]">
+          <div className="text-[11px] text-[#6a6b6c] font-mono">
             {contratos.filter((c) => c.estado === 'Vigente').length} contratos vigentes
           </div>
         </div>
 
-        <div className="raycast-card p-4 rounded-[16px] space-y-1 bg-[#07080a] border border-[#363739]">
+        <div className="cockpit-panel p-5 rounded-3xl border border-white/[0.08] space-y-1 relative overflow-hidden">
           <div className="flex items-center justify-between text-[#6a6b6c]">
-            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">Flota en Arriendo</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">[DISP // ARRIENDO]</span>
             <Truck className="w-4 h-4 text-[#59d499]" />
           </div>
           <div className="text-2xl font-bold text-[#59d499] font-mono">{totalPickupsAsignadas}</div>
-          <div className="text-[11px] text-[#6a6b6c]">Pickups 4x4 y vehículos pesados</div>
+          <div className="text-[11px] text-[#6a6b6c] font-mono">Pickups 4x4 y vehículos pesados</div>
         </div>
 
-        <div className="raycast-card p-4 rounded-[16px] space-y-1 bg-[#07080a] border border-[#363739]">
+        <div className="cockpit-panel p-5 rounded-3xl border border-white/[0.08] space-y-1 relative overflow-hidden">
           <div className="flex items-center justify-between text-[#6a6b6c]">
-            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">Ingresos Mensuales</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">[CASH // FACTURACIÓN]</span>
             <DollarSign className="w-4 h-4 text-[#59d499]" />
           </div>
           <div className="text-2xl font-bold text-white font-mono">
             ${(facturacionTotalUSD / 1000).toFixed(1)}k <span className="text-xs text-[#6a6b6c]">USD</span>
           </div>
-          <div className="text-[11px] text-[#59d499]">Recurrente garantizado</div>
+          <div className="text-[11px] text-[#59d499] font-mono">Recurrente garantizado</div>
         </div>
 
-        <div className="raycast-card p-4 rounded-[16px] space-y-1 bg-[#231908]/30 border border-[#f59e0b]/35">
+        <div className="cockpit-panel p-5 rounded-3xl border border-[#f59e0b]/35 space-y-1 relative overflow-hidden">
           <div className="flex items-center justify-between text-[#f59e0b]">
-            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">Por Renovar</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.8px]">[ALERT // VENCIMIENTO]</span>
             <Clock className="w-4 h-4 text-[#f59e0b]" />
           </div>
           <div className="text-2xl font-bold text-[#f59e0b] font-mono">
             {contratosProximosRenovar}
           </div>
-          <div className="text-[11px] text-[#6a6b6c]">Próximos 60 días</div>
+          <div className="text-[11px] text-[#6a6b6c] font-mono">Próximos 60 días</div>
         </div>
       </div>
 
       {downloadMsg && (
-        <div className="p-3 rounded-[8px] bg-[#1b1c1e] border border-[#ff6363]/40 text-[#ff6363] text-xs font-bold flex items-center gap-2">
+        <div className="p-3.5 rounded-full bg-[#1b1c1e] border border-[#ff6363]/40 text-[#ff6363] text-xs font-mono font-bold flex items-center gap-2">
           <FileDown className="w-4 h-4 shrink-0" />
           <span>{downloadMsg}</span>
         </div>
       )}
 
       {/* Barra de Búsqueda y Filtros */}
-      <div className="bg-[#07080a] border border-[#363739] p-3.5 rounded-[12px] flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="cockpit-panel border border-white/[0.08] p-4 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-[#6a6b6c] absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#6a6b6c] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por cliente, RUC, código o proyecto..."
-            className="w-full pl-9 pr-3 py-1.5 bg-[#111214] border border-[#363739] rounded-[8px] text-xs font-mono text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363]"
+            className="w-full pl-9 pr-4 py-2 telemetry-well border border-white/[0.08] rounded-full text-xs font-mono text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363]"
           />
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <span className="text-[11px] text-[#6a6b6c] uppercase font-mono">Estado:</span>
-          <div className="inline-flex p-0.5 rounded-[8px] bg-[#111214] border border-[#363739]">
+          <span className="text-[11px] text-[#6a6b6c] uppercase font-mono">Filtro:</span>
+          <div className="inline-flex p-1 rounded-full telemetry-well border border-white/[0.08]">
             <button
               onClick={() => setFiltroEstado('todos')}
-              className={`px-2.5 py-1 rounded-[6px] text-xs font-mono transition-all ${
+              className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
                 filtroEstado === 'todos'
-                  ? 'bg-[#1b1c1e] text-white font-bold'
+                  ? 'bg-white/10 text-white font-bold'
                   : 'text-[#6a6b6c] hover:text-white'
               }`}
             >
@@ -169,9 +169,9 @@ export default function GestionContratos() {
             </button>
             <button
               onClick={() => setFiltroEstado('vigente')}
-              className={`px-2.5 py-1 rounded-[6px] text-xs font-mono transition-all ${
+              className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
                 filtroEstado === 'vigente'
-                  ? 'bg-[#1b1c1e] text-[#59d499] font-bold'
+                  ? 'bg-[#59d499]/15 text-[#59d499] font-bold'
                   : 'text-[#6a6b6c] hover:text-white'
               }`}
             >
@@ -179,9 +179,9 @@ export default function GestionContratos() {
             </button>
             <button
               onClick={() => setFiltroEstado('renovar')}
-              className={`px-2.5 py-1 rounded-[6px] text-xs font-mono transition-all ${
+              className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
                 filtroEstado === 'renovar'
-                  ? 'bg-[#1b1c1e] text-[#f59e0b] font-bold'
+                  ? 'bg-[#f59e0b]/15 text-[#f59e0b] font-bold'
                   : 'text-[#6a6b6c] hover:text-white'
               }`}
             >
@@ -194,7 +194,7 @@ export default function GestionContratos() {
       {/* Lista General de Contratos */}
       <div className="space-y-4">
         {contratosFiltrados.length === 0 ? (
-          <div className="bg-[#07080a] border border-[#363739] rounded-[16px] p-8 text-center text-[#6a6b6c] text-xs">
+          <div className="cockpit-panel border border-white/[0.08] rounded-3xl p-8 text-center text-[#6a6b6c] text-xs font-mono">
             No se encontraron contratos que coincidan con los criterios de búsqueda.
           </div>
         ) : (
@@ -207,15 +207,15 @@ export default function GestionContratos() {
             return (
               <div
                 key={contrato.id}
-                className="bg-[#07080a] border border-[#363739] rounded-[16px] overflow-hidden transition-all shadow-md"
+                className="cockpit-panel border border-white/[0.08] rounded-3xl overflow-hidden transition-all shadow-lg"
               >
                 {/* Cabecera del Contrato */}
                 <div
                   onClick={() => toggleExpand(contrato.id)}
-                  className="p-4 bg-[#07080a] hover:bg-[#111214] cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors"
+                  className="p-5 hover:bg-white/[0.02] cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors"
                 >
                   <div className="flex items-start sm:items-center gap-3">
-                    <div className="w-10 h-10 rounded-[8px] bg-[#1b1c1e] text-[#ff6363] flex items-center justify-center shrink-0 border border-[#363739]">
+                    <div className="w-10 h-10 rounded-full telemetry-well text-[#ff6363] flex items-center justify-center shrink-0 border border-white/[0.08]">
                       <Building2 className="w-5 h-5" />
                     </div>
                     <div>
@@ -224,10 +224,10 @@ export default function GestionContratos() {
                           {contrato.id}
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded-[6px] text-[10px] font-bold ${
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
                             contrato.estado === 'Vigente'
-                              ? 'bg-[#040506] text-[#59d499] border border-[#59d499]/30'
-                              : 'bg-[#040506] text-[#f59e0b] border border-[#f59e0b]/30'
+                              ? 'bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/30'
+                              : 'bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/30'
                           }`}
                         >
                           {contrato.estado}
@@ -245,29 +245,29 @@ export default function GestionContratos() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between md:justify-end gap-5 border-t md:border-t-0 pt-2.5 md:pt-0 border-[#363739]">
+                  <div className="flex items-center justify-between md:justify-end gap-5 border-t md:border-t-0 pt-2.5 md:pt-0 border-white/[0.06]">
                     <div className="text-left md:text-right">
-                      <div className="text-[10px] uppercase font-bold text-[#6a6b6c]">Flota Asignada</div>
+                      <div className="text-[10px] font-mono uppercase font-bold text-[#6a6b6c]">Flota Asignada</div>
                       <div className="text-xs font-black text-white font-mono">
                         {contrato.unidadesAsignadas} Unidades
                       </div>
                     </div>
 
                     <div className="text-left md:text-right">
-                      <div className="text-[10px] uppercase font-bold text-[#6a6b6c]">Facturación</div>
+                      <div className="text-[10px] font-mono uppercase font-bold text-[#6a6b6c]">Facturación</div>
                       <div className="text-xs font-bold text-[#59d499] font-mono">
                         ${contrato.montoMensualUSD?.toLocaleString()} USD/m
                       </div>
                     </div>
 
                     <div className="text-left md:text-right hidden lg:block">
-                      <div className="text-[10px] uppercase font-bold text-[#6a6b6c]">Vigencia</div>
+                      <div className="text-[10px] font-mono uppercase font-bold text-[#6a6b6c]">Vigencia</div>
                       <div className="text-xs font-mono text-[#9c9c9d]">
                         {contrato.fechaInicio} al {contrato.fechaFin}
                       </div>
                     </div>
 
-                    <button className="p-1.5 rounded-[8px] bg-[#111214] border border-[#363739] text-[#9c9c9d] hover:text-white">
+                    <button className="p-2 rounded-full telemetry-well border border-white/[0.08] text-[#9c9c9d] hover:text-white cursor-pointer">
                       {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
                   </div>
@@ -275,9 +275,9 @@ export default function GestionContratos() {
 
                 {/* Acordeón Expandido: Unidades Asignadas & Auditoría de Documentos */}
                 {isExpanded && (
-                  <div className="p-4 border-t border-[#363739] space-y-4 bg-[#040506]">
+                  <div className="p-5 border-t border-white/[0.08] space-y-4 bg-black/40">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
+                      <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
                         <Truck className="w-3.5 h-3.5 text-[#ff6363]" />
                         Auditoría de Unidades Asignadas ({assignedVehs.length} vehículos en servicio)
                       </h4>
@@ -288,7 +288,7 @@ export default function GestionContratos() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {assignedVehs.length === 0 ? (
-                        <p className="text-xs text-[#6a6b6c] col-span-2 py-4 text-center">
+                        <p className="text-xs text-[#6a6b6c] col-span-2 py-4 text-center font-mono">
                           Placas registradas en el contrato: {contrato.placas.join(', ')}
                         </p>
                       ) : (
@@ -298,13 +298,13 @@ export default function GestionContratos() {
                           return (
                             <div
                               key={veh.id}
-                              className="bg-[#07080a] border border-[#363739] p-4 rounded-[12px] space-y-3"
+                              className="telemetry-well border border-white/[0.08] p-4 rounded-2xl space-y-3"
                             >
                               <div className="flex items-center justify-between">
                                 <div>
                                   <div className="text-xs font-bold text-white flex items-center gap-1.5">
                                     <span>{veh.marca} {veh.modelo}</span>
-                                    <span className="text-[10px] font-mono font-bold text-[#ff6363] bg-[#1b1c1e] px-1.5 py-0.5 rounded-[4px] border border-[#ff6363]/40">
+                                    <span className="text-[10px] font-mono font-bold text-[#ff6363] bg-[#ff6363]/10 px-2 py-0.5 rounded-full border border-[#ff6363]/30">
                                       {identificador.codigo}
                                     </span>
                                   </div>
@@ -312,28 +312,28 @@ export default function GestionContratos() {
                                     Placa Oficial: <strong className="text-white">{veh.placa}</strong> • Odómetro: {veh.odometroActual.toLocaleString()} km
                                   </div>
                                 </div>
-                                <span className="px-2 py-0.5 rounded-[6px] bg-[#111214] border border-[#363739] text-[#59d499] text-[11px] font-mono font-bold">
+                                <span className="px-2.5 py-0.5 rounded-full bg-black/40 border border-white/[0.1] text-[#59d499] text-[11px] font-mono font-bold">
                                   {veh.placa}
                                 </span>
                               </div>
 
                               <SemaforoBadge odometro={veh.odometroActual} compact={false} />
 
-                              <div className="text-[11px] text-[#6a6b6c] flex items-center justify-between border-t border-[#363739] pt-2">
+                              <div className="text-[11px] text-[#6a6b6c] flex items-center justify-between border-t border-white/[0.06] pt-2 font-mono">
                                 <span>Conductor: <strong className="text-white">{veh.conductorActual || 'No asignado'}</strong></span>
                                 <span>Combustible: <strong className="text-white">{veh.nivelCombustible}%</strong></span>
                               </div>
 
                               {/* Descarga / Visualización de Documentos Oficiales */}
-                              <div className="pt-2 border-t border-[#363739] space-y-1.5">
-                                <div className="text-[10px] font-bold uppercase tracking-wider text-[#6a6b6c]">
+                              <div className="pt-2 border-t border-white/[0.06] space-y-2">
+                                <div className="text-[10px] font-mono uppercase tracking-wider text-[#6a6b6c]">
                                   Descarga de Certificaciones Oficiales:
                                 </div>
 
-                                <div className="flex flex-wrap gap-1.5">
+                                <div className="flex flex-wrap gap-2">
                                   <button
                                     onClick={() => handleDownload('SOAT Vigente', veh.placa, veh)}
-                                    className="btn-raycast-secondary px-2.5 py-1 text-[10px] rounded-[6px] flex items-center gap-1.5 cursor-pointer"
+                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono"
                                   >
                                     <FileText className="w-3 h-3 text-[#ff6363]" />
                                     <span>SOAT</span>
@@ -342,7 +342,7 @@ export default function GestionContratos() {
 
                                   <button
                                     onClick={() => handleDownload('Póliza Todo Riesgo Rimac', veh.placa, veh)}
-                                    className="btn-raycast-secondary px-2.5 py-1 text-[10px] rounded-[6px] flex items-center gap-1.5 cursor-pointer"
+                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono"
                                   >
                                     <FileText className="w-3 h-3 text-[#59d499]" />
                                     <span>Póliza</span>
@@ -351,7 +351,7 @@ export default function GestionContratos() {
 
                                   <button
                                     onClick={() => handleDownload('Revisión Técnica MTC', veh.placa, veh)}
-                                    className="btn-raycast-secondary px-2.5 py-1 text-[10px] rounded-[6px] flex items-center gap-1.5 cursor-pointer"
+                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono"
                                   >
                                     <FileText className="w-3 h-3 text-sky-400" />
                                     <span>Rev. Técnica</span>

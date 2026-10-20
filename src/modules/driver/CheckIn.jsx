@@ -96,19 +96,19 @@ export default function CheckIn() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate('/conductor')}
-          className="p-1.5 rounded-[8px] bg-[#07080a] border border-[#363739] text-[#9c9c9d] hover:text-[#ffffff]"
+          className="p-2 rounded-[10px] telemetry-well border border-white/[0.08] text-[#9c9c9d] hover:text-[#ffffff] cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h1 className="text-lg font-black text-[#ffffff]">Check-in de Turno</h1>
-          <p className="text-xs text-[#6a6b6c]">Inspección preoperacional obligatoria</p>
+          <h1 className="text-lg font-black text-[#ffffff] font-sans">Check-in de Turno</h1>
+          <p className="text-xs text-[#6a6b6c] font-mono">Inspección preoperacional obligatoria</p>
         </div>
       </div>
 
       {/* Alerta de Operación en Socavón (Offline) */}
       {!navigator.onLine && (
-        <div className="p-3 rounded-[8px] bg-[#231908] border border-[#f59e0b]/40 text-[#f59e0b] flex items-center gap-2 text-xs font-mono">
+        <div className="p-3 rounded-[10px] bg-[#231908] border border-[#f59e0b]/40 text-[#f59e0b] flex items-center gap-2 text-xs font-mono">
           <WifiOff className="w-4 h-4 shrink-0 animate-pulse" />
           <span>
             <strong>Modo Socavón (Sin Señal 4G):</strong> Tu registro se guardará localmente en el dispositivo y se sincronizará con Firestore automáticamente al salir a superficie.
@@ -117,10 +117,10 @@ export default function CheckIn() {
       )}
 
       {success && (
-        <div className={`p-3.5 rounded-[8px] border flex items-center gap-2.5 ${
+        <div className={`p-3.5 rounded-[10px] border flex items-center gap-2.5 ${
           isOfflineRecord
             ? 'bg-[#231908] border-[#f59e0b]/50 text-[#f59e0b]'
-            : 'bg-[#07080a] border-[#59d499]/40 text-[#59d499]'
+            : 'bg-[#071f16] border-[#59d499]/40 text-[#59d499]'
         }`}>
           {isOfflineRecord ? (
             <CloudUpload className="w-5 h-5 text-[#f59e0b] shrink-0 animate-bounce" />
@@ -136,26 +136,26 @@ export default function CheckIn() {
       )}
 
       {/* Info Unidad */}
-      <div className="bg-[#07080a] border border-[#363739] p-3.5 rounded-[12px] flex items-center justify-between">
+      <div className="cockpit-panel border border-white/[0.08] p-4 rounded-3xl flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Truck className="w-4 h-4 text-[#ff6363]" />
           <div>
-            <div className="text-[10px] text-[#6a6b6c] uppercase font-bold">Unidad Asignada</div>
-            <div className="text-xs font-bold text-[#ffffff]">{assignedVehicle.marca} {assignedVehicle.modelo}</div>
+            <div className="text-[10px] text-[#6a6b6c] uppercase font-mono font-bold">Unidad Asignada</div>
+            <div className="text-xs font-bold text-[#ffffff] font-sans">{assignedVehicle.marca} {assignedVehicle.modelo}</div>
           </div>
         </div>
-        <span className="font-mono font-bold text-xs text-[#ff6363] px-2.5 py-0.5 rounded-[6px] bg-[#111214] border border-[#363739]">
+        <span className="font-mono font-bold text-xs text-[#ff6363] px-3 py-1 rounded-full telemetry-well border border-[#ff6363]/30">
           {assignedVehicle.placa}
         </span>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Odómetro Sunken con Monospace Blanco */}
-        <div className="bg-[#07080a] border border-[#363739] p-4 rounded-[16px] space-y-2.5">
+        <div className="cockpit-panel border border-white/[0.08] p-5 rounded-3xl space-y-2.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
+            <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
               <Gauge className="w-3.5 h-3.5 text-[#ff6363]" />
-              1. Registro de Odómetro (km) *
+              01 // Registro de Odómetro (km) *
             </label>
             <span className="text-[10px] text-[#6a6b6c] font-mono">Último: {assignedVehicle.odometroActual} km</span>
           </div>
@@ -167,9 +167,9 @@ export default function CheckIn() {
               min={assignedVehicle.odometroActual}
               value={odometro}
               onChange={(e) => setOdometro(e.target.value)}
-              className="w-full bg-[#111214] border border-[#363739] rounded-[8px] px-4 py-3 text-2xl font-mono font-black text-[#ffffff] text-center tracking-widest focus:outline-none focus:border-[#ff6363]"
+              className="w-full telemetry-well border border-white/[0.1] rounded-full px-4 py-3 text-2xl font-mono font-black text-[#ffffff] text-center tracking-widest focus:outline-none focus:border-[#ff6363]"
             />
-            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#6a6b6c] font-bold font-mono">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#6a6b6c] font-bold font-mono">
               KM
             </span>
           </div>
@@ -181,10 +181,10 @@ export default function CheckIn() {
         </div>
 
         {/* Nivel de Combustible */}
-        <div className="bg-[#07080a] border border-[#363739] p-4 rounded-[16px] space-y-2.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
+        <div className="cockpit-panel border border-white/[0.08] p-5 rounded-3xl space-y-2.5">
+          <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
             <Fuel className="w-3.5 h-3.5 text-[#59d499]" />
-            2. Nivel de Combustible *
+            02 // Nivel de Combustible *
           </label>
 
           <div className="grid grid-cols-4 gap-2">
@@ -193,10 +193,10 @@ export default function CheckIn() {
                 type="button"
                 key={pct}
                 onClick={() => setCombustible(pct)}
-                className={`py-2 rounded-[8px] font-bold text-xs transition-all ${
+                className={`py-2.5 rounded-full font-mono font-bold text-xs transition-all cursor-pointer ${
                   combustible === pct
-                    ? 'bg-[#e6e6e6] text-[#454647] font-black shadow-xs'
-                    : 'bg-[#111214] text-[#9c9c9d] border border-[#363739] hover:bg-[#1b1c1e]'
+                    ? 'btn-cockpit-action shadow-xs'
+                    : 'telemetry-well text-[#9c9c9d] border border-white/[0.08] hover:border-white/[0.2]'
                 }`}
               >
                 {pct === 100 ? 'Lleno' : `${pct}%`}
@@ -206,11 +206,11 @@ export default function CheckIn() {
         </div>
 
         {/* Checklist Preoperacional */}
-        <div className="bg-[#07080a] border border-[#363739] p-4 rounded-[16px] space-y-2.5">
+        <div className="cockpit-panel border border-white/[0.08] p-5 rounded-3xl space-y-2.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
+            <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#6a6b6c] flex items-center gap-1.5">
               <ClipboardCheck className="w-3.5 h-3.5 text-[#ff6363]" />
-              3. Checklist de Seguridad Minera
+              03 // Checklist de Seguridad Minera
             </label>
             <button
               type="button"
@@ -220,7 +220,7 @@ export default function CheckIn() {
                 PREOPERATIONAL_ITEMS.forEach((i) => (next[i.id] = markAll));
                 setChecklist(next);
               }}
-              className="text-[10px] text-[#ff6363] font-bold hover:underline"
+              className="text-[10px] text-[#ff6363] font-mono font-bold hover:underline cursor-pointer"
             >
               {allChecked ? 'Desmarcar' : 'Marcar todo'}
             </button>
@@ -233,15 +233,15 @@ export default function CheckIn() {
                 <div
                   key={item.id}
                   onClick={() => toggleCheck(item.id)}
-                  className={`p-2.5 rounded-[8px] border flex items-center justify-between cursor-pointer transition-colors ${
+                  className={`p-3 rounded-full border flex items-center justify-between cursor-pointer transition-colors px-4 ${
                     isChecked
-                      ? 'bg-[#111214] border-[#363739] text-[#ffffff]'
-                      : 'bg-[#1b1c1e] border-[#ff6363]/40 text-[#ff6363]'
+                      ? 'telemetry-well border-white/[0.08] text-[#ffffff]'
+                      : 'bg-[#ff6363]/10 border-[#ff6363]/40 text-[#ff6363]'
                   }`}
                 >
-                  <span className="text-[11px] font-medium pr-2">{item.label}</span>
+                  <span className="text-[11px] font-medium pr-2 font-sans">{item.label}</span>
                   <div
-                    className={`w-5 h-5 rounded-[4px] flex items-center justify-center shrink-0 transition-colors ${
+                    className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                       isChecked
                         ? 'bg-[#59d499] text-black font-bold'
                         : 'bg-[#07080a] border border-[#ff6363] text-[#ff6363]'
@@ -256,8 +256,8 @@ export default function CheckIn() {
         </div>
 
         {/* Observaciones */}
-        <div className="bg-[#07080a] border border-[#363739] p-4 rounded-[16px] space-y-1.5">
-          <label className="text-xs font-bold text-[#6a6b6c]">
+        <div className="cockpit-panel border border-white/[0.08] p-5 rounded-3xl space-y-1.5">
+          <label className="text-xs font-mono font-bold text-[#6a6b6c]">
             Observaciones Adicionales
           </label>
           <textarea
@@ -265,15 +265,15 @@ export default function CheckIn() {
             value={observaciones}
             onChange={(e) => setObservaciones(e.target.value)}
             placeholder="Reporte de barro, presión de llantas u observaciones de ingreso..."
-            className="w-full bg-[#111214] border border-[#363739] rounded-[8px] p-2 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363]"
+            className="w-full telemetry-well border border-white/[0.08] rounded-2xl p-3 text-xs text-[#ffffff] focus:outline-none focus:border-[#ff6363] font-mono"
           />
         </div>
 
-        {/* Botón Raycast Mist */}
+        {/* Botón Cockpit Action Cápsula */}
         <button
           type="submit"
           disabled={loading || success}
-          className="btn-raycast-primary w-full py-3.5 flex items-center justify-center gap-2 text-sm uppercase tracking-wide key-shadow rounded-[8px] active:scale-98 disabled:opacity-50 cursor-pointer"
+          className="btn-cockpit-action w-full py-4 flex items-center justify-center gap-2 text-sm uppercase tracking-wide rounded-full font-mono font-bold active:scale-98 disabled:opacity-50 cursor-pointer shadow-xl"
         >
           <ClipboardCheck className="w-4 h-4 stroke-[2.5]" />
           <span>{loading ? 'SINCRONIZANDO EN FIRESTORE...' : 'CONFIRMAR CHECK-IN DE TURNO'}</span>

@@ -32,7 +32,7 @@ export default function Bitacora() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] bg-[#2d0e14] text-[#ff6363] text-[10px] font-mono font-medium mb-1 border border-[#ff6363]/40">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d0e14] text-[#ff6363] text-[10px] font-mono font-medium mb-1 border border-[#ff6363]/40">
             TRAZABILIDAD DE ODÓMETROS & OPERACIONES
           </div>
           <h1 className="text-2xl sm:text-3xl font-medium text-white flex items-center gap-2 font-sans">
@@ -44,22 +44,22 @@ export default function Bitacora() {
           </p>
         </div>
 
-        <div className="raycast-card px-3.5 py-2 rounded-[8px] text-center self-start sm:self-auto bg-[#07080a] border border-[#363739]">
-          <div className="text-[10px] uppercase font-mono text-[#6a6b6c]">Eventos Registrados</div>
+        <div className="cockpit-panel px-4 py-2 rounded-full text-center self-start sm:self-auto border border-white/[0.08]">
+          <div className="text-[10px] uppercase font-mono text-[#6a6b6c]">[SYS // EVENTOS]</div>
           <div className="text-base font-bold text-white font-mono">{bitacora.length}</div>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="raycast-card p-3 rounded-[8px] flex flex-col sm:flex-row gap-3 bg-[#07080a] border border-[#363739]">
+      <div className="cockpit-panel p-4 rounded-3xl flex flex-col sm:flex-row gap-3 border border-white/[0.08]">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-[#6a6b6c] absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#6a6b6c] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Buscar por chofer, placa (ej. W4E-892) o tipo de evento..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="w-full bg-[#111214] border border-[#363739] rounded-[8px] pl-9 pr-3 py-2 text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] transition-colors"
+            className="w-full telemetry-well border border-white/[0.08] rounded-full pl-9 pr-4 py-2 text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] transition-colors font-mono"
           />
         </div>
 
@@ -68,7 +68,7 @@ export default function Bitacora() {
           <select
             value={filtroTipo}
             onChange={(e) => setFiltroTipo(e.target.value)}
-            className="bg-[#111214] border border-[#363739] rounded-[8px] px-3 py-2 text-xs text-white focus:outline-none focus:border-[#ff6363] font-mono"
+            className="telemetry-well border border-white/[0.08] rounded-full px-4 py-2 text-xs text-white focus:outline-none focus:border-[#ff6363] font-mono cursor-pointer"
           >
             <option value="todos">Todos los eventos</option>
             <option value="Check-in">Solo Check-in (Ingresos)</option>
@@ -78,56 +78,56 @@ export default function Bitacora() {
         </div>
       </div>
 
-      {/* Tabla Bitácora Raycast */}
-      <div className="raycast-card rounded-[16px] overflow-hidden bg-[#07080a] border border-[#363739]">
+      {/* Tabla Bitácora Cockpit */}
+      <div className="cockpit-panel rounded-3xl overflow-hidden border border-white/[0.08] shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#111214] text-[#6a6b6c] font-medium border-b border-[#363739] uppercase tracking-wider text-[10px] font-mono">
+            <thead className="telemetry-well text-[#6a6b6c] font-medium border-b border-white/[0.08] uppercase tracking-wider text-[10px] font-mono">
               <tr>
-                <th className="py-3 px-4">Fecha y Hora</th>
-                <th className="py-3 px-4">Conductor Responsable</th>
-                <th className="py-3 px-4">Placa</th>
-                <th className="py-3 px-4">Tipo de Evento</th>
-                <th className="py-3 px-4">Odómetro</th>
-                <th className="py-3 px-4">Detalle / Novedades</th>
-                <th className="py-3 px-4 text-right">Estado</th>
+                <th className="py-3.5 px-4">Fecha y Hora</th>
+                <th className="py-3.5 px-4">Conductor Responsable</th>
+                <th className="py-3.5 px-4">Placa</th>
+                <th className="py-3.5 px-4">Tipo de Evento</th>
+                <th className="py-3.5 px-4">Odómetro</th>
+                <th className="py-3.5 px-4">Detalle / Novedades</th>
+                <th className="py-3.5 px-4 text-right">Estado</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#363739]">
+            <tbody className="divide-y divide-white/[0.06]">
               {filtrados.map((log) => (
-                <tr key={log.id} className="hover:bg-[#111214] transition-colors">
-                  <td className="py-3 px-4 font-mono text-[11px] text-[#6a6b6c]">
+                <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="py-3.5 px-4 font-mono text-[11px] text-[#6a6b6c]">
                     {log.fechaHora}
                   </td>
 
-                  <td className="py-3 px-4">
+                  <td className="py-3.5 px-4">
                     <span className="font-medium text-white">{log.conductor}</span>
                   </td>
 
-                  <td className="py-3 px-4">
-                    <span className="font-mono text-xs font-bold text-white px-2 py-0.5 rounded-[4px] bg-[#111214] border border-[#363739]">
+                  <td className="py-3.5 px-4">
+                    <span className="font-mono text-xs font-bold text-white px-2.5 py-0.5 rounded-full telemetry-well border border-white/[0.1]">
                       {log.placa}
                     </span>
                   </td>
 
-                  <td className="py-3 px-4 font-medium text-white">
+                  <td className="py-3.5 px-4 font-medium text-white font-mono">
                     {log.tipoRegistro}
                   </td>
 
-                  <td className="py-3 px-4 font-mono font-bold text-white">
+                  <td className="py-3.5 px-4 font-mono font-bold text-white">
                     {log.odometro?.toLocaleString()} km
                   </td>
 
-                  <td className="py-3 px-4 text-[#9c9c9d] text-[11px]">
+                  <td className="py-3.5 px-4 text-[#9c9c9d] text-[11px]">
                     {log.proyecto || log.observaciones || log.checklistEstado || 'Sin observaciones'}
                   </td>
 
-                  <td className="py-3 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right">
                     <span
-                      className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-[4px] ${
+                      className={`text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full ${
                         log.estado === 'Alerta' || log.tipoRegistro?.includes('Avería')
-                          ? 'bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/40'
-                          : 'bg-[#071f16] text-[#59d499] border border-[#59d499]/35'
+                          ? 'bg-[#ff6363]/10 text-[#ff6363] border border-[#ff6363]/40'
+                          : 'bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/35'
                       }`}
                     >
                       {log.estado || 'OK'}

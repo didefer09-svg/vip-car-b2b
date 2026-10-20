@@ -37,7 +37,7 @@ export default function DashboardHome() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] bg-[#2d0e14] text-[#ff6363] text-[10px] font-mono font-medium mb-1 border border-[#ff6363]/40">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d0e14] text-[#ff6363] text-[10px] font-mono font-medium mb-1 border border-[#ff6363]/40">
             CONTROL OPERATIVO • TELEMETRÍA DE FLOTA
           </div>
           <h1 className="text-2xl sm:text-3xl font-medium text-white tracking-tight font-sans">
@@ -50,7 +50,7 @@ export default function DashboardHome() {
 
         <Link
           to="/dashboard/semaforo"
-          className="btn-raycast-primary self-start md:self-auto py-2 px-3.5 flex items-center gap-1.5 text-xs active:scale-98 cursor-pointer"
+          className="btn-raycast-primary self-start md:self-auto py-2.5 px-5 rounded-full flex items-center gap-1.5 text-xs active:scale-98 cursor-pointer"
         >
           <TrafficCone className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Ver Semáforo Preventivo</span>
@@ -59,9 +59,9 @@ export default function DashboardHome() {
 
       {/* Alerta Crítica en Coral Pulse */}
       {(semaforoStats.rojo > 0 || averias.length > 0) && (
-        <div className="p-4 rounded-[16px] bg-[#2d0e14] border border-[#ff6363]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+        <div className="p-5 rounded-3xl bg-[#2d0e14] border border-[#ff6363]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-[8px] bg-[#ff6363] text-black">
+            <div className="p-2.5 rounded-full bg-[#ff6363] text-black">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
@@ -75,58 +75,58 @@ export default function DashboardHome() {
           </div>
           <Link
             to="/dashboard/semaforo"
-            className="px-3 py-1.5 rounded-[8px] bg-[#ff6363] hover:bg-[#ff4d4d] text-black font-bold text-xs self-start sm:self-auto transition-colors font-mono cursor-pointer"
+            className="px-4 py-2 rounded-full bg-[#ff6363] hover:bg-[#ff4d4d] text-black font-bold text-xs self-start sm:self-auto transition-colors font-mono cursor-pointer"
           >
             Revisar Unidades
           </Link>
         </div>
       )}
 
-      {/* KPI Cards: Ink #07080a, Hairline #363739, 16px radius, Pure White text */}
+      {/* KPI Cards: Industrial Cockpit Cluster */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Flota Total */}
-        <div className="raycast-card p-5 rounded-[16px] space-y-1 bg-[#07080a] border border-[#363739]">
-          <div className="flex items-center justify-between text-[#6a6b6c]">
-            <span className="text-[11px] font-mono uppercase tracking-[0.8px]">Flota Total</span>
+        <div className="cockpit-panel p-5 rounded-3xl space-y-1 border border-white/[0.1] shadow-xl">
+          <div className="flex items-center justify-between text-[#626773]">
+            <span className="text-[10px] font-mono uppercase tracking-[1px]">Flota Total</span>
             <Car className="w-4 h-4 text-[#ff6363]" />
           </div>
-          <div className="text-3xl font-bold text-white font-mono">{totalVehicles}</div>
-          <div className="text-[11px] text-[#6a6b6c] flex items-center gap-1">
-            <span className="text-[#59d499] font-medium">{enServicio} en servicio</span> • {disponibles} disponibles
+          <div className="text-3xl font-black text-white font-mono">{totalVehicles}</div>
+          <div className="text-[11px] text-[#626773] flex items-center gap-1 font-mono">
+            <span className="text-[#59d499] font-bold">{enServicio} en servicio</span> • {disponibles} disp.
           </div>
         </div>
 
         {/* KPI 2: Verde */}
-        <div className="raycast-card p-5 rounded-[16px] space-y-1 bg-[#071f16]/30 border border-[#59d499]/35">
+        <div className="cockpit-panel p-5 rounded-3xl space-y-1 bg-[#071f16]/30 border border-[#59d499]/35 shadow-xl">
           <div className="flex items-center justify-between text-[#59d499]">
-            <span className="text-[11px] font-mono uppercase tracking-[0.8px]">Óptimas</span>
+            <span className="text-[10px] font-mono uppercase tracking-[1px]">Óptimas</span>
             <CheckCircle className="w-4 h-4 text-[#59d499]" />
           </div>
-          <div className="text-3xl font-bold text-[#59d499] font-mono">{semaforoStats.verde}</div>
-          <div className="text-[11px] text-[#6a6b6c] font-mono">
+          <div className="text-3xl font-black text-[#59d499] font-mono">{semaforoStats.verde}</div>
+          <div className="text-[11px] text-[#626773] font-mono">
             &gt; 500 km para servicio
           </div>
         </div>
 
         {/* KPI 3: Amarillo */}
-        <div className="raycast-card p-5 rounded-[16px] space-y-1 bg-[#231908]/30 border border-[#f59e0b]/35">
+        <div className="cockpit-panel p-5 rounded-3xl space-y-1 bg-[#231908]/30 border border-[#f59e0b]/35 shadow-xl">
           <div className="flex items-center justify-between text-[#f59e0b]">
-            <span className="text-[11px] font-mono uppercase tracking-[0.8px]">Próximas</span>
+            <span className="text-[10px] font-mono uppercase tracking-[1px]">Próximas</span>
             <Clock className="w-4 h-4 text-[#f59e0b]" />
           </div>
-          <div className="text-3xl font-bold text-[#f59e0b] font-mono">{semaforoStats.amarillo}</div>
-          <div className="text-[11px] text-[#6a6b6c] font-mono">
+          <div className="text-3xl font-black text-[#f59e0b] font-mono">{semaforoStats.amarillo}</div>
+          <div className="text-[11px] text-[#626773] font-mono">
             &lt; 500 km (Programar taller)
           </div>
         </div>
 
         {/* KPI 4: Rojo */}
-        <div className="raycast-card p-5 rounded-[16px] space-y-1 bg-[#2d0e14]/40 border border-[#ff6363]/40">
+        <div className="cockpit-panel p-5 rounded-3xl space-y-1 bg-[#2d0e14]/40 border border-[#ff6363]/40 shadow-xl">
           <div className="flex items-center justify-between text-[#ff6363]">
-            <span className="text-[11px] font-mono uppercase tracking-[0.8px]">Vencidas</span>
+            <span className="text-[10px] font-mono uppercase tracking-[1px]">Vencidas</span>
             <AlertTriangle className="w-4 h-4 text-[#ff6363] animate-pulse" />
           </div>
-          <div className="text-3xl font-bold text-[#ff6363] font-mono">{semaforoStats.rojo}</div>
+          <div className="text-3xl font-black text-[#ff6363] font-mono">{semaforoStats.rojo}</div>
           <div className="text-[11px] text-[#ff6363] font-medium font-mono">
             Inhabilitación preventiva
           </div>
@@ -136,11 +136,11 @@ export default function DashboardHome() {
       {/* 2 Columnas: Odómetro / Alertas + Bitácora en vivo */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Izquierda: Odómetro */}
-        <div className="raycast-card p-6 rounded-[16px] space-y-4 bg-[#07080a] border border-[#363739]">
-          <div className="flex items-center justify-between pb-3 border-b border-[#363739]">
+        <div className="cockpit-panel p-6 rounded-3xl space-y-4 border border-white/[0.1] shadow-2xl">
+          <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
             <div className="flex items-center gap-2">
               <Wrench className="w-4 h-4 text-[#ff6363]" />
-              <h2 className="text-xs uppercase font-mono tracking-[0.8px] text-white font-medium">
+              <h2 className="text-xs uppercase font-mono tracking-[1px] text-white font-bold">
                 Control de Odómetro & Preventivo
               </h2>
             </div>
@@ -156,16 +156,16 @@ export default function DashboardHome() {
             {vehicles.slice(0, 4).map((veh) => (
               <div
                 key={veh.id}
-                className="p-3 bg-[#111214] rounded-[8px] border border-[#363739] space-y-2 hover:bg-[#1b1c1e] transition-colors"
+                className="telemetry-well p-3.5 rounded-2xl space-y-2 hover:border-white/20 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-medium text-white">{veh.marca} {veh.modelo}</span>
-                    <div className="text-[11px] text-[#6a6b6c] font-mono">
+                    <span className="text-xs font-bold text-white font-sans">{veh.marca} {veh.modelo}</span>
+                    <div className="text-[11px] text-[#626773] font-mono">
                       {veh.empresaAsignada}
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-[#ff6363] px-2 py-0.5 rounded-[4px] bg-[#07080a] border border-[#363739]">
+                  <span className="font-mono text-xs font-bold text-[#ff6363] px-2.5 py-0.5 rounded-full bg-[#0c0e12] border border-[#ff6363]/40">
                     {veh.placa}
                   </span>
                 </div>
@@ -176,7 +176,7 @@ export default function DashboardHome() {
         </div>
 
         {/* Derecha: Bitácora reciente */}
-        <div className="raycast-card p-6 rounded-[16px] space-y-4 bg-[#07080a] border border-[#363739]">
+        <div className="cockpit-panel p-6 rounded-3xl space-y-4 border border-white/[0.1] shadow-2xl">
           <div className="flex items-center justify-between pb-3 border-b border-[#363739]">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-[#ff6363]" />
@@ -196,12 +196,12 @@ export default function DashboardHome() {
             {bitacora.slice(0, 5).map((log) => (
               <div
                 key={log.id}
-                className="p-2.5 rounded-[8px] bg-[#111214] border border-[#363739] flex items-center justify-between text-xs hover:bg-[#1b1c1e] transition-colors"
+                className="p-3 rounded-2xl bg-[#111214] border border-[#363739] flex items-center justify-between text-xs hover:bg-[#1b1c1e] transition-colors"
               >
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-1.5">
                     <span className="font-medium text-white">{log.tipoRegistro}</span>
-                    <span className="font-mono text-[10px] text-[#6a6b6c] font-bold bg-[#07080a] px-1.5 py-0.2 rounded-[4px] border border-[#363739]">
+                    <span className="font-mono text-[10px] text-[#6a6b6c] font-bold bg-[#07080a] px-2 py-0.5 rounded-full border border-[#363739]">
                       {log.placa}
                     </span>
                   </div>
@@ -215,7 +215,7 @@ export default function DashboardHome() {
                     {log.odometro?.toLocaleString()} km
                   </div>
                   <span
-                    className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-[4px] ${
+                    className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
                       log.estado === 'Alerta'
                         ? 'bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/40'
                         : 'bg-[#071f16] text-[#59d499] border border-[#59d499]/35'

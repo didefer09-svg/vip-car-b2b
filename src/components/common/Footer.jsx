@@ -14,7 +14,8 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[#363739] bg-[#07080a] text-[#9c9c9d] text-xs">
+    <footer className="border-t border-white/[0.08] bg-[#050608] text-[#949aa6] text-xs relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-b from-[#ff6363]/5 to-transparent blur-3xl pointer-events-none" />
       {/* Contenedor Principal con Padding Generoso */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
@@ -88,7 +89,7 @@ export default function Footer() {
             </h4>
 
             {/* Badge Destacado EMPRESA HOMOLOGADA */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#071f16] text-[#59d499] border border-[#59d499]/40 font-mono font-bold text-[11px] uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#071f16] text-[#59d499] border border-[#59d499]/40 font-mono font-bold text-[11px] uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4 text-[#59d499]" />
               <span>EMPRESA HOMOLOGADA</span>
             </div>
@@ -125,7 +126,7 @@ export default function Footer() {
               Aceptación de <strong className="text-[#ffffff]">órdenes de compra corporativas</strong>, transferencias interbancarias directas y pago con tarjetas comerciales.
             </p>
 
-            <div className="p-3 rounded-[8px] bg-[#111214] border border-[#363739] space-y-2.5">
+            <div className="p-4 rounded-2xl bg-[#111214] border border-white/[0.08] space-y-2.5">
               <div className="flex items-center gap-1.5 text-[#ffffff] font-semibold text-[11px]">
                 <CreditCard className="w-3.5 h-3.5 text-[#ff6363]" />
                 <span>Medios de Pago Autorizados</span>
@@ -133,16 +134,16 @@ export default function Footer() {
 
               {/* Badges de Tarjetas */}
               <div className="grid grid-cols-2 gap-1.5 text-center font-mono font-bold text-[10px]">
-                <span className="py-1 px-2 rounded-[6px] bg-[#1b1c1e] text-[#ffffff] border border-[#363739]">
+                <span className="py-1 px-2.5 rounded-full bg-[#1b1c1e] text-[#ffffff] border border-white/[0.08]">
                   Visa
                 </span>
-                <span className="py-1 px-2 rounded-[6px] bg-[#1b1c1e] text-[#ffffff] border border-[#363739]">
+                <span className="py-1 px-2.5 rounded-full bg-[#1b1c1e] text-[#ffffff] border border-white/[0.08]">
                   Mastercard
                 </span>
-                <span className="py-1 px-2 rounded-[6px] bg-[#1b1c1e] text-[#ffffff] border border-[#363739]">
+                <span className="py-1 px-2.5 rounded-full bg-[#1b1c1e] text-[#ffffff] border border-white/[0.08]">
                   Amex
                 </span>
-                <span className="py-1 px-2 rounded-[6px] bg-[#1b1c1e] text-[#ffffff] border border-[#363739]">
+                <span className="py-1 px-2.5 rounded-full bg-[#1b1c1e] text-[#ffffff] border border-white/[0.08]">
                   Diners Club
                 </span>
               </div>
@@ -164,7 +165,7 @@ export default function Footer() {
             {/* Enlace Rápido Discreto a Acceso Gerencial */}
             <Link
               to="/dashboard"
-              className="flex items-center justify-between p-3 rounded-[8px] bg-[#111214] hover:bg-[#1b1c1e] border border-[#363739] hover:border-white/[0.2] transition-all text-xs group"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#111214] hover:bg-[#1b1c1e] border border-white/[0.08] hover:border-white/[0.2] transition-all text-xs group"
               title="Panel de control para supervisión y telemetría"
             >
               <div className="flex items-center gap-2">
@@ -182,7 +183,7 @@ export default function Footer() {
             </Link>
 
             {/* Soporte Operativo 24/7 */}
-            <div className="p-3 rounded-[8px] bg-[#111214] border border-[#363739] space-y-1.5 text-[11px]">
+            <div className="p-3.5 rounded-2xl bg-[#111214] border border-white/[0.08] space-y-1.5 text-[11px]">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#59d499] opacity-75" />

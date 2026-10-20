@@ -36,7 +36,7 @@ export function PWAProvider({ children }) {
       console.log('[PWA] VIP CAR instalada exitosamente en el dispositivo.');
     };
 
-    // 4. Monitoreo de conectividad online/offline (ideal para faenas mineras)
+    // 4. Monitoreo de conectividad online/offline (ideal para operaciones mineras)
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
 

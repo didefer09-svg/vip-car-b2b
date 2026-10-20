@@ -8,7 +8,7 @@ export default function SemaforoBadge({ odometro, compact = false }) {
   if (compact) {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] text-xs font-medium font-mono border ${semaforo.color}`}
+        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium font-mono border ${semaforo.color}`}
       >
         <span
           className={`w-1.5 h-1.5 rounded-full ${
@@ -25,7 +25,7 @@ export default function SemaforoBadge({ odometro, compact = false }) {
   }
 
   return (
-    <div className={`p-2.5 rounded-[8px] border flex items-center justify-between gap-3 ${semaforo.color}`}>
+    <div className={`p-3 rounded-2xl border flex items-center justify-between gap-3 ${semaforo.color}`}>
       <div className="flex items-center gap-2.5">
         {semaforo.estado === 'Verde' && <CheckCircle className="w-4 h-4 text-[#59d499] shrink-0" />}
         {semaforo.estado === 'Amarillo' && <Clock className="w-4 h-4 text-[#f59e0b] shrink-0" />}
@@ -41,7 +41,7 @@ export default function SemaforoBadge({ odometro, compact = false }) {
       </div>
       <div className="text-right">
         <span
-          className={`text-[10px] font-bold px-2 py-0.5 rounded-[4px] uppercase font-mono tracking-wider ${
+          className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase font-mono tracking-wider ${
             semaforo.estado === 'Verde'
               ? 'bg-[#071f16] text-[#59d499] border border-[#59d499]/40'
               : semaforo.estado === 'Amarillo'

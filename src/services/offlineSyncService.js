@@ -1,5 +1,5 @@
 /**
- * VIP CAR B2B - Servicio de Sincronización Offline para Faenas en Socavón
+ * VIP CAR B2B - Servicio de Sincronización Offline para Operaciones en Socavón
  * Permite registrar odómetros, checklists y cierres de turno sin señal 4G dentro de la mina,
  * almacenando en cola local y sincronizando automáticamente con Cloud Firestore al recuperar conexión.
  */
