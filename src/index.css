@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #040506;
+  --color-ink: #07080a;
+  --color-obsidian: #111214;
+  --color-graphite: #1b1c1e;
+  --color-hairline: #363739;
+
+  --color-smoke: #6a6b6c;
+  --color-ash: #9c9c9d;
+  --color-pure-white: #ffffff;
+
+  --color-mist: #e6e6e6;
+  --color-iron: #454647;
+
+  --color-coral: #ff6363;
+  --color-racing-red: #e11d48;
+  --color-racing-red-hover: #be123c;
+
+  --color-semaforo-verde-text: #59d499;
+  --color-semaforo-verde-badge: #071f16;
+  --color-semaforo-verde-border: rgba(89, 212, 153, 0.35);
+
+  --color-semaforo-amarillo-text: #f59e0b;
+  --color-semaforo-amarillo-badge: #231908;
+  --color-semaforo-amarillo-border: rgba(245, 158, 11, 0.35);
+
+  --color-semaforo-rojo-text: #ff6363;
+  --color-semaforo-rojo-badge: #2d0e14;
+  --color-semaforo-rojo-border: rgba(255, 99, 99, 0.4);
+}
+
+:root {
+  --canvas: #040506;
+  --card: #07080a;
+  --well: #111214;
+  --graphite: #1b1c1e;
+  --hairline: #363739;
+  --mist: #e6e6e6;
+  --iron: #454647;
+  --coral: #ff6363;
+  --smoke: #6a6b6c;
+  --ash: #9c9c9d;
+  --white: #ffffff;
+  --key-shadow: rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.25) 0px 0px 0px 1px, rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background-color: #040506;
+  /* Micro-mesh industrial background pattern */
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: #9c9c9d;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Raycast Key-Cap & Card Elevation */
+.raycast-card,
+.cockpit-card {
+  background: #07080a;
+  border: 1px solid #363739;
+  border-radius: 16px;
+  box-shadow:
+    rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset,
+    rgba(255, 255, 255, 0.15) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.5) 0px 8px 24px -4px;
+}
+
+/* Raycast Obsidian Well (Inputs, Search, Odometers) */
+.raycast-well,
+.cockpit-sunken {
+  background: #111214;
+  border: 1px solid #363739;
+  border-radius: 8px;
+  box-shadow:
+    rgba(0, 0, 0, 0.5) 0px 2px 6px 0px inset,
+    rgba(255, 255, 255, 0.02) 0px -1px 0px 0px inset;
+}
+
+/* Key-Cap Shadow (Efecto Raycast Oficial) */
+.key-shadow {
+  box-shadow:
+    rgba(255, 255, 255, 0.05) 0px 1px 0px 0px inset,
+    rgba(255, 255, 255, 0.25) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.2) 0px -1px 0px 0px inset;
+}
+
+/* Cuadrícula técnica sutil */
+.cockpit-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Eyebrow Label Standard (11px, mayúsculas, tracking amplio +0.8px, color #6a6b6c) */
+.raycast-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #6a6b6c;
+  font-weight: 500;
+}
+
+/* Raycast Mist Primary Action Button (Mist #e6e6e6, Iron #454647 text, 8px radius, font-medium) */
+.btn-raycast-primary {
+  background-color: #e6e6e6;
+  color: #454647;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow:
+    rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset,
+    rgba(0, 0, 0, 0.3) 0px 2px 4px 0px;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-raycast-primary:hover {
+  background-color: #ffffff;
+  color: #1a1a1a;
+  box-shadow:
+    rgba(255, 255, 255, 0.7) 0px 1px 0px 0px inset,
+    rgba(255, 255, 255, 0.2) 0px 0px 20px 0px,
+    rgba(0, 0, 0, 0.4) 0px 3px 6px 0px;
+  transform: translateY(-0.5px);
+}
+
+.btn-raycast-primary:active {
+  background-color: #d8d8d8;
+  transform: translateY(0.5px);
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px 0px inset;
+}
+
+/* Raycast Secondary Action Button (Graphite #1b1c1e / Obsidian #111214) */
+.btn-raycast-secondary {
+  background-color: #111214;
+  color: #ffffff;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid #363739;
+  box-shadow:
+    rgba(255, 255, 255, 0.03) 0px 1px 0px 0px inset,
+    rgba(0, 0, 0, 0.3) 0px 2px 4px 0px;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-raycast-secondary:hover {
+  background-color: #1b1c1e;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: translateY(-0.5px);
+}
+
+.btn-raycast-secondary:active {
+  transform: translateY(0.5px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #040506;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1b1c1e;
+  border: 1px solid #363739;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #363739;
+}
+
+/* Ambient Pulse Glow Keyframes for Cockpit Hero */
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 7s ease-in-out infinite;
+}

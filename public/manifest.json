@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "id": "/",
+  "name": "VIP CAR B2B - Flota Operativa",
+  "short_name": "VIP CAR B2B",
+  "description": "Plataforma B2B para arriendo de camionetas 4x4, telemetría y cockpit de operaciones mineras y construcción.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "background_color": "#040506",
+  "theme_color": "#040506",
+  "lang": "es-PE",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/logo-vipcar.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-vipcar.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "App Conductor",
+      "short_name": "Conductor",
+      "description": "Check-in de turno, odómetro y checklist preoperacional en socavón",
+      "url": "/conductor",
+      "icons": [
+        {
+          "src": "/logo-vipcar.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Catálogo B2B",
+      "short_name": "Catálogo",
+      "description": "Catálogo corporativo de pickups 4x4 homologadas",
+      "url": "/b2b",
+      "icons": [
+        {
+          "src": "/logo-vipcar.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Cockpit Gerencial",
+      "short_name": "Dashboard",
+      "description": "Semáforo preventivo y control de contratos corporativos",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/logo-vipcar.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
