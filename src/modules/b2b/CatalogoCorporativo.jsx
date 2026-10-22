@@ -17,10 +17,12 @@ import {
   ChevronRight,
   ShieldCheck,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Check
 } from 'lucide-react';
 import SemaforoBadge from '../../components/common/SemaforoBadge';
 import MiningClientsStrip from '../../components/b2b/MiningClientsStrip';
+import VehicleCard from '../../components/b2b/VehicleCard';
 import { obtenerIdentificadorB2B } from '../../utils/plateMasker';
 
 export default function CatalogoCorporativo() {
@@ -57,6 +59,25 @@ export default function CatalogoCorporativo() {
   // Unidad Insignia Destacada para el Bento Showcase (vehículo 0 o primer resultado)
   const flagshipVehicle = filteredVehicles[0] || null;
   const remainingVehicles = filteredVehicles.slice(1);
+
+  // Salud mecánica preventiva para unidad insignia
+  const flagshipSiguiente = flagshipVehicle ? Math.ceil((flagshipVehicle.odometroActual + 1) / 5000) * 5000 : 0;
+  const flagshipKmRestantes = flagshipVehicle ? flagshipSiguiente - flagshipVehicle.odometroActual : 0;
+  const flagshipProgreso = Math.min(100, Math.max(0, ((5000 - flagshipKmRestantes) / 5000) * 100));
+
+  let flagshipProgresoTexto = `Faltan ${flagshipKmRestantes.toLocaleString()} km para servicio`;
+  let flagshipBarraColor = '#59d499';
+  let flagshipTextoColor = 'text-zinc-400';
+
+  if (flagshipKmRestantes <= 0) {
+    flagshipProgresoTexto = `Excedido por ${Math.abs(flagshipKmRestantes).toLocaleString()} km`;
+    flagshipBarraColor = '#ff6363';
+    flagshipTextoColor = 'text-[#ff6363]';
+  } else if (flagshipKmRestantes <= 500) {
+    flagshipProgresoTexto = `Faltan ${flagshipKmRestantes.toLocaleString()} km para servicio`;
+    flagshipBarraColor = '#f59e0b';
+    flagshipTextoColor = 'text-[#f59e0b]';
+  }
 
   return (
     <div className="space-y-10 text-[#949aa6]">
@@ -188,8 +209,8 @@ export default function CatalogoCorporativo() {
           {/* Luz ambiental sutil */}
           <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-gradient-to-b from-[#ff6363]/10 to-transparent blur-3xl pointer-events-none" />
 
-          {/* Encabezado HUD de la Unidad Insignia */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.08] relative z-10">
+          {/* Encabezado Limpio y Editorial */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-2 relative z-10">
             <div className="flex items-center gap-3">
               <span className="telemetry-badge bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40 font-bold rounded-full px-3 py-1">
                 UNIDAD INSIGNIA • {flagshipVehicle.identificadorB2B.codigo}
@@ -213,7 +234,7 @@ export default function CatalogoCorporativo() {
           </div>
 
           {/* Cuerpo Asimétrico del Showcase */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-4 relative z-10">
             {/* Visual Cinemático del Vehículo con Rim Light */}
             <div className="lg:col-span-7 relative">
               <div className="relative rounded-2xl overflow-hidden bg-gradient-to-b from-[#0e1218] via-[#090b0e] to-[#040506] border border-white/[0.08] h-64 sm:h-80 flex items-center justify-center group-hover:border-white/[0.2] transition-all">
@@ -255,72 +276,86 @@ export default function CatalogoCorporativo() {
 
             {/* Instrumentación Técnica & Especificaciones */}
             <div className="lg:col-span-5 space-y-5">
-              <div className="space-y-3">
-                <div className="text-[11px] font-mono uppercase tracking-[0.12em] text-[#626773] font-bold">
-                  Especificaciones para Operación Minera:
-                </div>
-
-                {/* Grid 2x2 de Parámetros de Ingeniería */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="telemetry-well p-3.5 rounded-2xl space-y-0.5">
-                    <span className="text-[9px] font-mono text-[#626773] uppercase block">Capacidad</span>
-                    <span className="text-xs font-bold text-white font-mono">{flagshipVehicle.capacidadCarga}</span>
+              <div className="space-y-4">
+                {/* Especificaciones Técnicas (Números Tabulares Monospace Estricto) */}
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-0.5">
+                      Capacidad Carga
+                    </span>
+                    <span className="text-white font-mono tabular-nums text-xs font-medium">
+                      {flagshipVehicle.capacidadCarga}
+                    </span>
                   </div>
-
-                  <div className="telemetry-well p-3.5 rounded-2xl space-y-0.5">
-                    <span className="text-[9px] font-mono text-[#626773] uppercase block">Odómetro Actual</span>
-                    <span className="text-xs font-bold text-white font-mono">{flagshipVehicle.odometroActual.toLocaleString()} km</span>
-                  </div>
-
-                  <div className="telemetry-well p-3.5 rounded-2xl space-y-0.5 col-span-2">
-                    <span className="text-[9px] font-mono text-[#626773] uppercase block">Certificaciones de Garita</span>
-                    <div className="flex gap-1.5 pt-0.5">
-                      {flagshipVehicle.certificaciones.map((c, i) => (
-                        <span key={i} className="px-3 py-1 rounded-full text-[10px] font-mono bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/30">
-                          {c} Homologado
-                        </span>
-                      ))}
-                    </div>
+                  <div>
+                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-0.5">
+                      Odómetro Actual
+                    </span>
+                    <span className="text-white font-mono tabular-nums text-xs font-medium">
+                      {flagshipVehicle.odometroActual.toLocaleString()} km
+                    </span>
                   </div>
                 </div>
 
-                {/* Semáforo Preventivo en Vivo */}
-                <div className="pt-2">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-[#626773] mb-1">
-                    <span>Salud Mecánica Preventiva:</span>
-                    <span className="text-[#59d499] font-bold">Auditoría 5k / 10k / 20k</span>
-                  </div>
-                  <SemaforoBadge odometro={flagshipVehicle.odometroActual} compact={false} />
-                </div>
-
-                {/* Equipamiento Minero Especializado en Cápsulas */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#626773] block">
-                    Equipamiento Instalado de Seguridad:
+                {/* Certificaciones de Garita: Tags sutiles fondo gris oscuro sin borde verde chillón */}
+                <div>
+                  <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-1.5">
+                    Certificaciones de Garita
                   </span>
                   <div className="flex flex-wrap gap-1.5">
-                    {flagshipVehicle.equipamiento.map((eq, i) => (
+                    {flagshipVehicle.certificaciones?.map((cert, i) => (
                       <span
                         key={i}
-                        className="px-2.5 py-1 rounded-full text-[10px] font-mono telemetry-well border border-white/[0.08] text-[#949aa6] flex items-center gap-1.5"
+                        className="px-2.5 py-0.5 rounded-full text-xs font-sans font-medium bg-zinc-800/90 text-zinc-300"
                       >
-                        <CheckCircle2 className="w-3 h-3 text-[#ff6363]" />
-                        {eq}
+                        {cert} Homologado
                       </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Salud Mecánica Preventiva: Barra delgada y elegante con indicador ámbar tenue (#f59e0b) */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans">
+                      Salud Mecánica Preventiva
+                    </span>
+                    <span className={`font-mono tabular-nums text-xs font-medium ${flagshipTextoColor}`}>
+                      {flagshipProgresoTexto}
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 bg-zinc-800/80 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${flagshipProgreso}%`, backgroundColor: flagshipBarraColor }}
+                    />
+                  </div>
+                </div>
+
+                {/* Lista de equipamiento limpia en cuadrícula de 2 columnas */}
+                <div className="pt-1">
+                  <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-2">
+                    Equipamiento de Seguridad ({flagshipVehicle.equipamiento.length} ítems)
+                  </span>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                    {flagshipVehicle.equipamiento.map((eq, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs text-zinc-300 font-sans font-normal">
+                        <Check className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                        <span className="truncate">{eq}</span>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Botón de Asignación Táctica - Píldora Prominente */}
+              {/* Botón de Acción: Cápsula Completa en Mist #e6e6e6 y texto oscuro */}
               <div className="pt-2">
                 <Link
                   to={`/b2b/cotizar?modelo=${encodeURIComponent(flagshipVehicle.modelo)}`}
-                  className="btn-cockpit-action w-full py-4 px-6 text-sm font-bold rounded-full flex items-center justify-center gap-2 cursor-pointer shadow-xl active:scale-98 tracking-wide font-mono"
+                  className="w-full py-3.5 px-6 rounded-full bg-[#e6e6e6] hover:bg-white text-zinc-900 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-none active:scale-98 font-sans"
                 >
-                  <Truck className="w-4 h-4 text-black" />
                   <span>Asignar {flagshipVehicle.identificadorB2B.codigo} a Cotización</span>
-                  <ChevronRight className="w-4 h-4 text-black" />
+                  <ArrowRight className="w-3.5 h-3.5 text-zinc-900" />
                 </Link>
               </div>
             </div>
@@ -346,129 +381,7 @@ export default function CatalogoCorporativo() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {remainingVehicles.map((veh) => (
-            <div
-              key={veh.id}
-              className="cockpit-panel rounded-3xl overflow-hidden flex flex-col justify-between group border border-white/[0.08] hover:border-[#ff6363]/40 transition-all shadow-xl"
-            >
-              {/* Header Técnico de la Ficha */}
-              <div className="p-4 border-b border-white/[0.08] flex items-center justify-between font-mono text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-[#ff6363] bg-[#ff6363]/10 px-2.5 py-0.5 rounded-full border border-[#ff6363]/40">
-                    {veh.identificadorB2B.codigo}
-                  </span>
-                  <span className="text-[#626773] text-[11px]">
-                    PLACA: <strong className="text-white">{veh.identificadorB2B.enmascarada}</strong>
-                  </span>
-                </div>
-                <span className="text-sm font-black text-white font-mono">
-                  ${veh.tarifaDiariaUSD} <span className="text-[9px] font-normal text-[#626773]">/d</span>
-                </span>
-              </div>
-
-              {/* Imagen Cinemática del Vehículo */}
-              <div className="relative h-48 bg-[#050608] overflow-hidden">
-                <img
-                  src={veh.imagen}
-                  alt={veh.modelo}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/logo-vipcar.png';
-                  }}
-                  className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-400"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#090b0e] via-transparent to-black/30" />
-
-                <div className="absolute top-3 left-3 flex items-center gap-1.5 font-mono text-[9px]">
-                  <span className="px-2.5 py-0.5 rounded-full bg-black/80 backdrop-blur-xs text-[#ff6363] font-bold border border-white/10">
-                    {veh.traccion}
-                  </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-black/80 backdrop-blur-xs text-white border border-white/10">
-                    {veh.anio}
-                  </span>
-                </div>
-
-                <div className="absolute top-3 right-3 font-mono text-[9px]">
-                  <span
-                    className={`px-2.5 py-0.5 rounded-full font-bold ${
-                      veh.estadoOperativo === 'Disponible'
-                        ? 'bg-[#59d499]/15 text-[#59d499] border border-[#59d499]/30'
-                        : 'bg-white/10 text-[#949aa6] border border-white/10'
-                    }`}
-                  >
-                    {veh.estadoOperativo}
-                  </span>
-                </div>
-
-                <div className="absolute bottom-3 left-3.5 right-3.5 text-white">
-                  <h3 className="text-base font-bold text-white tracking-tight leading-tight font-sans">
-                    {veh.marca} {veh.modelo}
-                  </h3>
-                  <div className="text-[11px] font-mono text-[#949aa6]">
-                    {veh.tipo} • {veh.motor}
-                  </div>
-                </div>
-              </div>
-
-              {/* Ficha Técnica & Telemetría */}
-              <div className="p-5 space-y-4 flex-1 flex flex-col justify-between">
-                <div className="space-y-3">
-                  {/* Carga & Homologación */}
-                  <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                    <div className="telemetry-well p-2.5 rounded-2xl">
-                      <span className="text-[9px] text-[#626773] uppercase block">Capacidad</span>
-                      <span className="text-white font-bold truncate block">{veh.capacidadCarga}</span>
-                    </div>
-                    <div className="telemetry-well p-2.5 rounded-2xl">
-                      <span className="text-[9px] text-[#626773] uppercase block">Certificación</span>
-                      <span className="text-[#59d499] font-bold truncate block">{veh.certificaciones.join(', ')}</span>
-                    </div>
-                  </div>
-
-                  {/* Odómetro y Semáforo */}
-                  <div className="pt-1 border-t border-white/[0.08]">
-                    <div className="flex items-center justify-between text-[10px] font-mono text-[#626773] mb-1">
-                      <span>Odómetro actual:</span>
-                      <strong className="text-white">{veh.odometroActual.toLocaleString()} km</strong>
-                    </div>
-                    <SemaforoBadge odometro={veh.odometroActual} compact={true} />
-                  </div>
-
-                  {/* Equipamiento Clave en Cápsulas */}
-                  <div>
-                    <div className="text-[9px] uppercase font-mono tracking-wider text-[#626773] mb-1.5">
-                      Equipamiento:
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {veh.equipamiento.slice(0, 4).map((eq, i) => (
-                        <span
-                          key={i}
-                          className="px-2.5 py-0.5 rounded-full text-[9px] font-mono telemetry-well border border-white/[0.06] text-[#949aa6]"
-                        >
-                          {eq}
-                        </span>
-                      ))}
-                      {veh.equipamiento.length > 4 && (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono bg-[#ff6363]/10 text-[#ff6363] border border-[#ff6363]/20">
-                          +{veh.equipamiento.length - 4} más
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Botón de Cotizar - Cápsula Prominente Táctil para Móvil y Desktop */}
-                <div className="pt-2 border-t border-white/[0.08]">
-                  <Link
-                    to={`/b2b/cotizar?modelo=${encodeURIComponent(veh.modelo)}`}
-                    className="btn-cockpit-action w-full py-3.5 sm:py-3 px-5 text-sm sm:text-xs font-bold rounded-full flex items-center justify-center gap-2 cursor-pointer text-center shadow-lg active:scale-98 tracking-wide font-mono"
-                  >
-                    <Truck className="w-4 h-4 text-black" />
-                    <span>Cotizar {veh.identificadorB2B.codigo}</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-black" />
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <VehicleCard key={veh.id} vehicle={veh} />
           ))}
         </div>
       </div>
