@@ -17,8 +17,9 @@ export default function B2BLayout() {
       {/* ========================================================================= */}
       <section className="relative bg-gradient-to-b from-[#090b0e] via-[#050608] to-[#040506] border-b border-white/[0.08] pt-8 sm:pt-12 pb-6 px-4 sm:px-6 lg:px-8 overflow-hidden select-none">
         {/* Atmósfera de Iluminación Rim Light & Resplandor Coral */}
+        {/* Atmósfera de Iluminación Rim Light & Resplandor Coral Centrado */}
         <div
-          className="absolute -top-32 left-1/4 w-[540px] h-[360px] rounded-full pointer-events-none opacity-40"
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[640px] h-[360px] rounded-full pointer-events-none opacity-40"
           style={{
             background: 'radial-gradient(circle, rgba(255, 99, 99, 0.18) 0%, rgba(4, 5, 6, 0) 70%)',
             filter: 'blur(80px)'
@@ -26,16 +27,16 @@ export default function B2BLayout() {
         />
 
         <div
-          className="absolute top-1/2 right-10 w-[420px] h-[280px] rounded-full pointer-events-none opacity-20"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full pointer-events-none opacity-15"
           style={{
-            background: 'radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(4, 5, 6, 0) 70%)',
+            background: 'radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(4, 5, 6, 0) 70%)',
             filter: 'blur(75px)'
           }}
         />
 
         <div className="relative z-10 max-w-7xl mx-auto space-y-8">
-          {/* Mando Operativo Corporativo */}
-          <div className="max-w-3xl space-y-5">
+          {/* Mando Operativo Corporativo - Centrado & Equilibrado */}
+          <div className="max-w-4xl mx-auto space-y-6 text-center flex flex-col items-center">
             {/* Telemetry Status Bar */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full telemetry-well border border-white/[0.08] text-xs font-mono shadow-md">
               <span className="relative flex h-2 w-2">
@@ -52,8 +53,8 @@ export default function B2BLayout() {
             </div>
 
             {/* Título Monumental & Emblema VIP CAR */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
+            <div className="space-y-2.5 flex flex-col items-center">
+              <div className="flex items-center justify-center gap-3">
                 <img
                   src="/logo-vipcar.png"
                   alt="VIP CAR"
@@ -68,13 +69,13 @@ export default function B2BLayout() {
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight uppercase leading-[0.95] font-sans">
                 PORTAL CORPORATIVO
               </h1>
-              <p className="text-xs sm:text-sm text-[#949aa6] font-mono max-w-xl leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#949aa6] font-mono max-w-2xl mx-auto leading-relaxed">
                 Sistema centralizado de arriendo, telemetría y homologación técnica de camionetas 4x4 para operaciones mineras y construcción en alta montaña.
               </p>
             </div>
 
             {/* Botón de Acción Principal Cockpit en Cápsula + Métricas Rápidas */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
               <Link
                 to="/b2b/cotizar"
                 className="btn-cockpit-action px-7 py-3.5 text-xs sm:text-sm font-bold rounded-full inline-flex items-center gap-2.5 cursor-pointer shadow-xl active:scale-98 font-mono"

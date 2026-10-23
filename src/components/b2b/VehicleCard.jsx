@@ -23,7 +23,7 @@ export default function VehicleCard({ vehicle }) {
         {/* Badges de cabecera flotantes */}
         <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 font-mono text-[10px]">
           <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[#ff6363] font-bold border border-white/10">
-            {vehicle.identificadorB2B?.codigo || vehicle.placa}
+            {vehicle.identificadorB2B?.codigo || 'Unidad'}
           </span>
           <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white font-medium border border-white/10">
             {vehicle.traccion}
@@ -106,8 +106,8 @@ export default function VehicleCard({ vehicle }) {
               Tarifa Corporativa
             </div>
             <div className="text-xl font-bold text-white font-mono tabular-nums leading-none mt-1">
-              ${vehicle.tarifaDiariaUSD}{' '}
-              <span className="text-[11px] font-normal text-zinc-500 font-sans">USD/día</span>
+              S/ {Math.round((vehicle.tarifaDiariaUSD || 0) * 3.765)}{' '}
+              <span className="text-[11px] font-normal text-zinc-500 font-sans">/día</span>
             </div>
           </div>
 

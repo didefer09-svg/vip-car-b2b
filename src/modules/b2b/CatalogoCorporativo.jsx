@@ -183,9 +183,6 @@ export default function CatalogoCorporativo() {
               <span className="telemetry-badge bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40 font-bold rounded-full px-3 py-1">
                 UNIDAD INSIGNIA • {flagshipVehicle.identificadorB2B.codigo}
               </span>
-              <span className="text-xs font-mono text-[#626773]">
-                PLACA: <strong className="text-white">{flagshipVehicle.identificadorB2B.enmascarada}</strong>
-              </span>
             </div>
 
             <div className="flex items-center gap-3">
@@ -194,9 +191,9 @@ export default function CatalogoCorporativo() {
               </span>
               <div className="text-right">
                 <span className="text-xl sm:text-2xl font-black text-white font-mono">
-                  ${flagshipVehicle.tarifaDiariaUSD}
+                  S/ {Math.round((flagshipVehicle.tarifaDiariaUSD || 0) * 3.765)}
                 </span>
-                <span className="text-[10px] text-[#626773] font-mono"> USD/día</span>
+                <span className="text-[10px] text-[#626773] font-mono"> /día</span>
               </div>
             </div>
           </div>
