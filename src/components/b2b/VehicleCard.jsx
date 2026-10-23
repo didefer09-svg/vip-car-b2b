@@ -41,11 +41,6 @@ export default function VehicleCard({ vehicle }) {
             {vehicle.estadoOperativo}
           </span>
         </div>
-
-        {/* Placa protegida sutil */}
-        <div className="absolute bottom-2.5 left-4 text-[11px] font-mono text-zinc-500">
-          Placa: <span className="text-zinc-400">{vehicle.identificadorB2B?.enmascarada || vehicle.placa}</span>
-        </div>
       </div>
 
       {/* 2. Cuerpo Editorial de la Ficha */}
