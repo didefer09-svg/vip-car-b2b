@@ -47,25 +47,6 @@ export default function CatalogoCorporativo() {
   const flagshipVehicle = filteredVehicles[0] || null;
   const remainingVehicles = filteredVehicles.slice(1);
 
-  // Salud mecánica preventiva para unidad insignia
-  const flagshipSiguiente = flagshipVehicle ? Math.ceil((flagshipVehicle.odometroActual + 1) / 5000) * 5000 : 0;
-  const flagshipKmRestantes = flagshipVehicle ? flagshipSiguiente - flagshipVehicle.odometroActual : 0;
-  const flagshipProgreso = Math.min(100, Math.max(0, ((5000 - flagshipKmRestantes) / 5000) * 100));
-
-  let flagshipProgresoTexto = `Faltan ${flagshipKmRestantes.toLocaleString()} km para servicio`;
-  let flagshipBarraColor = '#59d499';
-  let flagshipTextoColor = 'text-zinc-400';
-
-  if (flagshipKmRestantes <= 0) {
-    flagshipProgresoTexto = `Excedido por ${Math.abs(flagshipKmRestantes).toLocaleString()} km`;
-    flagshipBarraColor = '#ff6363';
-    flagshipTextoColor = 'text-[#ff6363]';
-  } else if (flagshipKmRestantes <= 500) {
-    flagshipProgresoTexto = `Faltan ${flagshipKmRestantes.toLocaleString()} km para servicio`;
-    flagshipBarraColor = '#f59e0b';
-    flagshipTextoColor = 'text-[#f59e0b]';
-  }
-
   return (
     <div className="space-y-10 text-[#949aa6]">
       {/* ========================================================================= */}
@@ -264,58 +245,30 @@ export default function CatalogoCorporativo() {
             {/* Instrumentación Técnica & Especificaciones */}
             <div className="lg:col-span-5 space-y-5">
               <div className="space-y-4">
-                {/* Especificaciones Técnicas (Números Tabulares Monospace Estricto) */}
-                <div className="grid grid-cols-2 gap-3 pt-1">
+                {/* Especificaciones Técnicas: Capacidad de Carga & Certificaciones de Garita */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 items-start">
                   <div>
-                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-0.5">
-                      Capacidad Carga
+                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-1">
+                      Capacidad de Carga
                     </span>
-                    <span className="text-white font-mono tabular-nums text-xs font-medium">
+                    <span className="text-white font-mono tabular-nums text-xs font-semibold">
                       {flagshipVehicle.capacidadCarga}
                     </span>
                   </div>
                   <div>
-                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-0.5">
-                      Odómetro Actual
+                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-1.5">
+                      Certificaciones de Garita
                     </span>
-                    <span className="text-white font-mono tabular-nums text-xs font-medium">
-                      {flagshipVehicle.odometroActual.toLocaleString()} km
-                    </span>
-                  </div>
-                </div>
-
-                {/* Certificaciones de Garita: Tags sutiles fondo gris oscuro sin borde verde chillón */}
-                <div>
-                  <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-1.5">
-                    Certificaciones de Garita
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {flagshipVehicle.certificaciones?.map((cert, i) => (
-                      <span
-                        key={i}
-                        className="px-2.5 py-0.5 rounded-full text-xs font-sans font-medium bg-zinc-800/90 text-zinc-300"
-                      >
-                        {cert} Homologado
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Salud Mecánica Preventiva: Barra delgada y elegante con indicador ámbar tenue (#f59e0b) */}
-                <div className="space-y-1.5 pt-1">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans">
-                      Salud Mecánica Preventiva
-                    </span>
-                    <span className={`font-mono tabular-nums text-xs font-medium ${flagshipTextoColor}`}>
-                      {flagshipProgresoTexto}
-                    </span>
-                  </div>
-                  <div className="w-full h-1.5 bg-zinc-800/80 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${flagshipProgreso}%`, backgroundColor: flagshipBarraColor }}
-                    />
+                    <div className="flex flex-wrap gap-1.5">
+                      {flagshipVehicle.certificaciones?.map((cert, i) => (
+                        <span
+                          key={i}
+                          className="px-2.5 py-0.5 rounded-full text-xs font-sans font-medium bg-zinc-800/90 text-zinc-300"
+                        >
+                          {cert} Homologado
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

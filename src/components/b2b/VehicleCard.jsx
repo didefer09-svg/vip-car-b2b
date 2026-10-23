@@ -5,25 +5,6 @@ import { Check, ArrowRight } from 'lucide-react';
 export default function VehicleCard({ vehicle }) {
   if (!vehicle) return null;
 
-  // Cálculo de Salud Mecánica Preventiva a intervalos de 5,000 km
-  const siguienteServicio = Math.ceil((vehicle.odometroActual + 1) / 5000) * 5000;
-  const kmRestantes = siguienteServicio - vehicle.odometroActual;
-  const progreso = Math.min(100, Math.max(0, ((5000 - kmRestantes) / 5000) * 100));
-
-  let progresoTexto = `Faltan ${kmRestantes.toLocaleString()} km para servicio`;
-  let barraColor = '#59d499';
-  let textoColor = 'text-zinc-400';
-
-  if (kmRestantes <= 0) {
-    progresoTexto = `Excedido por ${Math.abs(kmRestantes).toLocaleString()} km`;
-    barraColor = '#ff6363';
-    textoColor = 'text-[#ff6363]';
-  } else if (kmRestantes <= 500) {
-    progresoTexto = `Faltan ${kmRestantes.toLocaleString()} km para servicio`;
-    barraColor = '#f59e0b';
-    textoColor = 'text-[#f59e0b]';
-  }
-
   return (
     <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl overflow-hidden flex flex-col justify-between group border border-slate-700/50 hover:border-slate-600/60 transition-all duration-300 shadow-xl">
       {/* 1. Fotografía a sangre con gradiente sutil y badges flotantes */}
@@ -80,58 +61,30 @@ export default function VehicleCard({ vehicle }) {
             </p>
           </div>
 
-          {/* Especificaciones Técnicas (Números Tabulares Monospace Estricto) */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
+          {/* Especificaciones Técnicas: Capacidad de Carga & Certificaciones de Garita */}
+          <div className="grid grid-cols-2 gap-3 pt-1 items-start">
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-0.5">
-                Capacidad Carga
+              <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-1">
+                Capacidad de Carga
               </span>
-              <span className="text-white font-mono tabular-nums text-xs font-medium">
+              <span className="text-white font-mono tabular-nums text-xs font-semibold">
                 {vehicle.capacidadCarga}
               </span>
             </div>
             <div>
-              <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-0.5">
-                Odómetro Actual
+              <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-1.5">
+                Certificaciones de Garita
               </span>
-              <span className="text-white font-mono tabular-nums text-xs font-medium">
-                {vehicle.odometroActual.toLocaleString()} km
-              </span>
-            </div>
-          </div>
-
-          {/* Certificaciones de Garita: Tags muy sutiles de fondo gris oscuro sin bordes chillones */}
-          <div>
-            <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-1.5">
-              Certificaciones de Garita
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {vehicle.certificaciones?.map((cert, i) => (
-                <span
-                  key={i}
-                  className="px-2.5 py-0.5 rounded-full text-xs font-sans font-medium bg-zinc-800/90 text-zinc-300"
-                >
-                  {cert} Homologado
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Salud Mecánica Preventiva: Barra delgada y elegante con indicador ámbar tenue (#f59e0b) */}
-          <div className="space-y-1.5 pt-1">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans">
-                Salud Mecánica Preventiva
-              </span>
-              <span className={`font-mono tabular-nums text-xs font-medium ${textoColor}`}>
-                {progresoTexto}
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-zinc-800/80 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${progreso}%`, backgroundColor: barraColor }}
-              />
+              <div className="flex flex-wrap gap-1.5">
+                {vehicle.certificaciones?.map((cert, i) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-0.5 rounded-full text-[11px] font-sans font-medium bg-zinc-800/90 text-zinc-300"
+                  >
+                    {cert} Homologado
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
