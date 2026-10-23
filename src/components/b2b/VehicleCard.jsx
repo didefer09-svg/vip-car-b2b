@@ -25,7 +25,7 @@ export default function VehicleCard({ vehicle }) {
   }
 
   return (
-    <div className="cockpit-panel rounded-3xl overflow-hidden flex flex-col justify-between group border border-white/[0.08] hover:border-white/[0.18] transition-all duration-300 shadow-xl">
+    <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl overflow-hidden flex flex-col justify-between group border border-slate-700/50 hover:border-slate-600/60 transition-all duration-300 shadow-xl">
       {/* 1. Fotografía a sangre con gradiente sutil y badges flotantes */}
       <div className="relative h-52 bg-[#050608] overflow-hidden">
         <img
@@ -135,15 +135,15 @@ export default function VehicleCard({ vehicle }) {
             </div>
           </div>
 
-          {/* Cuadrícula compacta de 2 columnas de texto limpio de equipamiento */}
+          {/* Lista de equipamiento limpia en grid-cols-2 sin bordes individuales */}
           <div className="pt-1">
             <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-2">
               Equipamiento de Seguridad
             </span>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
               {vehicle.equipamiento?.slice(0, 6).map((item, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 text-xs text-zinc-300 font-sans font-normal">
-                  <Check className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                  <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                   <span className="truncate">{item}</span>
                 </div>
               ))}
@@ -151,7 +151,7 @@ export default function VehicleCard({ vehicle }) {
           </div>
         </div>
 
-        {/* 3. Fila Inferior: Tarifa y Botón de Acción en Cápsula Completa (Mist #e6e6e6) */}
+        {/* 3. Fila Inferior: Tarifa y Botón de Acción en Cápsula Completa (Rojo para móvil) */}
         <div className="pt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-white/[0.04]">
           <div>
             <div className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans">
@@ -165,10 +165,10 @@ export default function VehicleCard({ vehicle }) {
 
           <Link
             to={`/b2b/cotizar?modelo=${encodeURIComponent(vehicle.modelo)}`}
-            className="w-full sm:w-auto py-3 px-6 rounded-full bg-[#e6e6e6] hover:bg-white text-zinc-900 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-none active:scale-98 font-sans"
+            className="w-full sm:w-auto py-3 px-6 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-950/40 active:scale-98 font-sans"
           >
             <span>Cotizar {vehicle.identificadorB2B?.codigo || 'Unidad'}</span>
-            <ArrowRight className="w-3.5 h-3.5 text-zinc-900" />
+            <ArrowRight className="w-3.5 h-3.5 text-white" />
           </Link>
         </div>
       </div>

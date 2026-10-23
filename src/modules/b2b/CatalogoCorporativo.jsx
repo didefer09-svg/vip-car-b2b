@@ -2,25 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useFleet } from '../../context/FleetContext';
 import {
-  Filter,
-  CheckCircle,
-  Truck,
-  Shield,
   ArrowRight,
   Search,
   Lock,
-  Gauge,
-  Zap,
-  Activity,
   Layers,
-  Sparkles,
-  ChevronRight,
-  ShieldCheck,
-  CheckCircle2,
-  AlertTriangle,
   Check
 } from 'lucide-react';
-import SemaforoBadge from '../../components/common/SemaforoBadge';
 import MiningClientsStrip from '../../components/b2b/MiningClientsStrip';
 import VehicleCard from '../../components/b2b/VehicleCard';
 import { obtenerIdentificadorB2B } from '../../utils/plateMasker';
@@ -84,7 +71,7 @@ export default function CatalogoCorporativo() {
       {/* ========================================================================= */}
       {/* 1. BANNER PROTOCOLO DE SEGURIDAD PATRIMONIAL                              */}
       {/* ========================================================================= */}
-      <div className="cockpit-panel rounded-full px-5 py-3 border border-white/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono shadow-md">
+      <div className="bg-slate-800/40 backdrop-blur-md rounded-full px-5 py-3 border border-slate-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono shadow-md">
         <div className="flex items-center gap-2.5">
           <div className="w-6 h-6 rounded-full bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40 flex items-center justify-center shrink-0">
             <Lock className="w-3 h-3" />
@@ -102,7 +89,7 @@ export default function CatalogoCorporativo() {
       {/* ========================================================================= */}
       {/* 2. CONSOLA DE FILTRADO & DESPACHO TÁCTICO (INSTRUMENT CLUSTER)            */}
       {/* ========================================================================= */}
-      <div className="cockpit-panel rounded-3xl p-5 sm:p-7 border border-white/[0.08] space-y-4 shadow-xl">
+      <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl p-5 sm:p-7 border border-slate-700/50 space-y-4 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/[0.08]">
           <div className="flex items-center gap-2.5">
             <div className="w-2.5 h-2.5 rounded-full bg-[#ff6363] animate-pulse" />
@@ -205,7 +192,7 @@ export default function CatalogoCorporativo() {
       {/* 3. BENTO SHOWCASE: UNIDAD INSIGNIA DESTACADA (PORSCHE/RIVIAN COCKPIT)     */}
       {/* ========================================================================= */}
       {flagshipVehicle && (
-        <div className="cockpit-panel rounded-3xl p-6 lg:p-8 border border-white/[0.08] shadow-2xl relative overflow-hidden group">
+        <div className="bg-slate-800/40 backdrop-blur-md rounded-3xl p-6 lg:p-8 border border-slate-700/50 shadow-2xl relative overflow-hidden group">
           {/* Luz ambiental sutil */}
           <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-gradient-to-b from-[#ff6363]/10 to-transparent blur-3xl pointer-events-none" />
 
@@ -332,15 +319,15 @@ export default function CatalogoCorporativo() {
                   </div>
                 </div>
 
-                {/* Lista de equipamiento limpia en cuadrícula de 2 columnas */}
+                {/* Lista de equipamiento limpia en cuadrícula de 2 columnas sin bordes individuales */}
                 <div className="pt-1">
                   <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-2">
                     Equipamiento de Seguridad ({flagshipVehicle.equipamiento.length} ítems)
                   </span>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                     {flagshipVehicle.equipamiento.map((eq, i) => (
                       <div key={i} className="flex items-center gap-2 text-xs text-zinc-300 font-sans font-normal">
-                        <Check className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                         <span className="truncate">{eq}</span>
                       </div>
                     ))}
@@ -348,14 +335,14 @@ export default function CatalogoCorporativo() {
                 </div>
               </div>
 
-              {/* Botón de Acción: Cápsula Completa en Mist #e6e6e6 y texto oscuro */}
+              {/* Botón de Acción: Cápsula Completa en Rojo para móvil */}
               <div className="pt-2">
                 <Link
                   to={`/b2b/cotizar?modelo=${encodeURIComponent(flagshipVehicle.modelo)}`}
-                  className="w-full py-3.5 px-6 rounded-full bg-[#e6e6e6] hover:bg-white text-zinc-900 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-none active:scale-98 font-sans"
+                  className="w-full sm:w-auto py-3.5 px-6 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-950/40 active:scale-98 font-sans"
                 >
                   <span>Asignar {flagshipVehicle.identificadorB2B.codigo} a Cotización</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-zinc-900" />
+                  <ArrowRight className="w-3.5 h-3.5 text-white" />
                 </Link>
               </div>
             </div>
