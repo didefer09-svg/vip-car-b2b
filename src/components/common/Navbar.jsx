@@ -53,23 +53,13 @@ export default function Navbar() {
 
       <div className="cockpit-panel rounded-full border border-white/[0.08] shadow-2xl px-4 sm:px-5 h-14 flex items-center justify-between">
         {/* Brand Logo: VIP CAR Official Logo */}
-        <Link to="/b2b" className="flex items-center gap-2.5 group">
-            <img
-              src="/logo-vipcar.png"
-              alt="VIP CAR"
-              className="h-8 sm:h-9 w-auto object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-102 transition-transform"
-            />
-            <div className="flex flex-col justify-center">
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded-full bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40">
-                  FLEET-OS
-                </span>
-              </div>
-              <p className="text-[9px] text-[#626773] tracking-tight leading-none mt-0.5 font-mono hidden sm:block">
-                Cockpit Minero • Junín
-              </p>
-            </div>
-          </Link>
+        <Link to="/b2b" className="flex items-center group">
+          <img
+            src="/logo-vipcar.png"
+            alt="VIP CAR"
+            className="h-8 sm:h-9 w-auto object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)] group-hover:scale-102 transition-transform"
+          />
+        </Link>
 
           {/* Module Switcher Tabs (Cockpit Segmented Control en Cápsula) */}
           <nav className="flex items-center gap-1 telemetry-well p-1 rounded-full border border-white/[0.08]">
