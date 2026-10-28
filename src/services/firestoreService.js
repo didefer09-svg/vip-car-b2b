@@ -237,10 +237,41 @@ export function subscribeToBitacora(onSuccess, onError) {
   return onSnapshot(
     collection(db, COLLECTIONS.BITACORA),
     (snapshot) => {
-      const bitacoraList = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-      }));
+      const bitacoraList = snapshot.docs.map((docSnap) => {
+        const data = docSnap.data();
+        const conductor = data.conductor || data.operador || 'Conductor no asignado';
+        const tipoEvento = data.tipoEvento || (
+          data.tipoRegistro?.toLowerCase().includes('check-in') ? 'Check-in' :
+          data.tipoRegistro?.toLowerCase().includes('check-out') ? 'Check-out' :
+          data.tipoRegistro?.toLowerCase().includes('avería') || data.tipoRegistro?.toLowerCase().includes('averia') ? 'Avería' :
+          data.tipoRegistro?.toLowerCase().includes('sos') || data.tipoRegistro?.toLowerCase().includes('emergencia') ? 'SOS' :
+          data.tipoRegistro || 'Operativo'
+        );
+        const lat = data.latitud ?? data.ubicacion?.latitud ?? null;
+        const lng = data.longitud ?? data.ubicacion?.longitud ?? null;
+
+        return {
+          id: docSnap.id,
+          ...data,
+          conductor,
+          operador: conductor,
+          tipoEvento,
+          tipoRegistro: data.tipoRegistro || tipoEvento,
+          descripcion: data.descripcion || data.observaciones || data.checklistEstado || '',
+          observaciones: data.observaciones || data.descripcion || data.checklistEstado || '',
+          latitud: lat != null ? Number(lat) : null,
+          longitud: lng != null ? Number(lng) : null,
+          fechaHora: data.fechaHora || (data.timestamp ? new Date(data.timestamp).toLocaleString('es-PE') : 'Reciente'),
+        };
+      });
+
+      bitacoraList.sort((a, b) => {
+        const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+        const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+        if (timeA !== timeB && !isNaN(timeA) && !isNaN(timeB)) return timeB - timeA;
+        return (b.id || '').localeCompare(a.id || '');
+      });
+
       onSuccess(bitacoraList);
     },
     (error) => {

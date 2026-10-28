@@ -13,6 +13,7 @@ import {
   Wrench
 } from 'lucide-react';
 import SemaforoBadge from '../../components/common/SemaforoBadge';
+import AlertaCriticaCockpit from '../../components/dashboard/AlertaCriticaCockpit';
 
 export default function DashboardHome() {
   const { vehicles, bitacora, averias, calcularSemaforo } = useFleet();
@@ -56,6 +57,9 @@ export default function DashboardHome() {
           <span>Ver Semáforo Preventivo</span>
         </Link>
       </div>
+
+      {/* Apartado & Modal de Alerta Crítica (SOS & Averías) */}
+      <AlertaCriticaCockpit />
 
       {/* Alerta Crítica en Coral Pulse */}
       {(semaforoStats.rojo > 0 || averias.length > 0) && (

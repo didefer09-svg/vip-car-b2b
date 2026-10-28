@@ -25,7 +25,7 @@ const FleetContext = createContext(null);
 
 export function FleetProvider({ children }) {
   // Persistencia local para modo offline en operación minera
-  const FLEET_STORAGE_VERSION = 'v2_official_vipcar_fleet';
+  const FLEET_STORAGE_VERSION = 'v3_vipcar_fleet_sos_alerts';
 
   const [vehicles, setVehicles] = useState(() => {
     try {
@@ -33,6 +33,7 @@ export function FleetProvider({ children }) {
       if (ver !== FLEET_STORAGE_VERSION) {
         localStorage.setItem('vipcar_fleet_version', FLEET_STORAGE_VERSION);
         localStorage.setItem('vipcar_vehicles', JSON.stringify(INITIAL_VEHICLES));
+        localStorage.setItem('vipcar_bitacora', JSON.stringify(INITIAL_BITACORA));
         return INITIAL_VEHICLES;
       }
       const saved = localStorage.getItem('vipcar_vehicles');
@@ -53,6 +54,10 @@ export function FleetProvider({ children }) {
 
   const [bitacora, setBitacora] = useState(() => {
     try {
+      const ver = localStorage.getItem('vipcar_fleet_version');
+      if (ver !== FLEET_STORAGE_VERSION) {
+        return INITIAL_BITACORA;
+      }
       const saved = localStorage.getItem('vipcar_bitacora');
       return saved ? JSON.parse(saved) : INITIAL_BITACORA;
     } catch {
@@ -376,19 +381,40 @@ export function FleetProvider({ children }) {
     return { ...nuevoLog, guardadoEnSocavon };
   };
 
-  const reportarAveriaEmergencia = async ({ placa, tipoFalla, severidad, descripcion, conductor, foto }) => {
+  const reportarAveriaEmergencia = async ({
+    placa,
+    tipoFalla,
+    severidad,
+    descripcion,
+    conductor,
+    operador,
+    foto,
+    latitud,
+    longitud,
+    tipoEvento
+  }) => {
     const targetVeh = vehicles.find((v) => v.placa === placa);
+    const conductorNombre = conductor || operador || targetVeh?.conductorActual || 'Carlos Huamán';
+    const eventoTipo = tipoEvento || (severidad === 'Crítica' || tipoFalla?.toLowerCase().includes('sos') ? 'SOS' : 'Avería');
+    const now = new Date();
+    const fechaHora = now.toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'medium' });
+    const lat = latitud != null && !isNaN(latitud) ? Number(latitud) : -11.6083;
+    const lng = longitud != null && !isNaN(longitud) ? Number(longitud) : -76.1294;
 
     const nuevaAveria = {
       id: `avr-${Date.now()}`,
-      fechaHora: new Date().toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }),
+      fechaHora,
       placa,
-      tipoFalla,
-      severidad,
-      descripcion,
-      conductor: conductor || 'Carlos Huamán',
+      tipoFalla: tipoFalla || 'Incidente mecánico en ruta',
+      severidad: severidad || 'Grave',
+      descripcion: descripcion || 'Reporte de novedad en operación',
+      conductor: conductorNombre,
+      operador: conductorNombre,
       fotoUrl: foto || null,
       estado: 'Pendiente de Asistencia Mecánica',
+      tipoEvento: eventoTipo,
+      latitud: lat,
+      longitud: lng,
     };
 
     setAverias((prev) => [nuevaAveria, ...prev]);
@@ -399,16 +425,23 @@ export function FleetProvider({ children }) {
 
     const nuevoLog = {
       id: `bit-${Date.now()}`,
-      fechaHora: new Date().toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }),
-      conductor: conductor || 'Carlos Huamán',
+      fechaHora,
+      conductor: conductorNombre,
+      operador: conductorNombre,
       placa,
-      tipoRegistro: `EMERGENCIA: ${tipoFalla}`,
+      tipoEvento: eventoTipo, // 'SOS' o 'Avería'
+      tipoRegistro: `${eventoTipo}: ${tipoFalla || 'Incidente en ruta'} (${severidad || 'Urgente'})`,
       odometro: targetVeh?.odometroActual || 0,
       nivelCombustible: `${targetVeh?.nivelCombustible || 'N/A'}%`,
-      checklistEstado: `Avería ${severidad}`,
-      proyecto: targetVeh?.empresaAsignada || 'Ruta / Operación',
-      observaciones: descripcion,
+      combustible: targetVeh?.nivelCombustible || 75,
+      checklistEstado: `${eventoTipo} ${severidad || 'Grave'}`,
+      proyecto: targetVeh?.empresaAsignada || 'Toromocho - Junín',
+      observaciones: descripcion || 'Sin observaciones adicionales',
+      descripcion: descripcion || 'Sin observaciones adicionales',
       estado: 'Alerta',
+      latitud: lat,
+      longitud: lng,
+      timestamp: now.toISOString(),
     };
 
     setBitacora((prev) => [nuevoLog, ...prev]);
@@ -432,12 +465,35 @@ export function FleetProvider({ children }) {
           guardadoEnSocavon = true;
         }
       } catch (err) {
+        console.warn('Error en sync averia:', err);
         enqueueOfflineAction('AVERIA', averiaData);
         guardadoEnSocavon = true;
       }
     }
 
     return { ...nuevaAveria, guardadoEnSocavon };
+  };
+
+  const emitirAlertaCritica = async ({
+    placa = 'W4E-892',
+    operador = 'Carlos Huamán',
+    tipoEvento = 'SOS',
+    novedad = 'Señal de auxilio reportada por el operador.',
+    latitud = -11.6083,
+    longitud = -76.1294,
+    severidad = 'Crítica'
+  }) => {
+    return reportarAveriaEmergencia({
+      placa,
+      tipoFalla: tipoEvento === 'SOS' ? 'Auxilio Inmediato SOS' : 'Avería Mecánica en Operación',
+      severidad,
+      descripcion: novedad,
+      conductor: operador,
+      operador,
+      latitud,
+      longitud,
+      tipoEvento,
+    });
   };
 
   const agregarCotizacion = async (solicitud) => {
@@ -497,6 +553,7 @@ export function FleetProvider({ children }) {
         registrarCheckIn,
         registrarCheckOut,
         reportarAveriaEmergencia,
+        emitirAlertaCritica,
         agregarCotizacion,
         agregarVehiculo,
         eliminarVehiculo,

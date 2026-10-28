@@ -1,29 +1,24 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
+:root {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
-
   --color-void: #040506;
   --color-ink: #07080a;
   --color-obsidian: #0d0f12;
   --color-graphite: #15181c;
   --color-hairline: #262930;
-
   --color-smoke: #626773;
   --color-ash: #949aa6;
   --color-pure-white: #ffffff;
-
   --color-mist: #e6e6e6;
   --color-iron: #3a3e47;
-
   --color-coral: #ff6363;
   --color-amber-warning: #f59e0b;
   --color-emerald-active: #59d499;
   --color-cyan-radar: #38bdf8;
-}
-
-:root {
   --canvas: #040506;
   --card: #080a0d;
   --well: #0e1116;

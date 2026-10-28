@@ -18,7 +18,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function DashboardLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { vehicles, contratos, calcularSemaforo } = useFleet();
+  const { vehicles, contratos, calcularSemaforo, bitacora } = useFleet();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -26,6 +26,19 @@ export default function DashboardLayout() {
     await logout();
     navigate('/dashboard/login');
   };
+
+  const totalSosAlerts = (bitacora || []).filter((item) => {
+    const tipo = (item.tipoEvento || '').trim();
+    const reg = (item.tipoRegistro || '').toLowerCase();
+    return (
+      tipo === 'SOS' ||
+      tipo === 'Avería' ||
+      tipo === 'Averia' ||
+      reg.includes('sos') ||
+      reg.includes('avería') ||
+      reg.includes('averia')
+    );
+  }).length;
 
   const stats = vehicles.reduce(
     (acc, v) => {
@@ -42,7 +55,9 @@ export default function DashboardLayout() {
       to: '/dashboard',
       label: 'Panel Cockpit',
       icon: LayoutDashboard,
-      end: true
+      end: true,
+      badge: totalSosAlerts > 0 ? `🚨 ${totalSosAlerts} SOS` : null,
+      badgeColor: 'bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/50 animate-pulse font-mono',
     },
     {
       to: '/dashboard/semaforo',
