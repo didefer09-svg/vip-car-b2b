@@ -7,16 +7,26 @@ import { usePWA } from '../../context/PWAContext';
 
 export default function Navbar() {
   const { averias, cloudStatus } = useFleet();
-  const { isAuthenticated, user, isTaller, logout } = useAuth();
+  const { isAuthenticated, user, isTaller, loginAsGerente, loginAsTaller, logout } = useAuth();
   const { isInstallable, isInstalled, installApp } = usePWA();
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const alertCount = averias.length;
 
+  const handleSimularGerente = () => {
+    loginAsGerente();
+    navigate('/dashboard');
+  };
+
+  const handleSimularTaller = () => {
+    loginAsTaller();
+    navigate('/mantenimiento');
+  };
+
   const handleLogout = async () => {
     await logout();
-    if (location.pathname.startsWith('/dashboard')) {
+    if (location.pathname.startsWith('/dashboard') || location.pathname.startsWith('/mantenimiento')) {
       navigate('/dashboard/login');
     }
   };
@@ -138,6 +148,34 @@ export default function Navbar() {
                   <span className="text-[#6a6b6c]">Modo Local</span>
                 </>
               )}
+            </div>
+
+            {/* Botones de prueba RBAC para presentación */}
+            <div className="hidden xl:flex items-center gap-1 telemetry-well p-1 rounded-full border border-white/[0.08]">
+              <button
+                type="button"
+                onClick={handleSimularGerente}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                  user?.role === 'GERENTE'
+                    ? 'bg-[#ff6363] text-black shadow-xs font-black'
+                    : 'text-[#9c9c9d] hover:text-white hover:bg-white/[0.05]'
+                }`}
+                title="Simular rol Gerente (Acceso total)"
+              >
+                Simular rol Gerente
+              </button>
+              <button
+                type="button"
+                onClick={handleSimularTaller}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-all cursor-pointer ${
+                  user?.role === 'TALLER'
+                    ? 'bg-[#59d499] text-black shadow-xs font-black'
+                    : 'text-[#9c9c9d] hover:text-white hover:bg-white/[0.05]'
+                }`}
+                title="Simular rol Taller (Solo Mantenimiento en /mantenimiento)"
+              >
+                Simular rol Taller
+              </button>
             </div>
 
             {/* Botón Discreto 'Instalar App' Cápsula */}

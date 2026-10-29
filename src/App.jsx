@@ -70,7 +70,26 @@ export default function App() {
               {/* MÓDULO 3: Autenticación & Acceso Gerencial Restringido */}
               <Route path="/login" element={<Navigate to="/dashboard/login" replace />} />
               <Route path="/dashboard/login" element={<Login />} />
-              <Route path="/mantenimiento" element={<Navigate to="/dashboard/mantenimiento" replace />} />
+
+              {/* Ruta directa /mantenimiento con DashboardLayout (Acceso Gerente y Taller) */}
+              <Route
+                path="/mantenimiento"
+                element={
+                  <ProtectedRoute allowedRoles={['GERENTE', 'TALLER']}>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<GestionMantenimiento />} />
+              </Route>
+
+              {/* Alias directos para verificación estricta de rutas en URL */}
+              <Route path="/flota" element={<Navigate to="/dashboard/flota" replace />} />
+              <Route path="/conductores" element={<Navigate to="/dashboard/conductores" replace />} />
+              <Route path="/semaforo" element={<Navigate to="/dashboard/semaforo" replace />} />
+              <Route path="/contratos" element={<Navigate to="/dashboard/contratos" replace />} />
+              <Route path="/bitacora" element={<Navigate to="/dashboard/bitacora" replace />} />
+
               <Route
                 path="/dashboard"
                 element={

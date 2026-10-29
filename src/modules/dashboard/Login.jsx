@@ -34,7 +34,7 @@ export default function Login() {
   React.useEffect(() => {
     if (isAuthenticated) {
       if (user?.role === 'TALLER') {
-        navigate('/dashboard/mantenimiento', { replace: true });
+        navigate('/mantenimiento', { replace: true });
       } else {
         const dest = from && from !== '/dashboard/login' ? from : '/dashboard';
         navigate(dest, { replace: true });
@@ -56,7 +56,7 @@ export default function Login() {
       const res = await login(email, password);
       const role = res?.user?.role || (email.toLowerCase().includes('taller') || email.toLowerCase().includes('mantenimiento') ? 'TALLER' : 'GERENTE');
       if (role === 'TALLER') {
-        navigate('/dashboard/mantenimiento', { replace: true });
+        navigate('/mantenimiento', { replace: true });
       } else {
         const dest = from && from !== '/dashboard/login' ? from : '/dashboard';
         navigate(dest, { replace: true });
@@ -68,7 +68,7 @@ export default function Login() {
     }
   };
 
-  // Botón Rápido 1: Entrar como Gerente (Acceso Total)
+  // Botón Rápido 1: Simular rol Gerente (Acceso Total)
   const handleQuickLoginGerente = () => {
     setLoading(true);
     try {
@@ -82,12 +82,12 @@ export default function Login() {
     }
   };
 
-  // Botón Rápido 2: Entrar como Taller (Acceso Restringido Mantenimiento)
+  // Botón Rápido 2: Simular rol Taller (Acceso Restringido a /mantenimiento)
   const handleQuickLoginTaller = () => {
     setLoading(true);
     try {
       loginAsTaller();
-      navigate('/dashboard/mantenimiento', { replace: true });
+      navigate('/mantenimiento', { replace: true });
     } catch (err) {
       setLocalError('Error al iniciar como Taller.');
     } finally {
@@ -170,7 +170,7 @@ export default function Login() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              {/* Botón 1: Entrar como Gerente */}
+              {/* Botón 1: Simular rol Gerente */}
               <button
                 type="button"
                 onClick={handleQuickLoginGerente}
@@ -180,7 +180,7 @@ export default function Login() {
                 <div className="flex items-center justify-between w-full mb-1">
                   <span className="flex items-center gap-1.5 text-[#ff6363] font-bold text-xs font-mono">
                     <Briefcase className="w-3.5 h-3.5" />
-                    Entrar como Gerente
+                    Simular rol Gerente
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#ff6363] group-hover:translate-x-0.5 transition-transform" />
                 </div>
@@ -189,11 +189,11 @@ export default function Login() {
                   ✓ Acceso Total (7 módulos)
                 </span>
                 <span className="text-[9px] text-[#59d499] font-mono">
-                  Cockpit, Semáforo, Flota...
+                  Navega por cualquier ruta
                 </span>
               </button>
 
-              {/* Botón 2: Entrar como Taller */}
+              {/* Botón 2: Simular rol Taller */}
               <button
                 type="button"
                 onClick={handleQuickLoginTaller}
@@ -203,7 +203,7 @@ export default function Login() {
                 <div className="flex items-center justify-between w-full mb-1">
                   <span className="flex items-center gap-1.5 text-[#59d499] font-bold text-xs font-mono">
                     <Wrench className="w-3.5 h-3.5" />
-                    Entrar como Taller
+                    Simular rol Taller
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#59d499] group-hover:translate-x-0.5 transition-transform" />
                 </div>

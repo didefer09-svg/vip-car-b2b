@@ -15,7 +15,8 @@ import {
   ShieldCheck,
   Briefcase,
   ArrowRightLeft,
-  Lock
+  Lock,
+  CheckCircle2
 } from 'lucide-react';
 import { useFleet } from '../context/FleetContext';
 import { useAuth } from '../context/AuthContext';
@@ -32,21 +33,24 @@ export default function DashboardLayout() {
     navigate('/dashboard/login');
   };
 
-  // Conmutador rápido de rol para presentación en vivo
+  // Conmutador rápido de rol para presentación y pruebas (RBAC)
   const handleSwitchRole = (newRole) => {
     if (newRole === 'TALLER') {
       loginAsTaller();
-      navigate('/dashboard/mantenimiento', { replace: true });
+      navigate('/mantenimiento', { replace: true });
     } else {
       loginAsGerente();
       navigate('/dashboard', { replace: true });
     }
   };
 
-  // Redirección forzada si el rol TALLER intenta estar en /dashboard raíz
+  // Protección de rutas: Si rol TALLER intenta estar en cualquier ruta no autorizada, devolverlo a /mantenimiento
   useEffect(() => {
-    if (user?.role === 'TALLER' && location.pathname === '/dashboard') {
-      navigate('/dashboard/mantenimiento', { replace: true });
+    if (user?.role === 'TALLER') {
+      const allowed = ['/mantenimiento', '/dashboard/mantenimiento'];
+      if (!allowed.includes(location.pathname)) {
+        navigate('/mantenimiento', { replace: true });
+      }
     }
   }, [user?.role, location.pathname, navigate]);
 
@@ -88,7 +92,7 @@ export default function DashboardLayout() {
       icon: Users,
     },
     {
-      to: '/dashboard/mantenimiento',
+      to: '/mantenimiento',
       label: 'Mantenimiento',
       icon: Wrench,
       badge: (mantenimientos || []).length > 0 ? `${(mantenimientos || []).length}` : null,
@@ -121,10 +125,10 @@ export default function DashboardLayout() {
   ];
 
   // Regla estricta RBAC:
-  // - Rol 'TALLER': Solo ve la pestaña de 'Mantenimiento'
-  // - Rol 'GERENTE': Acceso total a los 7 módulos
+  // - Rol 'TALLER': Solo ve la pestaña de 'Mantenimiento', ocultando el resto de los módulos
+  // - Rol 'GERENTE': Acceso total a los 7 módulos y navegación libre
   const navLinks = isTaller
-    ? allNavLinks.filter((link) => link.to === '/dashboard/mantenimiento')
+    ? allNavLinks.filter((link) => link.label === 'Mantenimiento')
     : allNavLinks;
 
   return (
@@ -221,15 +225,15 @@ export default function DashboardLayout() {
             </div>
             <p className="text-[10px] text-[#9c9c9d] leading-tight">
               {isTaller
-                ? 'Acceso restringido únicamente a órdenes y registro de mantenimientos.'
-                : 'Acceso irrestricto a los 7 módulos y auditoría general.'}
+                ? 'Acceso restringido: Solo módulo Mantenimiento en /mantenimiento.'
+                : 'Acceso total: 7 módulos y navegación por todas las rutas.'}
             </p>
           </div>
 
           {/* Menú de Navegación (Filtrado por Rol) */}
           <nav className="space-y-1">
             <div className="px-3 py-1 text-[10px] font-mono uppercase tracking-wider text-[#6a6b6c]">
-              {isTaller ? 'Módulo Permitido' : 'Módulos del Sistema'}
+              {isTaller ? 'Módulo Autorizado (Taller)' : 'Módulos del Sistema (Gerente)'}
             </div>
             {navLinks.map((item) => {
               const Icon = item.icon;
@@ -274,39 +278,47 @@ export default function DashboardLayout() {
             </div>
           )}
 
-          {/* Selector Rápido para Presentación en Vivo */}
+          {/* Botones de Prueba en la Barra Lateral */}
           <div className="p-3 rounded-2xl bg-[#111214] border border-white/[0.08] space-y-2">
             <div className="flex items-center justify-between text-[10px] font-mono text-[#6a6b6c]">
               <span className="flex items-center gap-1">
                 <ArrowRightLeft className="w-3 h-3 text-amber-400" />
-                <span>Simulador de Roles:</span>
+                <span>Botones de Prueba:</span>
               </span>
-              <span className="text-amber-400 text-[9px] font-bold">Demo</span>
+              <span className="text-amber-400 text-[9px] font-bold">RBAC</span>
             </div>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="space-y-1.5">
               <button
                 type="button"
                 onClick={() => handleSwitchRole('GERENTE')}
-                className={`px-2 py-1.5 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                className={`w-full px-2.5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-between ${
                   isGerente
-                    ? 'bg-[#ff6363] text-black shadow-sm'
+                    ? 'bg-[#ff6363] text-black shadow-sm font-black'
                     : 'bg-white/[0.04] text-[#9c9c9d] hover:text-white hover:bg-white/[0.08]'
                 }`}
-                title="Cambiar a vista Gerente (Acceso Total)"
+                title="Simular rol Gerente (Acceso Total y todos los módulos)"
               >
-                <span>Gerente</span>
+                <div className="flex items-center gap-1.5">
+                  <Briefcase className="w-3.5 h-3.5" />
+                  <span>Simular rol Gerente</span>
+                </div>
+                {isGerente && <CheckCircle2 className="w-3.5 h-3.5" />}
               </button>
               <button
                 type="button"
                 onClick={() => handleSwitchRole('TALLER')}
-                className={`px-2 py-1.5 rounded-lg text-[10px] font-mono font-bold transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                className={`w-full px-2.5 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-between ${
                   isTaller
-                    ? 'bg-[#59d499] text-black shadow-sm'
+                    ? 'bg-[#59d499] text-black shadow-sm font-black'
                     : 'bg-white/[0.04] text-[#9c9c9d] hover:text-white hover:bg-white/[0.08]'
                 }`}
-                title="Cambiar a vista Taller (Solo Mantenimiento)"
+                title="Simular rol Taller (Solo Mantenimiento en /mantenimiento)"
               >
-                <span>Taller</span>
+                <div className="flex items-center gap-1.5">
+                  <Wrench className="w-3.5 h-3.5" />
+                  <span>Simular rol Taller</span>
+                </div>
+                {isTaller && <CheckCircle2 className="w-3.5 h-3.5" />}
               </button>
             </div>
           </div>
@@ -352,8 +364,8 @@ export default function DashboardLayout() {
 
       {/* Main Content Pane over Void Background */}
       <main className="flex-1 flex flex-col overflow-y-auto bg-[#040506]">
-        {/* Top Executive Header Bar with Discreet Logout */}
-        <div className="h-12 border-b border-white/[0.08] bg-[#07080a]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0">
+        {/* Cabecera Superior con Botones de Prueba 'Simular rol Gerente' y 'Simular rol Taller' */}
+        <div className="h-14 border-b border-white/[0.08] bg-[#07080a]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between shrink-0 gap-3">
           <div className="flex items-center gap-2 text-xs">
             <span
               className={`w-2 h-2 rounded-full animate-pulse ${
@@ -363,18 +375,48 @@ export default function DashboardLayout() {
             <span className="text-[#6a6b6c] font-mono text-[11px] hidden sm:inline">
               [SYS // {isTaller ? 'TALLER ACTIVO' : 'GERENCIA ACTIVA'}]:
             </span>
-            <span className="font-medium text-white text-[11px] truncate max-w-[220px]">
+            <span className="font-medium text-white text-[11px] truncate max-w-[180px]">
               {user?.displayName || (isTaller ? 'Jefe de Taller' : 'Gerencia General VIP CAR')}
             </span>
             <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border hidden sm:inline ${
+              className={`text-[10px] font-mono px-2 py-0.5 rounded-full border hidden lg:inline ${
                 isTaller
                   ? 'bg-[#0f2e1b] text-[#59d499] border-[#59d499]/30'
                   : 'bg-[#2d0e14] text-[#ff6363] border-[#ff6363]/30'
               }`}
             >
-              {isTaller ? 'ROL: TALLER / MANTENIMIENTO' : 'ROL: GERENTE (TOTAL)'}
+              {isTaller ? 'ROL: TALLER' : 'ROL: GERENTE'}
             </span>
+          </div>
+
+          {/* Botones Temporales de Prueba en la Cabecera */}
+          <div className="flex items-center gap-1.5 p-1 rounded-full telemetry-well border border-white/[0.08]">
+            <button
+              type="button"
+              onClick={() => handleSwitchRole('GERENTE')}
+              className={`px-3 py-1.5 rounded-full text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                isGerente
+                  ? 'bg-[#ff6363] text-black shadow-md font-black'
+                  : 'text-[#9c9c9d] hover:text-white hover:bg-white/[0.05]'
+              }`}
+              title="Activar perfil Gerente (Acceso total al sistema y todas las rutas)"
+            >
+              <Briefcase className="w-3.5 h-3.5" />
+              <span>Simular rol Gerente</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchRole('TALLER')}
+              className={`px-3 py-1.5 rounded-full text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                isTaller
+                  ? 'bg-[#59d499] text-black shadow-md font-black'
+                  : 'text-[#9c9c9d] hover:text-white hover:bg-white/[0.05]'
+              }`}
+              title="Activar perfil Taller (Redirige automáticamente a /mantenimiento y oculta otros módulos)"
+            >
+              <Wrench className="w-3.5 h-3.5" />
+              <span>Simular rol Taller</span>
+            </button>
           </div>
 
           <button
@@ -383,7 +425,7 @@ export default function DashboardLayout() {
             title="Cerrar sesión y volver al login"
           >
             <LogOut className="w-3.5 h-3.5" />
-            <span>Cerrar Sesión</span>
+            <span className="hidden sm:inline">Cerrar Sesión</span>
           </button>
         </div>
 
