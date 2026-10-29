@@ -10,7 +10,7 @@ import {
   limit,
 } from 'firebase/firestore';
 import { db, isConfigured } from '../config/firebase';
-import { INITIAL_VEHICLES, INITIAL_CONTRATOS, INITIAL_BITACORA } from '../data/mockData';
+import { INITIAL_VEHICLES, INITIAL_CONTRATOS, INITIAL_BITACORA, INITIAL_MANTENIMIENTOS } from '../data/mockData';
 import { obtenerIdentificadorB2B } from '../utils/plateMasker';
 
 export const COLLECTIONS = {
@@ -20,6 +20,7 @@ export const COLLECTIONS = {
   BITACORA: 'bitacora',
   COTIZACIONES: 'cotizaciones',
   AVERIAS: 'averias',
+  MANTENIMIENTOS: 'mantenimientos',
 };
 
 /**
@@ -68,6 +69,17 @@ export async function seedVehiculosIfEmpty() {
         await setDoc(doc(db, COLLECTIONS.BITACORA, bit.id), {
           ...bit,
           timestamp: new Date().toISOString(),
+        });
+      }
+    }
+
+    // Sembrado de mantenimientos
+    const mntSnapshot = await getDocs(query(collection(db, COLLECTIONS.MANTENIMIENTOS), limit(1)));
+    if (mntSnapshot.empty) {
+      for (const mnt of INITIAL_MANTENIMIENTOS) {
+        await setDoc(doc(db, COLLECTIONS.MANTENIMIENTOS, mnt.id), {
+          ...mnt,
+          timestamp: mnt.timestamp || new Date().toISOString(),
         });
       }
     }
@@ -316,6 +328,32 @@ export function subscribeToAverias(onSuccess, onError) {
   );
 }
 
+export function subscribeToMantenimientos(onSuccess, onError) {
+  if (!isConfigured || !db) return () => {};
+
+  return onSnapshot(
+    collection(db, COLLECTIONS.MANTENIMIENTOS),
+    (snapshot) => {
+      const mantenimientosList = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+      }));
+
+      // Ordenar por timestamp descendente
+      mantenimientosList.sort((a, b) => {
+        const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+        const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+        return timeB - timeA;
+      });
+
+      onSuccess(mantenimientosList);
+    },
+    (error) => {
+      if (onError) onError(error);
+    }
+  );
+}
+
 /**
  * Operaciones adicionales sincronizadas
  */
@@ -400,5 +438,34 @@ export async function firestoreSyncDeleteVehiculo(vehiculoId) {
     await deleteDoc(doc(db, COLLECTIONS.VEHICULOS, vehiculoId));
   } catch (error) {
     console.warn('Error al eliminar vehículo en Firestore:', error);
+  }
+}
+
+export async function firestoreSyncMantenimiento({ mantenimiento, vehicleId, vehicleUpdates, logEntry }) {
+  if (!isConfigured || !db) return;
+
+  try {
+    if (mantenimiento) {
+      await setDoc(doc(db, COLLECTIONS.MANTENIMIENTOS, mantenimiento.id), {
+        ...mantenimiento,
+        timestamp: mantenimiento.timestamp || new Date().toISOString(),
+      });
+    }
+
+    if (vehicleId && vehicleUpdates) {
+      await updateDoc(doc(db, COLLECTIONS.VEHICULOS, vehicleId), {
+        ...vehicleUpdates,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    if (logEntry) {
+      await setDoc(doc(db, COLLECTIONS.BITACORA, logEntry.id), {
+        ...logEntry,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch (error) {
+    console.warn('Error al sincronizar mantenimiento en Firestore:', error);
   }
 }

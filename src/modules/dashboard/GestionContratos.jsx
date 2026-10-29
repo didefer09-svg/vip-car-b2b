@@ -25,7 +25,7 @@ export default function GestionContratos() {
   const { contratos, vehicles } = useFleet();
   const [searchTerm, setSearchTerm] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('todos');
-  const [expandedId, setExpandedId] = useState(contratos[0]?.id || null);
+  const [expandedId, setExpandedId] = useState(contratos?.[0]?.id || null);
   const [downloadMsg, setDownloadMsg] = useState('');
 
   const toggleExpand = (id) => {
@@ -33,34 +33,35 @@ export default function GestionContratos() {
   };
 
   const handleDownload = (docName, placa, vehiculo) => {
-    setDownloadMsg(`Generando descarga de ${docName} para la unidad ${placa} (${vehiculo?.marca} ${vehiculo?.modelo})...`);
+    setDownloadMsg(`Generando descarga de ${docName} para la unidad ${placa} (${vehiculo?.marca || ''} ${vehiculo?.modelo || ''})...`);
     setTimeout(() => {
       setDownloadMsg('');
     }, 2500);
   };
 
   // Filtrado de contratos
-  const contratosFiltrados = contratos.filter((c) => {
-    const term = searchTerm.toLowerCase();
+  const term = (searchTerm || '').toLowerCase().trim();
+  const contratosFiltrados = (contratos || []).filter((c) => {
     const matchesSearch =
-      c.cliente.toLowerCase().includes(term) ||
-      c.ruc.includes(term) ||
-      c.id.toLowerCase().includes(term) ||
-      c.minaProyecto.toLowerCase().includes(term);
+      !term ||
+      c?.cliente?.toLowerCase()?.includes(term) ||
+      c?.ruc?.includes(term) ||
+      c?.id?.toLowerCase()?.includes(term) ||
+      c?.minaProyecto?.toLowerCase()?.includes(term);
 
     const matchesEstado =
       filtroEstado === 'todos' ||
-      (filtroEstado === 'vigente' && c.estado === 'Vigente') ||
-      (filtroEstado === 'renovar' && c.estado === 'Próximo a Renovar');
+      (filtroEstado === 'vigente' && c?.estado === 'Vigente') ||
+      (filtroEstado === 'renovar' && c?.estado === 'Próximo a Renovar');
 
     return matchesSearch && matchesEstado;
   });
 
   // Métricas Gerenciales Agregadas
-  const totalContratos = contratos.length;
-  const totalPickupsAsignadas = contratos.reduce((acc, c) => acc + c.unidadesAsignadas, 0);
-  const facturacionTotalUSD = contratos.reduce((acc, c) => acc + (c.montoMensualUSD || 0), 0);
-  const contratosProximosRenovar = contratos.filter((c) => c.estado === 'Próximo a Renovar').length;
+  const totalContratos = (contratos || []).length;
+  const totalPickupsAsignadas = (contratos || []).reduce((acc, c) => acc + (Number(c?.unidadesAsignadas) || 0), 0);
+  const facturacionTotalUSD = (contratos || []).reduce((acc, c) => acc + (Number(c?.montoMensualUSD) || 0), 0);
+  const contratosProximosRenovar = (contratos || []).filter((c) => c?.estado === 'Próximo a Renovar').length;
 
   return (
     <div className="space-y-6 text-[#9c9c9d]">
@@ -98,7 +99,7 @@ export default function GestionContratos() {
           </div>
           <div className="text-2xl font-bold text-white font-mono">{totalContratos}</div>
           <div className="text-[11px] text-[#6a6b6c] font-mono">
-            {contratos.filter((c) => c.estado === 'Vigente').length} contratos vigentes
+            {(contratos || []).filter((c) => c?.estado === 'Vigente').length} contratos vigentes
           </div>
         </div>
 
@@ -165,7 +166,7 @@ export default function GestionContratos() {
                   : 'text-[#6a6b6c] hover:text-white'
               }`}
             >
-              Todos ({contratos.length})
+              Todos ({(contratos || []).length})
             </button>
             <button
               onClick={() => setFiltroEstado('vigente')}
@@ -198,10 +199,10 @@ export default function GestionContratos() {
             No se encontraron contratos que coincidan con los criterios de búsqueda.
           </div>
         ) : (
-          contratosFiltrados.map((contrato) => {
-            const isExpanded = expandedId === contrato.id;
-            const assignedVehs = vehicles.filter((v) =>
-              contrato.placas.includes(v.placa)
+          (contratosFiltrados || []).map((contrato) => {
+            const isExpanded = expandedId === contrato?.id;
+            const assignedVehs = (vehicles || []).filter((v) =>
+              (contrato?.placas || []).includes(v?.placa)
             );
 
             return (
@@ -287,41 +288,41 @@ export default function GestionContratos() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {assignedVehs.length === 0 ? (
+                      {(assignedVehs || []).length === 0 ? (
                         <p className="text-xs text-[#6a6b6c] col-span-2 py-4 text-center font-mono">
-                          Placas registradas en el contrato: {contrato.placas.join(', ')}
+                          Placas registradas en el contrato: {(contrato?.placas || []).join(', ') || 'Ninguna'}
                         </p>
                       ) : (
-                        assignedVehs.map((veh, idx) => {
+                        (assignedVehs || []).map((veh, idx) => {
                           const identificador = obtenerIdentificadorB2B(veh, idx);
 
                           return (
                             <div
-                              key={veh.id}
+                              key={veh?.id || idx}
                               className="telemetry-well border border-white/[0.08] p-4 rounded-2xl space-y-3"
                             >
                               <div className="flex items-center justify-between">
                                 <div>
                                   <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                                    <span>{veh.marca} {veh.modelo}</span>
+                                    <span>{veh?.marca} {veh?.modelo}</span>
                                     <span className="text-[10px] font-mono font-bold text-[#ff6363] bg-[#ff6363]/10 px-2 py-0.5 rounded-full border border-[#ff6363]/30">
-                                      {identificador.codigo}
+                                      {identificador?.codigo || 'UNIDAD'}
                                     </span>
                                   </div>
                                   <div className="text-[11px] text-[#6a6b6c] font-mono mt-0.5">
-                                    Placa Oficial: <strong className="text-white">{veh.placa}</strong> • Odómetro: {veh.odometroActual.toLocaleString()} km
+                                    Placa Oficial: <strong className="text-white">{veh?.placa}</strong> • Odómetro: {veh?.odometroActual?.toLocaleString?.() || veh?.odometroActual || 0} km
                                   </div>
                                 </div>
                                 <span className="px-2.5 py-0.5 rounded-full bg-black/40 border border-white/[0.1] text-[#59d499] text-[11px] font-mono font-bold">
-                                  {veh.placa}
+                                  {veh?.placa}
                                 </span>
                               </div>
 
-                              <SemaforoBadge odometro={veh.odometroActual} compact={false} />
+                              <SemaforoBadge odometro={veh?.odometroActual || 0} compact={false} />
 
                               <div className="text-[11px] text-[#6a6b6c] flex items-center justify-between border-t border-white/[0.06] pt-2 font-mono">
-                                <span>Conductor: <strong className="text-white">{veh.conductorActual || 'No asignado'}</strong></span>
-                                <span>Combustible: <strong className="text-white">{veh.nivelCombustible}%</strong></span>
+                                <span>Conductor: <strong className="text-white">{veh?.conductorActual || 'No asignado'}</strong></span>
+                                <span>Combustible: <strong className="text-white">{veh?.nivelCombustible ?? 100}%</strong></span>
                               </div>
 
                               {/* Descarga / Visualización de Documentos Oficiales */}

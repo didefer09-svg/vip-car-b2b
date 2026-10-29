@@ -10,6 +10,8 @@ import {
   X,
   LogOut,
   User,
+  Users,
+  Wrench,
   ShieldCheck,
   FileCheck
 } from 'lucide-react';
@@ -18,7 +20,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function DashboardLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { vehicles, contratos, calcularSemaforo, bitacora } = useFleet();
+  const { vehicles, contratos, calcularSemaforo, bitacora, mantenimientos } = useFleet();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -28,8 +30,8 @@ export default function DashboardLayout() {
   };
 
   const totalSosAlerts = (bitacora || []).filter((item) => {
-    const tipo = (item.tipoEvento || '').trim();
-    const reg = (item.tipoRegistro || '').toLowerCase();
+    const tipo = (item?.tipoEvento || '').trim();
+    const reg = (item?.tipoRegistro || '').toLowerCase();
     return (
       tipo === 'SOS' ||
       tipo === 'Avería' ||
@@ -40,11 +42,11 @@ export default function DashboardLayout() {
     );
   }).length;
 
-  const stats = vehicles.reduce(
+  const stats = (vehicles || []).reduce(
     (acc, v) => {
-      const s = calcularSemaforo(v.odometroActual);
-      if (s.estado === 'Rojo') acc.rojo++;
-      if (s.estado === 'Amarillo') acc.amarillo++;
+      const s = calcularSemaforo(v?.odometroActual || 0);
+      if (s?.estado === 'Rojo') acc.rojo++;
+      if (s?.estado === 'Amarillo') acc.amarillo++;
       return acc;
     },
     { rojo: 0, amarillo: 0 }
@@ -58,6 +60,18 @@ export default function DashboardLayout() {
       end: true,
       badge: totalSosAlerts > 0 ? `🚨 ${totalSosAlerts} SOS` : null,
       badgeColor: 'bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/50 animate-pulse font-mono',
+    },
+    {
+      to: '/dashboard/conductores',
+      label: 'Control de Conductores',
+      icon: Users,
+    },
+    {
+      to: '/dashboard/mantenimiento',
+      label: 'Mantenimiento',
+      icon: Wrench,
+      badge: (mantenimientos || []).length > 0 ? `${(mantenimientos || []).length}` : null,
+      badgeColor: 'bg-[#1b1c1e] text-[#59d499] border border-[#59d499]/30',
     },
     {
       to: '/dashboard/semaforo',
@@ -75,7 +89,7 @@ export default function DashboardLayout() {
       to: '/dashboard/contratos',
       label: 'Contratos Corporativos',
       icon: FileCheck,
-      badge: `${contratos.length} Activos`,
+      badge: `${(contratos || []).length} Activos`,
       badgeColor: 'bg-[#1b1c1e] text-[#59d499] border border-[#59d499]/30'
     },
     {

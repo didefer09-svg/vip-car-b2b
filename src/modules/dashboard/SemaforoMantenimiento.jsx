@@ -44,14 +44,20 @@ export default function SemaforoMantenimiento() {
     return () => unsub();
   }, []);
 
-  const categorized = vehicles.reduce(
+  const safeVehicles = vehicles || [];
+  const categorized = safeVehicles.reduce(
     (acc, v) => {
-      if (empresaFiltro !== 'todas' && !v.empresaAsignada.includes(empresaFiltro)) {
+      const empresa = v?.empresaAsignada || '';
+      if (empresaFiltro !== 'todas' && !empresa.includes(empresaFiltro)) {
         return acc;
       }
-      const s = calcularSemaforo(v.odometroActual);
-      if (s.estado === 'Rojo') acc.rojo.push({ ...v, semaforo: s });
-      else if (s.estado === 'Amarillo') acc.amarillo.push({ ...v, semaforo: s });
+      const s = (typeof calcularSemaforo === 'function' ? calcularSemaforo(v?.odometroActual || 0) : null) || {
+        estado: 'Verde',
+        kmRestantes: 5000,
+        siguienteServicio: 10000,
+      };
+      if (s?.estado === 'Rojo') acc.rojo.push({ ...v, semaforo: s });
+      else if (s?.estado === 'Amarillo') acc.amarillo.push({ ...v, semaforo: s });
       else acc.verde.push({ ...v, semaforo: s });
       return acc;
     },
@@ -189,41 +195,41 @@ export default function SemaforoMantenimiento() {
           </div>
 
           <div className="space-y-3">
-            {categorized.rojo.length === 0 ? (
+            {(categorized?.rojo || []).length === 0 ? (
               <div className="p-6 rounded-3xl cockpit-panel border border-white/[0.08] text-center text-xs text-[#6a6b6c] font-mono">
                 No hay unidades con mantenimiento vencido.
               </div>
             ) : (
-              categorized.rojo.map((veh) => (
+              (categorized?.rojo || []).map((veh) => (
                 <div
-                  key={veh.id}
+                  key={veh?.id || veh?.placa}
                   className="cockpit-panel border border-[#ff6363]/40 p-5 rounded-3xl space-y-3 relative"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-xs font-medium text-white">{veh.marca} {veh.modelo}</div>
+                      <div className="text-xs font-medium text-white">{veh?.marca} {veh?.modelo}</div>
                       <div className="text-[10px] text-[#6a6b6c] flex items-center gap-1 mt-0.5 font-mono">
                         <Building className="w-3 h-3 text-[#ff6363]" />
-                        <span>{veh.empresaAsignada}</span>
+                        <span>{veh?.empresaAsignada || 'Flota General'}</span>
                       </div>
                     </div>
                     <span className="font-mono text-xs font-bold text-[#ff6363] px-2.5 py-0.5 rounded-full bg-[#ff6363]/10 border border-[#ff6363]/40">
-                      {veh.placa}
+                      {veh?.placa}
                     </span>
                   </div>
 
                   <div className="telemetry-well p-3.5 rounded-2xl space-y-1 text-xs border border-white/[0.08]">
                     <div className="flex justify-between font-mono">
                       <span className="text-[#6a6b6c] text-[11px]">Odómetro actual:</span>
-                      <span className="font-bold text-white">{veh.odometroActual.toLocaleString()} km</span>
+                      <span className="font-bold text-white">{veh?.odometroActual?.toLocaleString?.() || veh?.odometroActual || 0} km</span>
                     </div>
                     <div className="flex justify-between font-mono">
                       <span className="text-[#6a6b6c] text-[11px]">Límite de servicio:</span>
-                      <span className="font-bold text-[#ff6363]">{veh.semaforo.siguienteServicio.toLocaleString()} km</span>
+                      <span className="font-bold text-[#ff6363]">{veh?.semaforo?.siguienteServicio?.toLocaleString?.() || 0} km</span>
                     </div>
                     <div className="flex justify-between pt-1 border-t border-white/[0.06] text-[#ff6363] font-bold text-[11px] font-mono">
                       <span>Exceso de kilometraje:</span>
-                      <span>+ {Math.abs(veh.semaforo.kmRestantes).toLocaleString()} km</span>
+                      <span>+ {Math.abs(veh?.semaforo?.kmRestantes || 0).toLocaleString()} km</span>
                     </div>
                   </div>
 
@@ -255,41 +261,41 @@ export default function SemaforoMantenimiento() {
           </div>
 
           <div className="space-y-3">
-            {categorized.amarillo.length === 0 ? (
+            {(categorized?.amarillo || []).length === 0 ? (
               <div className="p-6 rounded-3xl cockpit-panel border border-white/[0.08] text-center text-xs text-[#6a6b6c] font-mono">
                 No hay unidades próximas a servicio.
               </div>
             ) : (
-              categorized.amarillo.map((veh) => (
+              (categorized?.amarillo || []).map((veh) => (
                 <div
-                  key={veh.id}
+                  key={veh?.id || veh?.placa}
                   className="cockpit-panel border border-[#f59e0b]/40 p-5 rounded-3xl space-y-3 relative"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-xs font-medium text-white">{veh.marca} {veh.modelo}</div>
+                      <div className="text-xs font-medium text-white">{veh?.marca} {veh?.modelo}</div>
                       <div className="text-[10px] text-[#6a6b6c] flex items-center gap-1 mt-0.5 font-mono">
                         <Building className="w-3 h-3 text-[#f59e0b]" />
-                        <span>{veh.empresaAsignada}</span>
+                        <span>{veh?.empresaAsignada || 'Flota General'}</span>
                       </div>
                     </div>
                     <span className="font-mono text-xs font-bold text-[#f59e0b] px-2.5 py-0.5 rounded-full bg-[#f59e0b]/10 border border-[#f59e0b]/40">
-                      {veh.placa}
+                      {veh?.placa}
                     </span>
                   </div>
 
                   <div className="telemetry-well p-3.5 rounded-2xl space-y-1 text-xs border border-white/[0.08]">
                     <div className="flex justify-between font-mono">
                       <span className="text-[#6a6b6c] text-[11px]">Odómetro actual:</span>
-                      <span className="font-bold text-white">{veh.odometroActual.toLocaleString()} km</span>
+                      <span className="font-bold text-white">{veh?.odometroActual?.toLocaleString?.() || veh?.odometroActual || 0} km</span>
                     </div>
                     <div className="flex justify-between font-mono">
                       <span className="text-[#6a6b6c] text-[11px]">Siguiente servicio:</span>
-                      <span className="font-bold text-[#f59e0b]">{veh.semaforo.siguienteServicio.toLocaleString()} km</span>
+                      <span className="font-bold text-[#f59e0b]">{veh?.semaforo?.siguienteServicio?.toLocaleString?.() || 0} km</span>
                     </div>
                     <div className="flex justify-between pt-1 border-t border-white/[0.06] text-[#f59e0b] font-bold text-[11px] font-mono">
                       <span>Margen restante:</span>
-                      <span>{veh.semaforo.kmRestantes.toLocaleString()} km</span>
+                      <span>{(veh?.semaforo?.kmRestantes || 0).toLocaleString()} km</span>
                     </div>
                   </div>
 
@@ -312,7 +318,7 @@ export default function SemaforoMantenimiento() {
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-[#59d499]" />
               <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[#59d499]">
-                03 // Estado Óptimo ({categorized.verde.length})
+                03 // Estado Óptimo ({(categorized?.verde || []).length})
               </h3>
             </div>
             <span className="text-[10px] text-[#59d499] font-mono font-bold bg-[#59d499]/10 px-2.5 py-0.5 rounded-full border border-[#59d499]/35">
@@ -321,46 +327,46 @@ export default function SemaforoMantenimiento() {
           </div>
 
           <div className="space-y-3">
-            {categorized.verde.length === 0 ? (
+            {(categorized?.verde || []).length === 0 ? (
               <div className="p-6 rounded-3xl cockpit-panel border border-white/[0.08] text-center text-xs text-[#6a6b6c] font-mono">
                 No hay unidades registradas en estado óptimo.
               </div>
             ) : (
-              categorized.verde.map((veh) => (
+              (categorized?.verde || []).map((veh) => (
                 <div
-                  key={veh.id}
+                  key={veh?.id || veh?.placa}
                   className="cockpit-panel border border-white/[0.08] p-5 rounded-3xl space-y-3 relative"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-xs font-medium text-white">{veh.marca} {veh.modelo}</div>
+                      <div className="text-xs font-medium text-white">{veh?.marca} {veh?.modelo}</div>
                       <div className="text-[10px] text-[#6a6b6c] flex items-center gap-1 mt-0.5 font-mono">
                         <Building className="w-3 h-3 text-[#6a6b6c]" />
-                        <span>{veh.empresaAsignada}</span>
+                        <span>{veh?.empresaAsignada || 'Flota General'}</span>
                       </div>
                     </div>
                     <span className="font-mono text-xs font-bold text-white px-2.5 py-0.5 rounded-full telemetry-well border border-white/[0.1]">
-                      {veh.placa}
+                      {veh?.placa}
                     </span>
                   </div>
 
                   <div className="telemetry-well p-3.5 rounded-2xl space-y-1 text-xs border border-white/[0.08]">
                     <div className="flex justify-between font-mono">
                       <span className="text-[#6a6b6c] text-[11px]">Odómetro actual:</span>
-                      <span className="font-bold text-white">{veh.odometroActual.toLocaleString()} km</span>
+                      <span className="font-bold text-white">{veh?.odometroActual?.toLocaleString?.() || veh?.odometroActual || 0} km</span>
                     </div>
                     <div className="flex justify-between font-mono">
                       <span className="text-[#6a6b6c] text-[11px]">Próximo servicio a:</span>
-                      <span className="font-bold text-[#6a6b6c]">{veh.semaforo.siguienteServicio.toLocaleString()} km</span>
+                      <span className="font-bold text-[#6a6b6c]">{veh?.semaforo?.siguienteServicio?.toLocaleString?.() || 0} km</span>
                     </div>
                     <div className="flex justify-between pt-1 border-t border-white/[0.06] text-[#59d499] font-bold text-[11px] font-mono">
                       <span>Margen operativo:</span>
-                      <span>{veh.semaforo.kmRestantes.toLocaleString()} km restantes</span>
+                      <span>{(veh?.semaforo?.kmRestantes || 0).toLocaleString()} km restantes</span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between text-[11px] text-[#6a6b6c] font-mono">
-                    <span>Chofer: {veh.conductorActual || 'En patio'}</span>
+                    <span>Chofer: {veh?.conductorActual || 'En patio'}</span>
                     <span className="text-[#59d499] font-medium">100% Conforme</span>
                   </div>
                 </div>

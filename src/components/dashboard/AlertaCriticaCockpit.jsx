@@ -261,17 +261,17 @@ export default function AlertaCriticaCockpit() {
       </div>
 
       {/* Grid de Alertas Críticas Filtradas */}
-      {alertasCriticas.length > 0 ? (
+      {(alertasCriticas || []).length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {alertasFiltradas.map((alert) => {
+          {(alertasFiltradas || []).map((alert) => {
             const { lat, lng, valido } = getCoordenadas(alert);
-            const operador = alert.operador || alert.conductor || 'Operador en ruta';
-            const placa = alert.placa || 'UNIDAD';
-            const fechaHora = alert.fechaHora || (alert.timestamp ? new Date(alert.timestamp).toLocaleString('es-PE') : 'En curso');
-            const descripcion = alert.descripcion || alert.observaciones || alert.checklistEstado || alert.tipoRegistro || 'Reporte de emergencia emitido por el operador sin detalles adicionales.';
-            const tipo = (alert.tipoEvento || '').trim();
-            const esSos = tipo === 'SOS' || (alert.tipoRegistro || '').toLowerCase().includes('sos');
-            const vehiculoInfo = vehicles.find((v) => v.placa === placa);
+            const operador = alert?.operador || alert?.conductor || 'Operador en ruta';
+            const placa = alert?.placa || 'UNIDAD';
+            const fechaHora = alert?.fechaHora || (alert?.timestamp ? new Date(alert.timestamp).toLocaleString('es-PE') : 'En curso');
+            const descripcion = alert?.descripcion || alert?.observaciones || alert?.checklistEstado || alert?.tipoRegistro || 'Reporte de emergencia emitido por el operador sin detalles adicionales.';
+            const tipo = (alert?.tipoEvento || '').trim();
+            const esSos = tipo === 'SOS' || (alert?.tipoRegistro || '').toLowerCase().includes('sos');
+            const vehiculoInfo = (vehicles || []).find((v) => v?.placa === placa);
 
             return (
               <div
@@ -457,7 +457,7 @@ export default function AlertaCriticaCockpit() {
         const descripcion = selectedAlert.descripcion || selectedAlert.observaciones || selectedAlert.checklistEstado || selectedAlert.tipoRegistro || 'Reporte de emergencia emitido sin notas adicionales.';
         const tipo = (selectedAlert.tipoEvento || '').trim();
         const esSos = tipo === 'SOS' || (selectedAlert.tipoRegistro || '').toLowerCase().includes('sos');
-        const vehiculo = vehicles.find((v) => v.placa === placa);
+        const vehiculo = (vehicles || []).find((v) => v?.placa === placa);
 
         return (
           <div
@@ -515,7 +515,7 @@ export default function AlertaCriticaCockpit() {
               {alertasCriticas.length > 1 && (
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-mono">
                   <span className="text-[#6a6b6c] text-[10px] uppercase font-bold shrink-0">Ver unidad:</span>
-                  {alertasCriticas.map((item) => (
+                  {(alertasCriticas || []).map((item) => (
                     <button
                       key={item.id}
                       type="button"
@@ -560,7 +560,7 @@ export default function AlertaCriticaCockpit() {
                 <div className="bg-[#11131a] p-3 rounded-2xl border border-white/[0.06] space-y-1">
                   <span className="text-[10px] text-[#6a6b6c] uppercase block font-bold">Odómetro / Fuel</span>
                   <div className="text-xs font-semibold text-slate-200">
-                    {selectedAlert.odometro?.toLocaleString() || vehiculo?.odometroActual?.toLocaleString() || '14,750'} km • {selectedAlert.combustible != null ? `${selectedAlert.combustible}%` : '75%'}
+                    {selectedAlert?.odometro?.toLocaleString?.() || vehiculo?.odometroActual?.toLocaleString?.() || '14,750'} km • {selectedAlert?.combustible != null ? `${selectedAlert.combustible}%` : '75%'}
                   </div>
                 </div>
               </div>

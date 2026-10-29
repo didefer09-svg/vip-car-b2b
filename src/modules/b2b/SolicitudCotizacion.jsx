@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useFleet } from '../../context/FleetContext';
+import { OFICIAL_SERVICIOS } from '../../data/mockData';
 import {
   FileSpreadsheet,
   Building2,
@@ -24,7 +25,7 @@ export default function SolicitudCotizacion() {
     contacto: 'Ing. Carlos Mendoza (Superintendente de Logística)',
     email: 'cmendoza@chinalco.com.pe',
     telefono: '964 892 100',
-    minaDestino: 'Mina Toromocho - Morococha, Junín',
+    minaDestino: 'OCP - COBRIZA (TP-01)',
     tipoAmbiente: 'Socavón & Superficie',
     cantidadVehiculos: 4,
     modeloPreferido: modeloParam,
@@ -40,7 +41,7 @@ export default function SolicitudCotizacion() {
       gpsSatelital: true,
       cinturones4Puntos: true,
     },
-    comentarios: 'Se requiere entrega con homologación vigente para ingreso a garita de control.',
+    comentarios: 'Se requiere entrega con homologación técnica minera vigente para ingreso a garita de control.',
   });
 
   const [enviado, setEnviado] = useState(false);
@@ -177,18 +178,19 @@ export default function SolicitudCotizacion() {
 
             <div>
               <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1 font-mono uppercase">
-                Gama / Modelo *
+                Gama / Tipo de Unidad *
               </label>
               <select
                 value={formData.modeloPreferido}
                 onChange={(e) => setFormData({ ...formData, modeloPreferido: e.target.value })}
                 className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363] cursor-pointer"
               >
-                <option value="Toyota Hilux 4x4 SRV Minera" className="bg-[#0c0e12]">Toyota Hilux 4x4 SRV Minera</option>
-                <option value="Ford Ranger 4x4 XLT Biturbo" className="bg-[#0c0e12]">Ford Ranger 4x4 XLT Biturbo</option>
-                <option value="Mitsubishi L200 4x4 High Power" className="bg-[#0c0e12]">Mitsubishi L200 4x4 High Power</option>
-                <option value="Nissan Frontier PRO-4X" className="bg-[#0c0e12]">Nissan Frontier PRO-4X</option>
-                <option value="Isuzu D-Max 4x4 Crew Cab" className="bg-[#0c0e12]">Isuzu D-Max 4x4 Crew Cab</option>
+                <option value="Camioneta 4x4 Doble Cabina Minera (Toyota Hilux)" className="bg-[#0c0e12]">Camioneta 4x4 Doble Cabina (Toyota Hilux)</option>
+                <option value="Camioneta Cerrada 4x4 (Toyota Fortuner D-4D)" className="bg-[#0c0e12]">Camioneta Cerrada 4x4 (Toyota Fortuner)</option>
+                <option value="Sprinter Pasajeros (Mercedes-Benz 516 CDI)" className="bg-[#0c0e12]">Sprinter Pasajeros (Mercedes-Benz 516 CDI)</option>
+                <option value="Minivan Corporativa (Toyota HiAce / Hyundai H1)" className="bg-[#0c0e12]">Minivan Corporativa (HiAce / H1 / Staria)</option>
+                <option value="Minibus 28 Pax (Toyota Coaster / Hyundai County)" className="bg-[#0c0e12]">Minibus 28 Pax (Coaster / County)</option>
+                <option value="Bus Interurbano 45-50 Pax (Scania / Mercedes-Benz)" className="bg-[#0c0e12]">Bus Interurbano 45-50 Pax (Scania / Mercedes)</option>
               </select>
             </div>
 
@@ -201,9 +203,9 @@ export default function SolicitudCotizacion() {
                 onChange={(e) => setFormData({ ...formData, tipoAmbiente: e.target.value })}
                 className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363] cursor-pointer"
               >
-                <option value="Socavón & Superficie" className="bg-[#0c0e12]">Socavón & Superficie</option>
+                <option value="Socavón & Superficie" className="bg-[#0c0e12]">Socavón & Superficie (Pértiga LED, Tacos, Jaula)</option>
                 <option value="Solo Superficie / Obras" className="bg-[#0c0e12]">Solo Superficie / Obras Civiles</option>
-                <option value="Transporte de Personal" className="bg-[#0c0e12]">Transporte de Personal</option>
+                <option value="Transporte de Personal" className="bg-[#0c0e12]">Transporte de Personal Interurbano</option>
               </select>
             </div>
           </div>
@@ -211,15 +213,19 @@ export default function SolicitudCotizacion() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
             <div>
               <label className="block text-[11px] font-bold text-[#6a6b6c] mb-1 font-mono uppercase">
-                Ubicación del Servicio / Proyecto *
+                Servicio / Cliente Oficial (16 Servicios) *
               </label>
-              <input
-                type="text"
-                required
+              <select
                 value={formData.minaDestino}
                 onChange={(e) => setFormData({ ...formData, minaDestino: e.target.value })}
-                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363]"
-              />
+                className="w-full telemetry-well border border-white/[0.08] rounded-full px-4 py-2.5 text-xs text-[#ffffff] font-mono focus:outline-none focus:border-[#ff6363] cursor-pointer"
+              >
+                {(OFICIAL_SERVICIOS || []).map((s) => (
+                  <option key={s.id} value={`${s.cliente} | ${s.sede} (${s.centroCosto})`} className="bg-[#0c0e12]">
+                    {s.cliente} - {s.sede} [{s.centroCosto}]
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>

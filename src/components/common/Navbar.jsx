@@ -61,7 +61,7 @@ export default function Navbar() {
           />
         </Link>
 
-          {/* Module Switcher Tabs (Cockpit Segmented Control en Cápsula) */}
+          {/* Module Switcher Tabs (Cockpit Segmented Control en Cápsula: Portal B2B y Cockpit Gerencial) */}
           <nav className="flex items-center gap-1 telemetry-well p-1 rounded-full border border-white/[0.08]">
             <NavLink
               to="/b2b"
@@ -76,21 +76,6 @@ export default function Navbar() {
               <Shield className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Portal B2B</span>
               <span className="md:hidden">B2B</span>
-            </NavLink>
-
-            <NavLink
-              to="/conductor"
-              className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all cursor-pointer ${
-                  isActive
-                    ? 'btn-cockpit-action text-black shadow-sm'
-                    : 'text-[#626773] hover:text-white hover:bg-white/[0.03]'
-                }`
-              }
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">App Conductor</span>
-              <span className="md:hidden">Chofer</span>
             </NavLink>
 
             <NavLink

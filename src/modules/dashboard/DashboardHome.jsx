@@ -18,16 +18,16 @@ import AlertaCriticaCockpit from '../../components/dashboard/AlertaCriticaCockpi
 export default function DashboardHome() {
   const { vehicles, bitacora, averias, calcularSemaforo } = useFleet();
 
-  const totalVehicles = vehicles.length;
-  const enServicio = vehicles.filter((v) => v.estadoOperativo === 'En Servicio').length;
-  const disponibles = vehicles.filter((v) => v.estadoOperativo === 'Disponible').length;
+  const totalVehicles = (vehicles || []).length;
+  const enServicio = (vehicles || []).filter((v) => v?.estadoOperativo === 'En Servicio').length;
+  const disponibles = (vehicles || []).filter((v) => v?.estadoOperativo === 'Disponible').length;
 
-  const semaforoStats = vehicles.reduce(
+  const semaforoStats = (vehicles || []).reduce(
     (acc, v) => {
-      const s = calcularSemaforo(v.odometroActual);
-      if (s.estado === 'Rojo') acc.rojo++;
-      if (s.estado === 'Amarillo') acc.amarillo++;
-      if (s.estado === 'Verde') acc.verde++;
+      const s = calcularSemaforo(v?.odometroActual || 0);
+      if (s?.estado === 'Rojo') acc.rojo++;
+      if (s?.estado === 'Amarillo') acc.amarillo++;
+      if (s?.estado === 'Verde') acc.verde++;
       return acc;
     },
     { verde: 0, amarillo: 0, rojo: 0 }
@@ -62,7 +62,7 @@ export default function DashboardHome() {
       <AlertaCriticaCockpit />
 
       {/* Alerta Crítica en Coral Pulse */}
-      {(semaforoStats.rojo > 0 || averias.length > 0) && (
+      {((semaforoStats?.rojo || 0) > 0 || (averias || []).length > 0) && (
         <div className="p-5 rounded-3xl bg-[#2d0e14] border border-[#ff6363]/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-full bg-[#ff6363] text-black">
@@ -73,7 +73,7 @@ export default function DashboardHome() {
                 Atención Mecánica Requerida
               </div>
               <div className="text-xs text-[#9c9c9d] mt-0.5">
-                {semaforoStats.rojo} unidad(es) con servicio vencido y {averias.length} reporte(s) de avería activos en operación.
+                {semaforoStats?.rojo || 0} unidad(es) con servicio vencido y {(averias || []).length} reporte(s) de avería activos en operación.
               </div>
             </div>
           </div>
@@ -157,23 +157,23 @@ export default function DashboardHome() {
           </div>
 
           <div className="space-y-2.5">
-            {vehicles.slice(0, 4).map((veh) => (
+            {(vehicles || []).slice(0, 4).map((veh) => (
               <div
-                key={veh.id}
+                key={veh?.id || veh?.placa}
                 className="telemetry-well p-3.5 rounded-2xl space-y-2 hover:border-white/20 transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-bold text-white font-sans">{veh.marca} {veh.modelo}</span>
+                    <span className="text-xs font-bold text-white font-sans">{veh?.marca} {veh?.modelo}</span>
                     <div className="text-[11px] text-[#626773] font-mono">
-                      {veh.empresaAsignada}
+                      {veh?.empresaAsignada || 'Flota VIP CAR'}
                     </div>
                   </div>
                   <span className="font-mono text-xs font-bold text-[#ff6363] px-2.5 py-0.5 rounded-full bg-[#0c0e12] border border-[#ff6363]/40">
-                    {veh.placa}
+                    {veh?.placa}
                   </span>
                 </div>
-                <SemaforoBadge odometro={veh.odometroActual} compact={false} />
+                <SemaforoBadge odometro={veh?.odometroActual || 0} compact={false} />
               </div>
             ))}
           </div>
@@ -197,35 +197,35 @@ export default function DashboardHome() {
           </div>
 
           <div className="space-y-2">
-            {bitacora.slice(0, 5).map((log) => (
+            {(bitacora || []).slice(0, 5).map((log, idx) => (
               <div
-                key={log.id}
+                key={log?.id || idx}
                 className="p-3 rounded-2xl bg-[#111214] border border-[#363739] flex items-center justify-between text-xs hover:bg-[#1b1c1e] transition-colors"
               >
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-medium text-white">{log.tipoRegistro}</span>
+                    <span className="font-medium text-white">{log?.tipoRegistro || log?.tipoEvento || 'Registro'}</span>
                     <span className="font-mono text-[10px] text-[#6a6b6c] font-bold bg-[#07080a] px-2 py-0.5 rounded-full border border-[#363739]">
-                      {log.placa}
+                      {log?.placa || 'Placa'}
                     </span>
                   </div>
                   <div className="text-[10px] text-[#6a6b6c] font-mono">
-                    {log.conductor} • {log.fechaHora}
+                    {log?.conductor || log?.operador || 'Conductor'} • {log?.fechaHora || 'Reciente'}
                   </div>
                 </div>
 
                 <div className="text-right">
                   <div className="font-mono text-xs font-bold text-white">
-                    {log.odometro?.toLocaleString()} km
+                    {log?.odometro != null ? `${log.odometro.toLocaleString()} km` : '-'}
                   </div>
                   <span
                     className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                      log.estado === 'Alerta'
+                      log?.estado === 'Alerta'
                         ? 'bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/40'
                         : 'bg-[#071f16] text-[#59d499] border border-[#59d499]/35'
                     }`}
                   >
-                    {log.estado}
+                    {log?.estado || 'OK'}
                   </span>
                 </div>
               </div>

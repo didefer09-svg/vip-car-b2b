@@ -63,7 +63,7 @@ export default function Bitacora() {
 
         <div className="cockpit-panel px-4 py-2 rounded-full text-center self-start sm:self-auto border border-white/[0.08]">
           <div className="text-[10px] uppercase font-mono text-[#6a6b6c]">[SYS // EVENTOS]</div>
-          <div className="text-base font-bold text-white font-mono">{bitacora.length}</div>
+          <div className="text-base font-bold text-white font-mono">{(bitacora || []).length}</div>
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export default function Bitacora() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.06]">
-              {filtrados.map((log) => {
+              {(filtrados || []).map((log) => {
                 const lat = log.latitud ?? log.ubicacion?.latitud;
                 const lng = log.longitud ?? log.ubicacion?.longitud;
                 const hasCoords = lat != null && lng != null && !isNaN(lat) && !isNaN(lng);
@@ -148,7 +148,7 @@ export default function Bitacora() {
                     </td>
 
                     <td className="py-3.5 px-4 font-mono font-bold text-white">
-                      {log.odometro?.toLocaleString()} km
+                      {log?.odometro?.toLocaleString?.() || log?.odometro || 0} km
                     </td>
 
                     <td className="py-3.5 px-4 text-[#9c9c9d] text-[11px] max-w-xs truncate">

@@ -300,10 +300,10 @@ export default function ContratosActivos() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {vehiculosAsignados.length === 0 ? (
             <div className="telemetry-well border border-white/[0.08] p-6 rounded-3xl text-center col-span-2 text-xs text-[#6a6b6c] font-mono">
-              Placas registradas en el contrato: {contratoActivo.placas.map(enmascararPlaca).join(', ')}
+              Placas registradas en el contrato: {(contratoActivo?.placas || []).map(enmascararPlaca).join(', ')}
             </div>
           ) : (
-            vehiculosAsignados.map((veh, idx) => {
+            (vehiculosAsignados || []).map((veh, idx) => {
               const identificador = obtenerIdentificadorB2B(veh, idx);
 
               return (

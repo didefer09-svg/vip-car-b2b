@@ -19,7 +19,7 @@ export default function CatalogoCorporativo() {
   const [filtroCertificacion, setFiltroCertificacion] = useState('todos');
   const [busqueda, setBusqueda] = useState('');
 
-  const enrichedVehicles = vehicles.map((veh, index) => ({
+  const enrichedVehicles = (vehicles || []).map((veh, index) => ({
     ...veh,
     identificadorB2B: obtenerIdentificadorB2B(veh, index),
   }));
@@ -272,10 +272,10 @@ export default function CatalogoCorporativo() {
                 {/* Lista de equipamiento limpia en cuadrícula de 2 columnas sin bordes individuales */}
                 <div className="pt-1">
                   <span className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium font-sans block mb-2">
-                    Equipamiento de Seguridad ({flagshipVehicle.equipamiento.length} ítems)
+                    Equipamiento de Seguridad ({(flagshipVehicle?.equipamiento || []).length} ítems)
                   </span>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                    {flagshipVehicle.equipamiento.map((eq, i) => (
+                    {(flagshipVehicle?.equipamiento || []).map((eq, i) => (
                       <div key={i} className="flex items-center gap-2 text-xs text-zinc-300 font-sans font-normal">
                         <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                         <span className="truncate">{eq}</span>
@@ -317,7 +317,7 @@ export default function CatalogoCorporativo() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {remainingVehicles.map((veh) => (
+          {(remainingVehicles || []).map((veh) => (
             <VehicleCard key={veh.id} vehicle={veh} />
           ))}
         </div>

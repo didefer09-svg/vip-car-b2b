@@ -36,11 +36,18 @@ export default function GestionFlota() {
     imagen: 'https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=800&q=80',
   });
 
-  const filtrados = vehicles.filter(
+  const term = (busqueda || '').toLowerCase().trim();
+  const filtrados = (vehicles || []).filter(
     (v) =>
-      v.placa.toLowerCase().includes(busqueda.toLowerCase()) ||
-      v.modelo.toLowerCase().includes(busqueda.toLowerCase()) ||
-      v.empresaAsignada.toLowerCase().includes(busqueda.toLowerCase())
+      !term ||
+      v?.placa?.toLowerCase()?.includes(term) ||
+      v?.modelo?.toLowerCase()?.includes(term) ||
+      v?.marca?.toLowerCase()?.includes(term) ||
+      v?.tipo?.toLowerCase()?.includes(term) ||
+      v?.propietario?.toLowerCase()?.includes(term) ||
+      v?.centroCosto?.toLowerCase()?.includes(term) ||
+      v?.empresaAsignada?.toLowerCase()?.includes(term) ||
+      v?.conductorActual?.toLowerCase()?.includes(term)
   );
 
   const handleCrear = (e) => {
@@ -139,60 +146,84 @@ export default function GestionFlota() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.06]">
-              {filtrados.map((veh) => (
-                <tr key={veh.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="py-3.5 px-4">
-                    <div className="font-medium text-white text-xs">
-                      {veh.marca} {veh.modelo}
-                    </div>
-                    <div className="font-mono text-[#6a6b6c] text-[11px] mt-0.5">
-                      <strong className="text-[#ff6363]">{veh.placa}</strong> • {veh.traccion} • {veh.anio}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <div className="text-white font-medium flex items-center gap-1.5 text-xs">
-                      <Building className="w-3.5 h-3.5 text-[#6a6b6c]" />
-                      <span>{veh.empresaAsignada}</span>
-                    </div>
-                    <div className="text-[10px] text-[#6a6b6c] font-mono">
-                      Chofer: {veh.conductorActual || 'No asignado'}
-                    </div>
-                  </td>
-
-                  <td className="py-3.5 px-4 font-mono font-bold text-white">
-                    {veh.odometroActual.toLocaleString()} km
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <SemaforoBadge odometro={veh.odometroActual} compact={true} />
-                  </td>
-
-                  <td className="py-3.5 px-4">
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                        veh.estadoOperativo === 'En Servicio'
-                          ? 'bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/30'
-                          : veh.estadoOperativo === 'Disponible'
-                          ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30'
-                          : 'bg-[#ff6363]/10 text-[#ff6363] border border-[#ff6363]/40'
-                      }`}
-                    >
-                      {veh.estadoOperativo}
-                    </span>
-                  </td>
-
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      onClick={() => handleEliminar(veh.id, veh.placa)}
-                      className="p-1.5 rounded-full hover:bg-[#ff6363]/15 text-[#6a6b6c] hover:text-[#ff6363] transition-colors cursor-pointer"
-                      title="Dar de baja de flota"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+              {(filtrados || []).length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-[#6a6b6c] font-mono text-xs">
+                    No se encontraron unidades que coincidan con la búsqueda.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                (filtrados || []).map((veh) => (
+                  <tr key={veh?.id || veh?.placa} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="py-3.5 px-4">
+                      <div className="font-medium text-white text-xs">
+                        {veh?.marca || 'Toyota'} {veh?.modelo || 'Hilux'}
+                      </div>
+                      <div className="font-mono text-[#6a6b6c] text-[11px] mt-0.5 flex items-center gap-1.5 flex-wrap">
+                        <strong className="text-[#ff6363]">{veh?.placa}</strong>
+                        <span>•</span>
+                        <span>{veh?.traccion || '4x4'}</span>
+                        <span>•</span>
+                        <span>{veh?.tipo || 'Unidad'}</span>
+                        {veh?.centroCosto && (
+                          <span className="text-[10px] px-1.5 py-0.2 rounded-sm bg-white/10 text-slate-300 font-mono">
+                            CC: {veh.centroCosto}
+                          </span>
+                        )}
+                        {veh?.propietario && (
+                          <span className={`text-[9px] px-1.5 py-0.2 rounded-sm font-mono font-bold ${
+                            veh.propietario === 'VIP CAR' ? 'text-[#ff6363] bg-[#ff6363]/10' : 'text-sky-300 bg-sky-950/40'
+                          }`}>
+                            {veh.propietario}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <div className="text-white font-medium flex items-center gap-1.5 text-xs">
+                        <Building className="w-3.5 h-3.5 text-[#6a6b6c]" />
+                        <span>{veh?.empresaAsignada || 'Flota Central Huancayo'}</span>
+                      </div>
+                      <div className="text-[10px] text-[#6a6b6c] font-mono">
+                        Chofer: {veh?.conductorActual || 'No asignado'}
+                      </div>
+                    </td>
+
+                    <td className="py-3.5 px-4 font-mono font-bold text-white">
+                      {veh?.odometroActual?.toLocaleString?.() || veh?.odometroActual || 0} km
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <SemaforoBadge odometro={veh?.odometroActual || 0} compact={true} />
+                    </td>
+
+                    <td className="py-3.5 px-4">
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                          veh?.estadoOperativo === 'En Servicio'
+                            ? 'bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/30'
+                            : veh?.estadoOperativo === 'Disponible'
+                            ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30'
+                            : 'bg-[#ff6363]/10 text-[#ff6363] border border-[#ff6363]/40'
+                        }`}
+                      >
+                        {veh?.estadoOperativo || 'Disponible'}
+                      </span>
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        onClick={() => handleEliminar(veh?.id, veh?.placa)}
+                        className="p-1.5 rounded-full hover:bg-[#ff6363]/15 text-[#6a6b6c] hover:text-[#ff6363] transition-colors cursor-pointer"
+                        title="Dar de baja de flota"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

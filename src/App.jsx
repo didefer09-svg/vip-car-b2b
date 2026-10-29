@@ -26,6 +26,8 @@ import ContratosActivos from './modules/b2b/ContratosActivos';
 // Módulo 3: Dashboard de Gerencia & Semáforo
 import Login from './modules/dashboard/Login';
 import DashboardHome from './modules/dashboard/DashboardHome';
+import ControlConductores from './modules/dashboard/ControlConductores';
+import GestionMantenimiento from './modules/dashboard/GestionMantenimiento';
 import SemaforoMantenimiento from './modules/dashboard/SemaforoMantenimiento';
 import GestionFlota from './modules/dashboard/GestionFlota';
 import GestionContratos from './modules/dashboard/GestionContratos';
@@ -77,6 +79,8 @@ export default function App() {
                 }
               >
                 <Route index element={<DashboardHome />} />
+                <Route path="conductores" element={<ControlConductores />} />
+                <Route path="mantenimiento" element={<GestionMantenimiento />} />
                 <Route path="semaforo" element={<SemaforoMantenimiento />} />
                 <Route path="flota" element={<GestionFlota />} />
                 <Route path="contratos" element={<GestionContratos />} />

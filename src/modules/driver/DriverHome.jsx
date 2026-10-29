@@ -23,8 +23,19 @@ import SemaforoBadge from '../../components/common/SemaforoBadge';
 export default function DriverHome() {
   const { vehicles, bitacora, pendingSyncCount, sincronizarColaManual } = useFleet();
 
-  const myVehicle = vehicles.find((v) => v.placa === 'W4E-892') || vehicles[0];
-  const myLogs = bitacora.filter((b) => b.placa === myVehicle.placa).slice(0, 3);
+  const fallbackVehicle = {
+    placa: 'W4E-892',
+    marca: 'Toyota',
+    modelo: 'Hilux 4x4',
+    tipo: 'Pickup 4x4',
+    traccion: '4x4',
+    empresaAsignada: 'VIP CAR Huancayo',
+    odometroActual: 45280,
+    nivelCombustible: 85,
+    equipamiento: ['Jaula Antivuelco', 'Pértiga LED', 'GPS Satelital', 'Extintor 6kg'],
+  };
+  const myVehicle = (vehicles || []).find((v) => v?.placa === 'W4E-892') || vehicles?.[0] || fallbackVehicle;
+  const myLogs = (bitacora || []).filter((b) => b?.placa === myVehicle?.placa).slice(0, 3);
 
   return (
     <div className="space-y-5 text-[#949aa6]">
@@ -135,7 +146,7 @@ export default function DriverHome() {
               Equipamiento Instalado para Socavón:
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {myVehicle.equipamiento.map((eq, idx) => (
+              {(myVehicle?.equipamiento || []).map((eq, idx) => (
                 <span
                   key={idx}
                   className="px-2.5 py-0.5 rounded-full text-[10px] font-mono telemetry-well text-[#949aa6] border border-white/[0.08]"
@@ -207,7 +218,7 @@ export default function DriverHome() {
           {myLogs.length === 0 ? (
             <p className="text-xs text-[#626773] text-center py-3 font-mono">Sin registros previos.</p>
           ) : (
-            myLogs.map((log) => (
+            (myLogs || []).map((log) => (
               <div
                 key={log.id}
                 className="telemetry-well p-3 rounded-2xl flex items-center justify-between text-xs font-mono"

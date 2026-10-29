@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { INITIAL_VEHICLES, INITIAL_CONTRATOS, INITIAL_BITACORA, calcularSemaforo } from '../data/mockData';
+import {
+  INITIAL_VEHICLES,
+  INITIAL_CONTRATOS,
+  INITIAL_BITACORA,
+  INITIAL_MANTENIMIENTOS,
+  OFICIAL_SERVICIOS,
+  calcularSemaforo
+} from '../data/mockData';
 import { isConfigured } from '../config/firebase';
 import {
   seedVehiculosIfEmpty,
@@ -8,6 +15,8 @@ import {
   subscribeToBitacora,
   subscribeToCotizaciones,
   subscribeToAverias,
+  subscribeToMantenimientos,
+  firestoreSyncMantenimiento,
   registrarOdometroFirestore,
   firestoreSyncCheckOut,
   firestoreSyncAveria,
@@ -25,7 +34,7 @@ const FleetContext = createContext(null);
 
 export function FleetProvider({ children }) {
   // Persistencia local para modo offline en operación minera
-  const FLEET_STORAGE_VERSION = 'v3_vipcar_fleet_sos_alerts';
+  const FLEET_STORAGE_VERSION = 'v4_vipcar_official_30units_16services_mantenimiento';
 
   const [vehicles, setVehicles] = useState(() => {
     try {
@@ -34,6 +43,7 @@ export function FleetProvider({ children }) {
         localStorage.setItem('vipcar_fleet_version', FLEET_STORAGE_VERSION);
         localStorage.setItem('vipcar_vehicles', JSON.stringify(INITIAL_VEHICLES));
         localStorage.setItem('vipcar_bitacora', JSON.stringify(INITIAL_BITACORA));
+        localStorage.setItem('vipcar_mantenimientos', JSON.stringify(INITIAL_MANTENIMIENTOS));
         return INITIAL_VEHICLES;
       }
       const saved = localStorage.getItem('vipcar_vehicles');
@@ -62,6 +72,19 @@ export function FleetProvider({ children }) {
       return saved ? JSON.parse(saved) : INITIAL_BITACORA;
     } catch {
       return INITIAL_BITACORA;
+    }
+  });
+
+  const [mantenimientos, setMantenimientos] = useState(() => {
+    try {
+      const ver = localStorage.getItem('vipcar_fleet_version');
+      if (ver !== FLEET_STORAGE_VERSION) {
+        return INITIAL_MANTENIMIENTOS;
+      }
+      const saved = localStorage.getItem('vipcar_mantenimientos');
+      return saved ? JSON.parse(saved) : INITIAL_MANTENIMIENTOS;
+    } catch {
+      return INITIAL_MANTENIMIENTOS;
     }
   });
 
@@ -139,6 +162,7 @@ export function FleetProvider({ children }) {
     let unsubBitacora = () => {};
     let unsubCotizaciones = () => {};
     let unsubAverias = () => {};
+    let unsubMantenimientos = () => {};
 
     const initCloud = async () => {
       try {
@@ -184,6 +208,12 @@ export function FleetProvider({ children }) {
             setAverias(cloudAverias);
           }
         });
+
+        unsubMantenimientos = subscribeToMantenimientos((cloudMantenimientos) => {
+          if (cloudMantenimientos && cloudMantenimientos.length > 0) {
+            setMantenimientos(cloudMantenimientos);
+          }
+        });
       } catch (error) {
         console.warn('Error inicializando listeners de Firestore:', error);
         setCloudStatus('offline');
@@ -198,6 +228,7 @@ export function FleetProvider({ children }) {
       unsubBitacora();
       unsubCotizaciones();
       unsubAverias();
+      unsubMantenimientos();
     };
   }, []);
 
@@ -217,6 +248,14 @@ export function FleetProvider({ children }) {
       console.warn('Error saving bitacora to localStorage', e);
     }
   }, [bitacora]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('vipcar_mantenimientos', JSON.stringify(mantenimientos));
+    } catch (e) {
+      console.warn('Error saving mantenimientos to localStorage', e);
+    }
+  }, [mantenimientos]);
 
   useEffect(() => {
     try {
@@ -254,7 +293,7 @@ export function FleetProvider({ children }) {
 
     // Actualización reactiva inmediata
     setVehicles((prev) =>
-      prev.map((veh) => {
+      (prev || []).map((veh) => {
         if (veh.placa === placa || veh.id === targetId) {
           return {
             ...veh,
@@ -327,7 +366,7 @@ export function FleetProvider({ children }) {
     };
 
     setVehicles((prev) =>
-      prev.map((veh) => {
+      (prev || []).map((veh) => {
         if (veh.placa === placa) {
           return {
             ...veh,
@@ -420,7 +459,7 @@ export function FleetProvider({ children }) {
     setAverias((prev) => [nuevaAveria, ...prev]);
 
     setVehicles((prev) =>
-      prev.map((v) => (v.placa === placa ? { ...v, estadoOperativo: 'Inhabilitado por Avería' } : v))
+      (prev || []).map((v) => (v.placa === placa ? { ...v, estadoOperativo: 'Inhabilitado por Avería' } : v))
     );
 
     const nuevoLog = {
@@ -533,21 +572,105 @@ export function FleetProvider({ children }) {
   };
 
   const eliminarVehiculo = async (id) => {
-    setVehicles((prev) => prev.filter((v) => v.id !== id));
+    setVehicles((prev) => (prev || []).filter((v) => v?.id !== id));
 
     if (isConfigured) {
       await firestoreSyncDeleteVehiculo(id);
     }
   };
 
+  /**
+   * Requerimiento 3: Registrar Mantenimiento de Flota (4 campos estrictos)
+   * Placa, Tipo de Mantenimiento, Kilometraje actual, Observaciones detalladas.
+   */
+  const registrarMantenimiento = async ({ placa, tipoMantenimiento, kilometraje, observaciones }) => {
+    const kNum = Number(kilometraje) || 0;
+    const now = new Date();
+    const fechaHora = now.toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
+    const targetVeh = (vehicles || []).find((v) => v?.placa === placa);
+
+    const nuevoMnt = {
+      id: `mnt-${Date.now()}`,
+      placa,
+      tipoMantenimiento: tipoMantenimiento || 'Preventivo General',
+      kilometraje: kNum,
+      observaciones: observaciones || 'Mantenimiento registrado en base central.',
+      fechaHora,
+      timestamp: now.toISOString(),
+      registradoPor: 'Gerencia VIP CAR',
+      estado: 'Completado',
+      propietario: targetVeh?.propietario || 'VIP CAR',
+      centroCosto: targetVeh?.centroCosto || 'UM-01'
+    };
+
+    setMantenimientos((prev) => [nuevoMnt, ...(prev || [])]);
+
+    // Actualizar odómetro y último mantenimiento del vehículo
+    const vehicleUpdates = {
+      ultimoMantenimiento: kNum,
+      estadoOperativo: 'Disponible',
+      updatedAt: now.toISOString(),
+    };
+    if (kNum > (targetVeh?.odometroActual || 0)) {
+      vehicleUpdates.odometroActual = kNum;
+    }
+
+    setVehicles((prev) =>
+      (prev || []).map((v) => {
+        if (v?.placa === placa) {
+          return {
+            ...v,
+            ...vehicleUpdates,
+          };
+        }
+        return v;
+      })
+    );
+
+    // Registrar en bitácora para trazabilidad global
+    const nuevoLog = {
+      id: `bit-${Date.now()}`,
+      fechaHora,
+      conductor: targetVeh?.conductorActual || 'Taller Central Huancayo',
+      operador: targetVeh?.conductorActual || 'Taller Central Huancayo',
+      placa,
+      tipoRegistro: `Mantenimiento: ${tipoMantenimiento || 'Preventivo'} (${kNum.toLocaleString()} km)`,
+      tipoEvento: 'Mantenimiento',
+      odometro: kNum,
+      nivelCombustible: `${targetVeh?.nivelCombustible || 80}%`,
+      combustible: targetVeh?.nivelCombustible || 80,
+      checklistEstado: 'Servicio Mecánico Conforme',
+      proyecto: targetVeh?.empresaAsignada || 'Taller Central VIP CAR',
+      observaciones: observaciones || 'Mantenimiento preventivo completado.',
+      descripcion: observaciones || 'Mantenimiento preventivo completado.',
+      estado: 'OK',
+      timestamp: now.toISOString(),
+    };
+
+    setBitacora((prev) => [nuevoLog, ...(prev || [])]);
+
+    if (isConfigured) {
+      await firestoreSyncMantenimiento({
+        mantenimiento: nuevoMnt,
+        vehicleId: targetVeh?.id,
+        vehicleUpdates,
+        logEntry: nuevoLog,
+      });
+    }
+
+    return nuevoMnt;
+  };
+
   return (
     <FleetContext.Provider
       value={{
-        vehicles,
-        contratos,
-        bitacora,
-        cotizaciones,
-        averias,
+        vehicles: vehicles || [],
+        contratos: contratos || [],
+        bitacora: bitacora || [],
+        cotizaciones: cotizaciones || [],
+        averias: averias || [],
+        mantenimientos: mantenimientos || [],
+        servicios: OFICIAL_SERVICIOS || [],
         cloudStatus,
         isCloudReady: cloudStatus === 'connected',
         registrarCheckIn,
@@ -557,6 +680,7 @@ export function FleetProvider({ children }) {
         agregarCotizacion,
         agregarVehiculo,
         eliminarVehiculo,
+        registrarMantenimiento,
         calcularSemaforo,
         pendingSyncCount,
         sincronizarColaManual: syncOfflineQueueWithFirestore,
