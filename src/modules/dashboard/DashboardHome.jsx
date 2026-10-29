@@ -197,7 +197,12 @@ export default function DashboardHome() {
           </div>
 
           <div className="space-y-2">
-            {(bitacora || []).slice(0, 5).map((log, idx) => (
+            {(!bitacora || bitacora.length === 0) ? (
+              <div className="p-6 rounded-2xl bg-[#0a0c10] border border-white/[0.06] text-center text-xs text-[#6a6b6c] font-mono">
+                No hay eventos registrados en este turno
+              </div>
+            ) : (
+              (bitacora || []).slice(0, 5).map((log, idx) => (
               <div
                 key={log?.id || idx}
                 className="p-3 rounded-2xl bg-[#111214] border border-[#363739] flex items-center justify-between text-xs hover:bg-[#1b1c1e] transition-colors"
@@ -229,7 +234,7 @@ export default function DashboardHome() {
                   </span>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
         </div>
       </div>

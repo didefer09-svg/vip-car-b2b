@@ -469,3 +469,21 @@ export async function firestoreSyncMantenimiento({ mantenimiento, vehicleId, veh
     console.warn('Error al sincronizar mantenimiento en Firestore:', error);
   }
 }
+
+/**
+ * Elimina todos los registros de la colección 'bitacora' en Firestore
+ */
+export async function firestoreClearBitacora() {
+  if (!isConfigured || !db) return;
+
+  try {
+    const snap = await getDocs(collection(db, COLLECTIONS.BITACORA));
+    const deletePromises = snap.docs.map((docSnap) =>
+      deleteDoc(doc(db, COLLECTIONS.BITACORA, docSnap.id))
+    );
+    await Promise.all(deletePromises);
+  } catch (error) {
+    console.warn('Error al vaciar colección bitácora en Firestore:', error);
+    throw error;
+  }
+}

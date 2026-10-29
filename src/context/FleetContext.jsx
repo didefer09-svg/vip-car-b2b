@@ -23,6 +23,7 @@ import {
   firestoreSyncCotizacion,
   firestoreSyncAddVehiculo,
   firestoreSyncDeleteVehiculo,
+  firestoreClearBitacora,
 } from '../services/firestoreService';
 import {
   enqueueOfflineAction,
@@ -192,7 +193,7 @@ export function FleetProvider({ children }) {
         });
 
         unsubBitacora = subscribeToBitacora((cloudBitacora) => {
-          if (cloudBitacora && cloudBitacora.length > 0) {
+          if (Array.isArray(cloudBitacora)) {
             setBitacora(cloudBitacora);
           }
         });
@@ -661,6 +662,27 @@ export function FleetProvider({ children }) {
     return nuevoMnt;
   };
 
+  /**
+   * Vacía la bitácora de conductores/eventos tanto en el estado global,
+   * localStorage y en Cloud Firestore si está conectado.
+   */
+  const limpiarBitacora = async () => {
+    setBitacora([]);
+    try {
+      localStorage.setItem('vipcar_bitacora', JSON.stringify([]));
+    } catch (e) {
+      console.warn('Error al guardar bitácora vacía en localStorage', e);
+    }
+
+    if (isConfigured) {
+      try {
+        await firestoreClearBitacora();
+      } catch (err) {
+        console.warn('Error al vaciar bitácora en Firestore:', err);
+      }
+    }
+  };
+
   return (
     <FleetContext.Provider
       value={{
@@ -681,6 +703,7 @@ export function FleetProvider({ children }) {
         agregarVehiculo,
         eliminarVehiculo,
         registrarMantenimiento,
+        limpiarBitacora,
         calcularSemaforo,
         pendingSyncCount,
         sincronizarColaManual: syncOfflineQueueWithFirestore,
