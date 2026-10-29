@@ -7,7 +7,7 @@ import { usePWA } from '../../context/PWAContext';
 
 export default function Navbar() {
   const { averias, cloudStatus } = useFleet();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, isTaller, logout } = useAuth();
   const { isInstallable, isInstalled, installApp } = usePWA();
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ export default function Navbar() {
             </NavLink>
 
             <NavLink
-              to="/dashboard"
+              to={isTaller ? '/dashboard/mantenimiento' : '/dashboard'}
               className={({ isActive }) =>
                 `flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-bold transition-all relative cursor-pointer ${
                   isActive
@@ -89,12 +89,16 @@ export default function Navbar() {
               }
             >
               <BarChart3 className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Cockpit Gerencial</span>
-              <span className="md:hidden">Gerencia</span>
+              <span className="hidden md:inline">
+                {isTaller ? 'Módulo Taller' : 'Cockpit Gerencial'}
+              </span>
+              <span className="md:hidden">
+                {isTaller ? 'Taller' : 'Gerencia'}
+              </span>
               {!isAuthenticated ? (
                 <Lock className="w-2.5 h-2.5 text-[#626773]" title="Acceso restringido con autenticación" />
               ) : (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#59d499]" title="Sesión ejecutiva activa" />
+                <span className={`w-1.5 h-1.5 rounded-full ${isTaller ? 'bg-[#59d499]' : 'bg-[#59d499]'}`} title="Sesión activa" />
               )}
               {alertCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#ff6363] rounded-full animate-pulse" />
@@ -160,9 +164,9 @@ export default function Navbar() {
 
             {/* Notification Bell Cápsula */}
             <Link
-              to="/dashboard/semaforo"
+              to={isTaller ? '/dashboard/mantenimiento' : '/dashboard/semaforo'}
               className="relative p-2 rounded-full telemetry-well border border-white/[0.08] text-[#9c9c9d] hover:text-[#ffffff] hover:border-white/[0.2] transition-colors"
-              title="Alertas de Mantenimiento"
+              title={isTaller ? 'Historial de Mantenimientos' : 'Alertas de Mantenimiento'}
             >
               <Bell className="w-4 h-4" />
               {alertCount > 0 && (
@@ -176,21 +180,27 @@ export default function Navbar() {
             {isAuthenticated ? (
               <div className="flex items-center gap-1.5 pl-1 border-l border-white/[0.08]">
                 <Link
-                  to="/dashboard"
+                  to={isTaller ? '/dashboard/mantenimiento' : '/dashboard'}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full telemetry-well border border-white/[0.08] hover:border-white/[0.2] text-xs transition-colors"
-                  title={`Conectado como: ${user?.displayName || 'Gerencia'}`}
+                  title={`Conectado como: ${user?.displayName || (isTaller ? 'Taller' : 'Gerencia')}`}
                 >
-                  <span className="w-5 h-5 rounded-full bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40 flex items-center justify-center font-bold text-[10px] font-mono">
-                    {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'G'}
+                  <span
+                    className={`w-5 h-5 rounded-full border flex items-center justify-center font-bold text-[10px] font-mono ${
+                      isTaller
+                        ? 'bg-[#59d499]/15 text-[#59d499] border-[#59d499]/40'
+                        : 'bg-[#ff6363]/15 text-[#ff6363] border-[#ff6363]/40'
+                    }`}
+                  >
+                    {user?.displayName ? user.displayName.charAt(0).toUpperCase() : (isTaller ? 'T' : 'G')}
                   </span>
                   <span className="text-[11px] font-medium text-[#ffffff] hidden xl:inline max-w-[90px] truncate">
-                    {user?.displayName || 'Gerencia'}
+                    {user?.displayName || (isTaller ? 'Taller' : 'Gerencia')}
                   </span>
                 </Link>
                 <button
                   onClick={handleLogout}
                   className="p-2 rounded-full telemetry-well border border-white/[0.08] text-[#9c9c9d] hover:text-[#ff6363] hover:border-[#ff6363]/40 transition-colors cursor-pointer"
-                  title="Cerrar sesión gerencial"
+                  title="Cerrar sesión"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
@@ -199,10 +209,10 @@ export default function Navbar() {
               <Link
                 to="/dashboard/login"
                 className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full telemetry-well border border-white/[0.08] hover:border-white/[0.2] text-[#9c9c9d] hover:text-[#ffffff] text-xs font-medium transition-colors"
-                title="Acceso restringido para gerencia y supervisores"
+                title="Acceso restringido para gerencia y taller"
               >
                 <Lock className="w-3 h-3 text-[#ff6363]" />
-                <span className="text-[11px] font-mono">Acceso Gerencia</span>
+                <span className="text-[11px] font-mono">Acceso Gerencia / Taller</span>
               </Link>
             )}
           </div>

@@ -155,32 +155,36 @@ export default function AlertaCriticaCockpit() {
   return (
     <section className="space-y-3.5">
       {/* Barra de Título y Estado Crítico */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0d0f14] p-4 rounded-3xl border border-white/[0.08] shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="relative flex items-center justify-center shrink-0">
-            {alertasCriticas.length > 0 ? (
-              <>
-                <span className="w-3.5 h-3.5 rounded-full bg-[#ff6363] animate-ping opacity-75" />
-                <span className="absolute w-2.5 h-2.5 rounded-full bg-[#ff6363]" />
-              </>
-            ) : (
-              <span className="w-3 h-3 rounded-full bg-[#59d499]" />
-            )}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#0d0f14] p-4 sm:p-5 rounded-3xl border border-white/[0.08] shadow-lg">
+        {/* Encabezado Corporativo Premium */}
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Ícono rojo de advertencia con resplandor */}
+          <div className="flex items-center justify-center p-2 rounded-2xl bg-[#ff6363]/10 border border-[#ff6363]/25 shrink-0 shadow-sm">
+            <AlertOctagon className="w-5 h-5 text-[#ff6363] filter drop-shadow-[0_0_8px_rgba(255,99,99,0.55)]" />
           </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-white flex items-center gap-1.5">
-                <AlertOctagon className="w-4 h-4 text-[#ff6363]" />
-                <span>Panel de Alerta Crítica // Señales SOS & Reportes de Avería</span>
-              </h2>
-              <span className="text-[10px] font-mono text-[#6a6b6c] bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06]">
-                Colección bitacora • Filtrado Automático
-              </span>
-            </div>
-            <p className="text-[11px] text-[#6a6b6c] font-mono mt-0.5">
-              Recepción satelital en tiempo real con geolocalización y telemetría de campo
-            </p>
+
+          {/* Punto verde de conexión en tiempo real con parpadeo suave */}
+          <div className="flex items-center justify-center shrink-0" title="Conexión satelital en tiempo real activa">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#59d499] animate-pulse" />
           </div>
+
+          {/* Título Principal */}
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+            Panel de Alerta Crítica
+          </h2>
+
+          {/* Divisor sutil */}
+          <span className="text-gray-500 text-sm font-light select-none hidden sm:inline">|</span>
+
+          {/* Subtítulo */}
+          <span className="text-sm text-gray-400 font-normal">
+            Señales SOS y Reportes de Avería
+          </span>
+
+          {/* Tag de colección satelital */}
+          <span className="hidden xl:inline-block text-[10px] font-mono text-[#6a6b6c] bg-white/[0.04] px-2.5 py-0.5 rounded-full border border-white/[0.06]">
+            Colección bitacora • Filtrado Automático
+          </span>
         </div>
 
         {/* Acciones Rápidas y Contador de Alertas */}

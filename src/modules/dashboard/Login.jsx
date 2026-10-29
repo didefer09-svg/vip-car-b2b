@@ -10,11 +10,14 @@ import {
   AlertCircle,
   ArrowRight,
   Sparkles,
-  ChevronLeft
+  ChevronLeft,
+  Wrench,
+  Briefcase,
+  CheckCircle2
 } from 'lucide-react';
 
 export default function Login() {
-  const { login, loginAsDemo, isAuthenticated, authError } = useAuth();
+  const { login, loginAsGerente, loginAsTaller, isAuthenticated, user, authError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,14 +28,19 @@ export default function Login() {
   const [localError, setLocalError] = useState('');
 
   // Destino original antes de la redirección al login
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = location.state?.from?.pathname;
 
-  // Si ya está autenticado, redirigir al dashboard
+  // Si ya está autenticado, redirigir según el rol
   React.useEffect(() => {
     if (isAuthenticated) {
-      navigate(from, { replace: true });
+      if (user?.role === 'TALLER') {
+        navigate('/dashboard/mantenimiento', { replace: true });
+      } else {
+        const dest = from && from !== '/dashboard/login' ? from : '/dashboard';
+        navigate(dest, { replace: true });
+      }
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, user?.role, navigate, from]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,8 +53,14 @@ export default function Login() {
 
     setLoading(true);
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      const res = await login(email, password);
+      const role = res?.user?.role || (email.toLowerCase().includes('taller') || email.toLowerCase().includes('mantenimiento') ? 'TALLER' : 'GERENTE');
+      if (role === 'TALLER') {
+        navigate('/dashboard/mantenimiento', { replace: true });
+      } else {
+        const dest = from && from !== '/dashboard/login' ? from : '/dashboard';
+        navigate(dest, { replace: true });
+      }
     } catch (err) {
       setLocalError(err.message || 'Error al autenticar credenciales.');
     } finally {
@@ -54,31 +68,58 @@ export default function Login() {
     }
   };
 
-  const handleDemoAccess = () => {
+  // Botón Rápido 1: Entrar como Gerente (Acceso Total)
+  const handleQuickLoginGerente = () => {
     setLoading(true);
     try {
-      loginAsDemo();
-      navigate(from, { replace: true });
+      loginAsGerente();
+      const dest = from && from !== '/dashboard/login' ? from : '/dashboard';
+      navigate(dest, { replace: true });
     } catch (err) {
-      setLocalError('Error al iniciar con credenciales demo.');
+      setLocalError('Error al iniciar como Gerente.');
     } finally {
       setLoading(false);
     }
   };
 
+  // Botón Rápido 2: Entrar como Taller (Acceso Restringido Mantenimiento)
+  const handleQuickLoginTaller = () => {
+    setLoading(true);
+    try {
+      loginAsTaller();
+      navigate('/dashboard/mantenimiento', { replace: true });
+    } catch (err) {
+      setLocalError('Error al iniciar como Taller.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper para autollenar credenciales en el formulario manual
+  const autofillCredentials = (roleType) => {
+    if (roleType === 'GERENTE') {
+      setEmail('gerencia@vipcar.pe');
+      setPassword('vipcar2026');
+    } else {
+      setEmail('taller@vipcar.pe');
+      setPassword('taller2026');
+    }
+    setLocalError('');
+  };
+
   return (
     <div className="relative min-h-[calc(100vh-3.5rem)] flex items-center justify-center p-4 overflow-hidden bg-[#040506]">
-      {/* Fondo de Malla Técnica Cockpit + Resplandor Ambiental Coral Pulse */}
+      {/* Fondo de Malla Técnica Cockpit + Resplandor Ambiental */}
       <div className="absolute inset-0 pointer-events-none cockpit-grid opacity-25" />
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[480px] rounded-full pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(255, 99, 99, 0.1) 0%, rgba(4, 5, 6, 0) 70%)',
-          filter: 'blur(70px)'
+          background: 'radial-gradient(circle, rgba(255, 99, 99, 0.08) 0%, rgba(4, 5, 6, 0) 70%)',
+          filter: 'blur(80px)'
         }}
       />
 
-      <div className="relative z-10 w-full max-w-md">
+      <div className="relative z-10 w-full max-w-lg my-8">
         {/* Enlace para volver */}
         <div className="mb-4">
           <Link
@@ -90,7 +131,7 @@ export default function Login() {
           </Link>
         </div>
 
-        {/* Tarjeta Raycast Titanium Curved (24px radius rounded-3xl) */}
+        {/* Tarjeta Raycast Titanium Curved */}
         <div className="cockpit-panel rounded-3xl border border-white/[0.08] p-6 sm:p-8 shadow-2xl key-shadow">
           {/* Cabecera con Logotipo Oficial */}
           <div className="flex flex-col items-center text-center mb-6">
@@ -101,14 +142,92 @@ export default function Login() {
             />
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d0e14] text-[#ff6363] border border-[#ff6363]/40 text-[10px] font-mono font-medium uppercase tracking-wider mb-2">
               <Lock className="w-3 h-3" />
-              <span>Acceso Restringido • Gerencia</span>
+              <span>Control de Accesos por Roles (RBAC)</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-normal tracking-tight text-white font-sans">
-              Acceso Gerencial
+              Portal Gerencial & Operativo
             </h1>
-            <p className="text-xs text-[#6a6b6c] mt-1 max-w-xs leading-relaxed">
-              Supervisión de telemetría de flotas mineras, semáforo preventivo y auditoría de odómetros.
+            <p className="text-xs text-[#6a6b6c] mt-1 max-w-sm leading-relaxed">
+              Inicia sesión con tu perfil asignado para acceder a los módulos autorizados según tu nivel de seguridad.
             </p>
+          </div>
+
+          {/* ============================================================== */}
+          {/* SECCIÓN TEMPORAL PARA PRESENTACIÓN: BOTONES DE LOGIN RÁPIDO */}
+          {/* ============================================================== */}
+          <div className="mb-6 p-4 rounded-2xl bg-[#0f1115] border border-amber-400/30 text-xs space-y-3 shadow-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-amber-400 font-bold text-[11px] font-mono">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>BOTONES DE ACCESO RÁPIDO (MODO PRESENTACIÓN)</span>
+              </div>
+              <span className="px-2 py-0.5 rounded-full text-[9px] bg-amber-400/10 text-amber-300 border border-amber-400/30 font-mono font-bold">
+                1-CLICK
+              </span>
+            </div>
+            <p className="text-[11px] text-[#9c9c9d] leading-relaxed">
+              Selecciona cualquiera de los dos perfiles para demostrar de inmediato el control estricto de roles:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              {/* Botón 1: Entrar como Gerente */}
+              <button
+                type="button"
+                onClick={handleQuickLoginGerente}
+                disabled={loading}
+                className="group relative flex flex-col items-start p-3 rounded-xl bg-[#1c1214] hover:bg-[#261518] border border-[#ff6363]/40 hover:border-[#ff6363] transition-all text-left cursor-pointer"
+              >
+                <div className="flex items-center justify-between w-full mb-1">
+                  <span className="flex items-center gap-1.5 text-[#ff6363] font-bold text-xs font-mono">
+                    <Briefcase className="w-3.5 h-3.5" />
+                    Entrar como Gerente
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#ff6363] group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <span className="text-[10px] text-white font-medium">Ing. Carlos Mendoza</span>
+                <span className="text-[9px] text-[#9c9c9d] mt-0.5 font-mono">
+                  ✓ Acceso Total (7 módulos)
+                </span>
+                <span className="text-[9px] text-[#59d499] font-mono">
+                  Cockpit, Semáforo, Flota...
+                </span>
+              </button>
+
+              {/* Botón 2: Entrar como Taller */}
+              <button
+                type="button"
+                onClick={handleQuickLoginTaller}
+                disabled={loading}
+                className="group relative flex flex-col items-start p-3 rounded-xl bg-[#0d1c14] hover:bg-[#13281c] border border-[#59d499]/40 hover:border-[#59d499] transition-all text-left cursor-pointer"
+              >
+                <div className="flex items-center justify-between w-full mb-1">
+                  <span className="flex items-center gap-1.5 text-[#59d499] font-bold text-xs font-mono">
+                    <Wrench className="w-3.5 h-3.5" />
+                    Entrar como Taller
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-[#59d499] group-hover:translate-x-0.5 transition-transform" />
+                </div>
+                <span className="text-white font-medium text-[10px]">Téc. Marco Aurelio Quispe</span>
+                <span className="text-[9px] text-[#9c9c9d] mt-0.5 font-mono">
+                  ✓ Redirige a /mantenimiento
+                </span>
+                <span className="text-[9px] text-amber-300 font-mono">
+                  🔒 Menú lateral solo Mantenimiento
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Separador */}
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/[0.08]" />
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase font-mono">
+              <span className="bg-[#07080a] px-3 text-[#6a6b6c]">
+                O ingresar con credenciales manuales
+              </span>
+            </div>
           </div>
 
           {/* Banner de Error si falló la autenticación */}
@@ -121,13 +240,33 @@ export default function Login() {
             </div>
           )}
 
-          {/* Formulario */}
+          {/* Formulario Manual */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Correo o Usuario */}
             <div>
-              <label className="block text-xs font-mono uppercase text-[#6a6b6c] mb-1.5">
-                Correo o Usuario Corporativo
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-mono uppercase text-[#6a6b6c]">
+                  Correo Corporativo
+                </label>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#6a6b6c]">
+                  <span>Autollenar:</span>
+                  <button
+                    type="button"
+                    onClick={() => autofillCredentials('GERENTE')}
+                    className="text-[#ff6363] hover:underline cursor-pointer"
+                  >
+                    Gerente
+                  </button>
+                  <span>•</span>
+                  <button
+                    type="button"
+                    onClick={() => autofillCredentials('TALLER')}
+                    className="text-[#59d499] hover:underline cursor-pointer"
+                  >
+                    Taller
+                  </button>
+                </div>
+              </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#6a6b6c]">
                   <Mail className="w-4 h-4" />
@@ -136,7 +275,7 @@ export default function Login() {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="gerencia@vipcar.pe"
+                  placeholder="gerencia@vipcar.pe o taller@vipcar.pe"
                   required
                   className="w-full pl-10 pr-4 py-2.5 rounded-full telemetry-well border border-white/[0.08] text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] transition-colors font-sans"
                 />
@@ -175,7 +314,7 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Botón Principal Raycast Mist Capsule: Iniciar Sesión */}
+            {/* Botón Principal: Iniciar Sesión */}
             <button
               type="submit"
               disabled={loading}
@@ -196,56 +335,26 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Separador */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/[0.08]" />
+          {/* Detalle informativo de cuentas registradas */}
+          <div className="mt-5 p-3 rounded-xl bg-[#08090b] border border-white/[0.06] font-mono text-[10px] text-[#6a6b6c] space-y-1">
+            <div className="font-semibold text-white flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3 text-[#59d499]" />
+              <span>Cuentas activas en sistema RBAC:</span>
             </div>
-            <div className="relative flex justify-center text-[10px] uppercase font-mono">
-              <span className="bg-[#07080a] px-3 text-[#6a6b6c]">
-                Acceso de Demostración & Auditoría
-              </span>
+            <div className="flex justify-between items-center text-[#9c9c9d] pt-1">
+              <span>👑 <strong className="text-white">Gerente:</strong> gerencia@vipcar.pe / vipcar2026</span>
+              <span className="text-[#ff6363] text-[9px]">Acceso Total</span>
             </div>
-          </div>
-
-          {/* Caja de Acceso Rápido para Demostración */}
-          <div className="p-4 rounded-2xl bg-[#111214] border border-white/[0.08] text-xs space-y-2.5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-[11px]">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Credenciales de Gerencia</span>
-              </div>
-              <span className="px-2 py-0.5 rounded-full text-[9px] bg-amber-400/10 text-amber-300 border border-amber-400/20 font-mono">
-                Bypass Operación
-              </span>
+            <div className="flex justify-between items-center text-[#9c9c9d]">
+              <span>🔧 <strong className="text-white">Taller:</strong> taller@vipcar.pe / taller2026</span>
+              <span className="text-[#59d499] text-[9px]">Solo Mantenimiento</span>
             </div>
-
-            <div className="font-mono text-[11px] text-[#9c9c9d] bg-[#07080a] p-2.5 rounded-xl border border-white/[0.08] space-y-0.5">
-              <div className="flex justify-between">
-                <span className="text-[#6a6b6c]">Usuario:</span>
-                <span className="text-white">gerencia@vipcar.pe</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#6a6b6c]">Contraseña:</span>
-                <span className="text-white">vipcar2026</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleDemoAccess}
-              disabled={loading}
-              className="btn-raycast-secondary w-full py-2.5 px-4 rounded-full text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <span>Autocompletar e Ingresar como Gerencia</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
           </div>
         </div>
 
         {/* Pie de página con aviso de seguridad */}
         <p className="text-center text-[10px] text-[#6a6b6c] font-mono mt-4">
-          Conexión cifrada TLS 1.3 • Sincronización en tiempo real con Firestore
+          Conexión cifrada TLS 1.3 • Control de Acceso por Roles (RBAC) verificado
         </p>
       </div>
     </div>

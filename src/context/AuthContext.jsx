@@ -8,21 +8,49 @@ import { auth, isConfigured } from '../config/firebase';
 
 const AuthContext = createContext();
 
-// Credenciales corporativas de bypass para operación minera sin conexión o demostración
-const DEMO_CREDENTIALS = [
+/**
+ * Normaliza los roles soportados en el portal:
+ * - 'GERENTE': Acceso total a todo el sistema.
+ * - 'TALLER': Acceso exclusivo y restringido al módulo de Mantenimiento.
+ */
+export const normalizeRole = (role, email = '') => {
+  const r = (role || '').toUpperCase();
+  const e = (email || '').toLowerCase();
+  if (r === 'TALLER' || r === 'MANTENIMIENTO' || e.includes('taller') || e.includes('mantenimiento')) {
+    return 'TALLER';
+  }
+  return 'GERENTE';
+};
+
+// Credenciales corporativas oficiales para demostración y operación
+export const DEMO_CREDENTIALS = [
   {
     email: 'gerencia@vipcar.pe',
     pass: 'vipcar2026',
     name: 'Ing. Carlos Mendoza',
     cargo: 'Gerente General & Operaciones',
-    role: 'ADMIN'
+    role: 'GERENTE'
   },
   {
     email: 'admin@vipcar.pe',
     pass: 'vipcar2026',
     name: 'Supervisión Minera VIP CAR',
     cargo: 'Jefe de Control de Flotas',
-    role: 'ADMIN'
+    role: 'GERENTE'
+  },
+  {
+    email: 'taller@vipcar.pe',
+    pass: 'taller2026',
+    name: 'Téc. Marco Aurelio Quispe',
+    cargo: 'Jefe de Taller & Mantenimiento',
+    role: 'TALLER'
+  },
+  {
+    email: 'mantenimiento@vipcar.pe',
+    pass: 'taller2026',
+    name: 'Área de Mantenimiento Junín',
+    cargo: 'Supervisor Mecánico de Patio',
+    role: 'TALLER'
   }
 ];
 
@@ -37,21 +65,23 @@ export function AuthProvider({ children }) {
     try {
       unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
+          const role = normalizeRole(null, firebaseUser.email);
           setUser({
             uid: firebaseUser.uid,
             email: firebaseUser.email,
-            displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Gerente',
-            cargo: 'Gerencia de Operaciones',
-            role: 'ADMIN',
+            displayName: firebaseUser.displayName || (role === 'TALLER' ? 'Jefe de Taller' : 'Ing. Carlos Mendoza'),
+            cargo: role === 'TALLER' ? 'Jefe de Taller & Mantenimiento' : 'Gerencia de Operaciones',
+            role,
             isDemo: false
           });
           setLoading(false);
         } else {
-          // Si no hay sesión en Firebase Auth, verificar si hay sesión demo guardada
+          // Si no hay sesión en Firebase Auth, verificar si hay sesión guardada en localStorage
           const savedDemo = localStorage.getItem('vipcar_b2b_session');
           if (savedDemo) {
             try {
               const parsed = JSON.parse(savedDemo);
+              parsed.role = normalizeRole(parsed.role, parsed.email);
               setUser(parsed);
             } catch {
               localStorage.removeItem('vipcar_b2b_session');
@@ -68,7 +98,9 @@ export function AuthProvider({ children }) {
       const savedDemo = localStorage.getItem('vipcar_b2b_session');
       if (savedDemo) {
         try {
-          setUser(JSON.parse(savedDemo));
+          const parsed = JSON.parse(savedDemo);
+          parsed.role = normalizeRole(parsed.role, parsed.email);
+          setUser(parsed);
         } catch {
           setUser(null);
         }
@@ -81,47 +113,46 @@ export function AuthProvider({ children }) {
 
   /**
    * Iniciar sesión corporativa
-   * Intenta autenticar contra Firebase Auth primero. Si falla o no está registrado,
-   * valida contra las credenciales autorizadas de gerencia para garantizar operatividad.
    */
   const login = async (email, password) => {
     setAuthError(null);
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmail = (email || '').trim().toLowerCase();
 
     // 1. Intentar con Firebase Auth si está configurado
     if (isConfigured) {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
         const fbUser = userCredential.user;
+        const role = normalizeRole(null, fbUser.email);
         const loggedUser = {
           uid: fbUser.uid,
           email: fbUser.email,
-          displayName: fbUser.displayName || fbUser.email?.split('@')[0] || 'Gerente',
-          cargo: 'Gerencia de Operaciones',
-          role: 'ADMIN',
+          displayName: fbUser.displayName || (role === 'TALLER' ? 'Jefe de Taller' : 'Ing. Carlos Mendoza'),
+          cargo: role === 'TALLER' ? 'Jefe de Taller & Mantenimiento' : 'Gerencia de Operaciones',
+          role,
           isDemo: false
         };
         setUser(loggedUser);
         localStorage.removeItem('vipcar_b2b_session');
         return { success: true, user: loggedUser };
       } catch (fbErr) {
-        console.warn('Firebase signIn falló, evaluando credenciales de gerencia autorizadas:', fbErr.code);
-        // Continuamos para verificar si son las credenciales autorizadas de bypass
+        console.warn('Firebase signIn falló, evaluando credenciales autorizadas:', fbErr.code);
       }
     }
 
-    // 2. Validación de credenciales autorizadas de gerencia (modo operación / demo ejecutiva)
+    // 2. Validación de credenciales autorizadas (modo operación / demo ejecutiva)
     const matched = DEMO_CREDENTIALS.find(
       (c) => c.email.toLowerCase() === cleanEmail && c.pass === password
     );
 
     if (matched) {
+      const role = normalizeRole(matched.role, matched.email);
       const demoUser = {
         uid: 'demo-' + matched.email.replace(/[@.]/g, '-'),
         email: matched.email,
         displayName: matched.name,
         cargo: matched.cargo,
-        role: matched.role,
+        role,
         isDemo: true
       };
       localStorage.setItem('vipcar_b2b_session', JSON.stringify(demoUser));
@@ -136,16 +167,35 @@ export function AuthProvider({ children }) {
   };
 
   /**
-   * Acceso rápido de demostración / auditoría
+   * Login Rápido: Perfil 'Gerente' (Acceso Total)
    */
-  const loginAsDemo = () => {
-    const demo = DEMO_CREDENTIALS[0];
+  const loginAsGerente = () => {
+    const cred = DEMO_CREDENTIALS[0];
     const demoUser = {
-      uid: 'demo-gerencia-vipcar',
-      email: demo.email,
-      displayName: demo.name,
-      cargo: demo.cargo,
-      role: demo.role,
+      uid: 'demo-gerente-vipcar',
+      email: cred.email,
+      displayName: cred.name,
+      cargo: cred.cargo,
+      role: 'GERENTE',
+      isDemo: true
+    };
+    localStorage.setItem('vipcar_b2b_session', JSON.stringify(demoUser));
+    setUser(demoUser);
+    setAuthError(null);
+    return demoUser;
+  };
+
+  /**
+   * Login Rápido: Perfil 'Taller / Mantenimiento' (Acceso Restringido)
+   */
+  const loginAsTaller = () => {
+    const cred = DEMO_CREDENTIALS.find((c) => c.role === 'TALLER') || DEMO_CREDENTIALS[2];
+    const demoUser = {
+      uid: 'demo-taller-vipcar',
+      email: cred.email,
+      displayName: cred.name,
+      cargo: cred.cargo,
+      role: 'TALLER',
       isDemo: true
     };
     localStorage.setItem('vipcar_b2b_session', JSON.stringify(demoUser));
@@ -173,8 +223,13 @@ export function AuthProvider({ children }) {
     loading,
     authError,
     isAuthenticated: Boolean(user),
+    isGerente: user?.role === 'GERENTE',
+    isTaller: user?.role === 'TALLER',
+    role: user?.role || null,
     login,
-    loginAsDemo,
+    loginAsGerente,
+    loginAsTaller,
+    loginAsDemo: loginAsGerente,
     logout
   };
 

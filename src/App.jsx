@@ -70,6 +70,7 @@ export default function App() {
               {/* MÓDULO 3: Autenticación & Acceso Gerencial Restringido */}
               <Route path="/login" element={<Navigate to="/dashboard/login" replace />} />
               <Route path="/dashboard/login" element={<Login />} />
+              <Route path="/mantenimiento" element={<Navigate to="/dashboard/mantenimiento" replace />} />
               <Route
                 path="/dashboard"
                 element={
@@ -78,13 +79,69 @@ export default function App() {
                   </ProtectedRoute>
                 }
               >
-                <Route index element={<DashboardHome />} />
-                <Route path="conductores" element={<ControlConductores />} />
-                <Route path="mantenimiento" element={<GestionMantenimiento />} />
-                <Route path="semaforo" element={<SemaforoMantenimiento />} />
-                <Route path="flota" element={<GestionFlota />} />
-                <Route path="contratos" element={<GestionContratos />} />
-                <Route path="bitacora" element={<Bitacora />} />
+                {/* Panel Cockpit: exclusivo Gerente */}
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute allowedRoles={['GERENTE']}>
+                      <DashboardHome />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Control de Conductores: exclusivo Gerente */}
+                <Route
+                  path="conductores"
+                  element={
+                    <ProtectedRoute allowedRoles={['GERENTE']}>
+                      <ControlConductores />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Mantenimiento: Gerente y Taller */}
+                <Route
+                  path="mantenimiento"
+                  element={
+                    <ProtectedRoute allowedRoles={['GERENTE', 'TALLER']}>
+                      <GestionMantenimiento />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Semáforo Preventivo: exclusivo Gerente */}
+                <Route
+                  path="semaforo"
+                  element={
+                    <ProtectedRoute allowedRoles={['GERENTE']}>
+                      <SemaforoMantenimiento />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Gestión de Flota: exclusivo Gerente */}
+                <Route
+                  path="flota"
+                  element={
+                    <ProtectedRoute allowedRoles={['GERENTE']}>
+                      <GestionFlota />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Contratos Corporativos: exclusivo Gerente */}
+                <Route
+                  path="contratos"
+                  element={
+                    <ProtectedRoute allowedRoles={['GERENTE']}>
+                      <GestionContratos />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Bitácora & Telemetría: exclusivo Gerente */}
+                <Route
+                  path="bitacora"
+                  element={
+                    <ProtectedRoute allowedRoles={['GERENTE']}>
+                      <Bitacora />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
 
               {/* Fallback */}

@@ -1,10 +1,17 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { ShieldCheck } from 'lucide-react';
 
-export default function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+/**
+ * ProtectedRoute:
+ * - Valida si el usuario está autenticado. Si no, redirige a /dashboard/login.
+ * - Valida allowedRoles (ej. ['GERENTE'], ['TALLER'], o ['GERENTE', 'TALLER']).
+ *   Si el rol del usuario no está permitido:
+ *     - Si el rol es 'TALLER', redirige automáticamente a /dashboard/mantenimiento.
+ *     - Si el rol es 'GERENTE', redirige a /dashboard.
+ */
+export default function ProtectedRoute({ children, allowedRoles }) {
+  const { user, isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -18,7 +25,7 @@ export default function ProtectedRoute({ children }) {
           <div>
             <h3 className="text-sm font-bold text-[#f1f2f6]">Cockpit Gerencial VIP CAR</h3>
             <p className="text-xs text-[#8a92a3] mt-1 font-mono">
-              Verificando credenciales de seguridad...
+              Verificando credenciales de seguridad y rol...
             </p>
           </div>
         </div>
@@ -29,6 +36,17 @@ export default function ProtectedRoute({ children }) {
   if (!isAuthenticated) {
     // Redirige al login de gerencia preservando la ruta previa
     return <Navigate to="/dashboard/login" state={{ from: location }} replace />;
+  }
+
+  // Validación estricta de permisos por roles (RBAC)
+  if (allowedRoles && allowedRoles.length > 0) {
+    const userRole = (user?.role || 'GERENTE').toUpperCase();
+    if (!allowedRoles.includes(userRole)) {
+      if (userRole === 'TALLER') {
+        return <Navigate to="/dashboard/mantenimiento" replace />;
+      }
+      return <Navigate to="/dashboard" replace />;
+    }
   }
 
   return children;
