@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useFleet } from '../../context/FleetContext';
 import { subscribeToVehiculos } from '../../services/firestoreService';
 import { isConfigured } from '../../config/firebase';
@@ -11,15 +11,27 @@ import {
   Wrench,
   Building,
   CheckCircle2,
-  Calendar
+  Calendar,
+  X,
+  Plus
 } from 'lucide-react';
 import SemaforoBadge from '../../components/common/SemaforoBadge';
 
 export default function SemaforoMantenimiento() {
-  const { vehicles: contextVehicles, calcularSemaforo } = useFleet();
+  const { vehicles: contextVehicles, calcularSemaforo, registrarMantenimiento } = useFleet();
   const [vehicles, setVehicles] = useState(contextVehicles);
   const [empresaFiltro, setEmpresaFiltro] = useState('todas');
   const [notif, setNotif] = useState('');
+
+  // Estados para el Modal de Mantenimiento
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [formData, setFormData] = useState({
+    placa: '',
+    tipoMantenimiento: 'Preventivo 5,000 km',
+    kilometraje: '',
+    observaciones: '',
+  });
 
   // Sincronizar con el estado global de la flota
   useEffect(() => {
@@ -44,6 +56,19 @@ export default function SemaforoMantenimiento() {
     return () => unsub();
   }, []);
 
+  // Lista de las 30 unidades oficiales disponibles para el selector del modal
+  const listaUnidades = useMemo(() => {
+    return (vehicles || []).map((v) => ({
+      placa: v?.placa || '',
+      tipo: v?.tipo || 'Unidad 4x4',
+      propietario: v?.propietario || 'VIP CAR',
+      centroCosto: v?.centroCosto || '',
+      odometroActual: v?.odometroActual || 0,
+      marca: v?.marca || 'Toyota',
+      modelo: v?.modelo || '',
+    }));
+  }, [vehicles]);
+
   const safeVehicles = vehicles || [];
   const categorized = safeVehicles.reduce(
     (acc, v) => {
@@ -64,9 +89,63 @@ export default function SemaforoMantenimiento() {
     { rojo: [], amarillo: [], verde: [] }
   );
 
-  const handleProgramarMantenimiento = (veh) => {
-    setNotif(`Orden de taller preventivo generada para [${veh.placa}] en Taller Central Huancayo.`);
-    setTimeout(() => setNotif(''), 3500);
+  // Abrir modal con la unidad preseleccionada y sugerir odómetro actual
+  const handleAbrirModal = (veh = null, defaultTipo = null) => {
+    const targetPlaca = veh?.placa || listaUnidades[0]?.placa || 'BHF-821';
+    const targetVeh = (vehicles || []).find((v) => v?.placa === targetPlaca) || veh;
+    const currentOdo = targetVeh?.odometroActual != null ? String(targetVeh.odometroActual) : '';
+
+    let tipoSugerido = defaultTipo;
+    if (!tipoSugerido) {
+      const s = targetVeh?.semaforo?.estado || (typeof calcularSemaforo === 'function' ? calcularSemaforo(targetVeh?.odometroActual || 0)?.estado : null);
+      tipoSugerido = s === 'Rojo' ? 'Correctivo Frenos' : 'Preventivo 5,000 km';
+    }
+
+    setFormData({
+      placa: targetPlaca,
+      tipoMantenimiento: tipoSugerido || 'Preventivo 5,000 km',
+      kilometraje: currentOdo,
+      observaciones: '',
+    });
+    setModalAbierto(true);
+  };
+
+  // Al cambiar la placa en el select del modal, actualizar odómetro sugerido
+  const handlePlacaChange = (nuevaPlaca) => {
+    const veh = (vehicles || []).find((v) => v?.placa === nuevaPlaca);
+    setFormData((prev) => ({
+      ...prev,
+      placa: nuevaPlaca,
+      kilometraje: veh?.odometroActual != null ? String(veh.odometroActual) : prev.kilometraje,
+    }));
+  };
+
+  // Guardar en Firestore y cerrar modal
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.placa) return;
+
+    setGuardando(true);
+    try {
+      if (typeof registrarMantenimiento === 'function') {
+        await registrarMantenimiento({
+          placa: formData.placa,
+          tipoMantenimiento: formData.tipoMantenimiento,
+          kilometraje: Number(formData.kilometraje) || 0,
+          observaciones: formData.observaciones.trim() || 'Mantenimiento programado desde Semáforo Preventivo.',
+        });
+      }
+
+      setNotif(`¡Mantenimiento para la unidad [${formData.placa}] guardado exitosamente en Firestore!`);
+      setModalAbierto(false);
+      setTimeout(() => setNotif(''), 4500);
+    } catch (err) {
+      console.error('Error al guardar mantenimiento en Firestore:', err);
+      setNotif(`Error al guardar mantenimiento para [${formData.placa}].`);
+      setTimeout(() => setNotif(''), 4500);
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -117,6 +196,16 @@ export default function SemaforoMantenimiento() {
               <option value="Nexa" className="bg-[#07080a]">Nexa Resources</option>
             </select>
           </div>
+
+          {/* Botón Acción Rápida Header */}
+          <button
+            type="button"
+            onClick={() => handleAbrirModal(null, 'Preventivo 5,000 km')}
+            className="btn-cockpit-action py-2 px-4 rounded-full flex items-center justify-center gap-1.5 text-xs font-mono font-bold cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>+ PROGRAMAR MANTENIMIENTO</span>
+          </button>
         </div>
       </div>
 
@@ -234,7 +323,7 @@ export default function SemaforoMantenimiento() {
                   </div>
 
                   <button
-                    onClick={() => handleProgramarMantenimiento(veh)}
+                    onClick={() => handleAbrirModal(veh, 'Correctivo Frenos')}
                     className="w-full py-2.5 px-4 rounded-full bg-[#ff6363] hover:bg-[#ff4d4d] text-black font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs active:scale-98 font-mono cursor-pointer"
                   >
                     <Wrench className="w-3.5 h-3.5" />
@@ -300,7 +389,7 @@ export default function SemaforoMantenimiento() {
                   </div>
 
                   <button
-                    onClick={() => handleProgramarMantenimiento(veh)}
+                    onClick={() => handleAbrirModal(veh, 'Preventivo 5,000 km')}
                     className="btn-cockpit-secondary w-full py-2.5 px-4 rounded-full text-xs flex items-center justify-center gap-1.5 text-[#f59e0b] hover:text-white border-[#f59e0b]/40 active:scale-98 font-mono cursor-pointer"
                   >
                     <Calendar className="w-3.5 h-3.5" />
@@ -375,6 +464,140 @@ export default function SemaforoMantenimiento() {
           </div>
         </div>
       </div>
+
+      {/* Modal Obligatorio: Programar Taller / Registrar Mantenimiento */}
+      {modalAbierto && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className="cockpit-panel rounded-3xl max-w-xl w-full p-6 space-y-4 max-h-[92vh] overflow-y-auto border border-white/[0.1] shadow-2xl">
+            {/* Cabecera del Modal */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/30">
+                  <Wrench className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white uppercase font-mono tracking-wider">
+                    Programar Taller Preventivo / Correctivo
+                  </h3>
+                  <p className="text-[11px] text-[#6a6b6c] font-mono mt-0.5">
+                    Sincronización en tiempo real con Firestore y actualización de odómetro
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalAbierto(false)}
+                className="p-1.5 rounded-full hover:bg-white/[0.08] text-[#9c9c9d] hover:text-white cursor-pointer transition-colors"
+                title="Cerrar modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Formulario estrictamente con los 4 campos solicitados */}
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs font-mono">
+              {/* CAMPO 1: Placa (Menú desplegable con las 30 unidades oficiales, preseleccionada) */}
+              <div>
+                <label className="block text-[11px] font-bold text-white mb-1.5 uppercase tracking-wider">
+                  01 // Placa de la Unidad (30 Unidades Oficiales) *
+                </label>
+                <select
+                  required
+                  value={formData.placa}
+                  onChange={(e) => handlePlacaChange(e.target.value)}
+                  className="w-full telemetry-well border border-white/[0.1] rounded-2xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-[#ff6363] cursor-pointer"
+                >
+                  {(listaUnidades || []).map((u, i) => (
+                    <option key={u.placa} value={u.placa} className="bg-[#0c0e12] text-white">
+                      {i + 1}. {u.placa} | {u.tipo} | {u.propietario} | {u.centroCosto} ({u.odometroActual.toLocaleString()} km)
+                    </option>
+                  ))}
+                </select>
+                <span className="text-[10px] text-[#6a6b6c] mt-1 block">
+                  Placa preseleccionada de la tarjeta donde se hizo clic. Cambiarla actualiza el odómetro sugerido.
+                </span>
+              </div>
+
+              {/* CAMPO 2: Tipo de Mantenimiento (Menú desplegable) */}
+              <div>
+                <label className="block text-[11px] font-bold text-white mb-1.5 uppercase tracking-wider">
+                  02 // Tipo de Mantenimiento *
+                </label>
+                <select
+                  required
+                  value={formData.tipoMantenimiento}
+                  onChange={(e) => setFormData({ ...formData, tipoMantenimiento: e.target.value })}
+                  className="w-full telemetry-well border border-white/[0.1] rounded-2xl px-4 py-2.5 text-xs text-white font-mono focus:outline-none focus:border-[#ff6363] cursor-pointer"
+                >
+                  <option value="Preventivo 5,000 km" className="bg-[#0c0e12]">Preventivo 5,000 km (Servicio Menor)</option>
+                  <option value="Preventivo 10,000 km" className="bg-[#0c0e12]">Preventivo 10,000 km (Aceite, Filtros y Neumáticos)</option>
+                  <option value="Preventivo 15,000 km" className="bg-[#0c0e12]">Preventivo 15,000 km</option>
+                  <option value="Preventivo 20,000 km" className="bg-[#0c0e12]">Preventivo 20,000 km (Servicio Mayor de Altura)</option>
+                  <option value="Correctivo Frenos" className="bg-[#0c0e12]">Correctivo Frenos (Pastillas / Discos / Líquido)</option>
+                  <option value="Cambio de Aceite y Filtros" className="bg-[#0c0e12]">Cambio de Aceite y Filtros</option>
+                  <option value="Alineamiento y Balanceo" className="bg-[#0c0e12]">Alineamiento y Balanceo Computarizado</option>
+                  <option value="Suspensión y Dirección" className="bg-[#0c0e12]">Suspensión, Amortiguadores y Dirección</option>
+                  <option value="Sistema Eléctrico / Luces Socavón" className="bg-[#0c0e12]">Sistema Eléctrico / Luces Socavón / Pértiga LED</option>
+                  <option value="Revisión General Socavón" className="bg-[#0c0e12]">Revisión Técnica Integral para Garita Socavón</option>
+                </select>
+              </div>
+
+              {/* CAMPO 3: Kilometraje actual (Campo numérico prellenado) */}
+              <div>
+                <label className="block text-[11px] font-bold text-white mb-1.5 uppercase tracking-wider">
+                  03 // Kilometraje Actual (km) *
+                </label>
+                <input
+                  type="number"
+                  required
+                  min="0"
+                  max="500000"
+                  value={formData.kilometraje}
+                  onChange={(e) => setFormData({ ...formData, kilometraje: e.target.value })}
+                  placeholder="Ej. 15000"
+                  className="w-full telemetry-well border border-white/[0.1] rounded-2xl px-4 py-2.5 text-xs text-white font-mono font-bold focus:outline-none focus:border-[#ff6363]"
+                />
+                <span className="text-[10px] text-[#6a6b6c] mt-1 block">
+                  Prellenado con el odómetro actual reportado por telemetría.
+                </span>
+              </div>
+
+              {/* CAMPO 4: Observaciones (Área de texto detallada) */}
+              <div>
+                <label className="block text-[11px] font-bold text-white mb-1.5 uppercase tracking-wider">
+                  04 // Observaciones Detalladas *
+                </label>
+                <textarea
+                  required
+                  rows={3}
+                  value={formData.observaciones}
+                  onChange={(e) => setFormData({ ...formData, observaciones: e.target.value })}
+                  placeholder="Detalle técnico de trabajos requeridos en taller, motivo del ingreso, repuestos o especificaciones de garita..."
+                  className="w-full telemetry-well border border-white/[0.1] rounded-2xl p-3 text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] font-sans"
+                />
+              </div>
+
+              {/* Botones de Cancelar y Guardar Mantenimiento */}
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-white/[0.08]">
+                <button
+                  type="button"
+                  onClick={() => setModalAbierto(false)}
+                  className="px-4 py-2 rounded-full telemetry-well text-xs font-mono text-[#9c9c9d] hover:text-white cursor-pointer transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={guardando}
+                  className="btn-cockpit-action px-6 py-2.5 rounded-full text-xs font-mono font-bold text-black cursor-pointer shadow-lg disabled:opacity-50 transition-transform active:scale-98"
+                >
+                  {guardando ? 'Guardando en Firestore...' : 'Guardar Mantenimiento'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
