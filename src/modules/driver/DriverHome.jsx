@@ -16,7 +16,8 @@ import {
   CloudUpload,
   WifiOff,
   Radio,
-  Zap
+  Zap,
+  Phone
 } from 'lucide-react';
 import SemaforoBadge from '../../components/common/SemaforoBadge';
 
@@ -185,26 +186,43 @@ export default function DriverHome() {
           </Link>
         </div>
 
-        {/* Botón SOS Cápsula Prominente */}
-        <Link
-          to="/conductor/averia"
-          className="w-full flex items-center justify-between p-4 px-6 rounded-full bg-gradient-to-r from-[#e11d48] to-[#be123c] hover:from-[#ff6363] hover:to-[#e11d48] text-white shadow-xl transition-all min-h-[60px] active:scale-98 border border-white/20 cursor-pointer"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-full bg-black/30">
-              <AlertOctagon className="w-5 h-5 text-white animate-pulse" />
-            </div>
-            <div className="text-left font-mono">
-              <div className="text-xs font-black uppercase tracking-wider">
-                Reportar Avería o Choque (SOS)
+        {/* Botón SOS Cápsula Prominente con Enlace Telefónico */}
+        <div className="space-y-2.5">
+          <Link
+            to="/conductor/averia"
+            className="w-full flex items-center justify-between p-4 px-6 rounded-full bg-gradient-to-r from-[#e11d48] to-[#be123c] hover:from-[#ff6363] hover:to-[#e11d48] text-white shadow-xl transition-all min-h-[60px] active:scale-98 border border-white/20 cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-black/30">
+                <AlertOctagon className="w-5 h-5 text-white animate-pulse" />
               </div>
-              <div className="text-[10px] text-white/80">
-                Alerta inmediata con foto y telemetría a Base Huancayo
+              <div className="text-left font-mono">
+                <div className="text-xs font-black uppercase tracking-wider">
+                  REPORTAR AVERÍA O CHOQUE (SOS)
+                </div>
+                <div className="text-[10px] text-white/80">
+                  Alerta inmediata con foto y telemetría a Base Huancayo
+                </div>
               </div>
             </div>
+            <ArrowRight className="w-5 h-5 text-white" />
+          </Link>
+
+          {/* Enlace directo para llamada de emergencia telefónica */}
+          <div className="p-3 telemetry-well border border-white/[0.08] rounded-full flex items-center justify-between text-xs font-mono">
+            <div className="flex items-center gap-2 text-[#9c9c9d]">
+              <Phone className="w-3.5 h-3.5 text-[#ff6363]" />
+              <span className="text-[11px]">Central de Emergencia 24/7:</span>
+            </div>
+            <a
+              href="tel:983592452"
+              className="text-xs font-bold text-[#ff6363] hover:text-[#ff8080] hover:underline transition-colors"
+              title="Llamar al 983592452"
+            >
+              983592452
+            </a>
           </div>
-          <ArrowRight className="w-5 h-5 text-white" />
-        </Link>
+        </div>
       </div>
 
       {/* Historial Reciente */}

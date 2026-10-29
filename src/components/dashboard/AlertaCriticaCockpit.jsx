@@ -635,7 +635,7 @@ export default function AlertaCriticaCockpit() {
                   </a>
 
                   <a
-                    href="tel:954123456"
+                    href="tel:983592452"
                     className="px-3.5 py-2 rounded-2xl bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 border border-white/10 font-mono text-xs font-bold flex items-center gap-1.5 transition-colors"
                   >
                     <Wrench className="w-3.5 h-3.5 text-amber-400" />
