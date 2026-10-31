@@ -24,6 +24,7 @@ import {
   firestoreSyncAddVehiculo,
   firestoreSyncDeleteVehiculo,
   firestoreClearBitacora,
+  firestoreUpdateMantenimiento,
 } from '../services/firestoreService';
 import {
   enqueueOfflineAction,
@@ -683,6 +684,36 @@ export function FleetProvider({ children }) {
     }
   };
 
+  /**
+   * Actualiza el estado y observaciones de un mantenimiento existente
+   */
+  const actualizarMantenimiento = async (id, { estado, observaciones }) => {
+    setMantenimientos((prev) =>
+      (prev || []).map((m) => {
+        if (m.id === id) {
+          return {
+            ...m,
+            estado: estado || m.estado || 'Completado',
+            observaciones: observaciones !== undefined ? observaciones : m.observaciones,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return m;
+      })
+    );
+
+    if (isConfigured) {
+      try {
+        await firestoreUpdateMantenimiento(id, {
+          estado,
+          observaciones,
+        });
+      } catch (err) {
+        console.warn('Error al actualizar mantenimiento en Firestore:', err);
+      }
+    }
+  };
+
   return (
     <FleetContext.Provider
       value={{
@@ -703,6 +734,7 @@ export function FleetProvider({ children }) {
         agregarVehiculo,
         eliminarVehiculo,
         registrarMantenimiento,
+        actualizarMantenimiento,
         limpiarBitacora,
         calcularSemaforo,
         pendingSyncCount,

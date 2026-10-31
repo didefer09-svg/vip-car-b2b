@@ -175,10 +175,10 @@ export default function ReportarAveria() {
           <span className="text-[11px] font-mono">Auxilio Mecánico Junín 24/7:</span>
         </div>
         <a
-          href="tel:983592452"
+          href="tel:920738888"
           className="text-xs font-bold text-[#ff6363] hover:underline font-mono"
         >
-          983592452
+          920738888
         </a>
       </div>
 

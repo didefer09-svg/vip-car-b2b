@@ -13,13 +13,22 @@ import {
   ShieldCheck,
   AlertTriangle,
   FileText,
-  Activity
+  Activity,
+  Edit2
 } from 'lucide-react';
 
 export default function GestionMantenimiento() {
-  const { vehicles, mantenimientos, registrarMantenimiento } = useFleet();
+  const { vehicles, mantenimientos, registrarMantenimiento, actualizarMantenimiento } = useFleet();
 
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalEditarAbierto, setModalEditarAbierto] = useState(false);
+  const [mantenimientoAEditar, setMantenimientoAEditar] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    estado: 'Completado',
+    observaciones: '',
+  });
+  const [actualizando, setActualizando] = useState(false);
+
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [filtroPropietario, setFiltroPropietario] = useState('todos');
@@ -51,7 +60,7 @@ export default function GestionMantenimiento() {
     }));
   }, [vehicles]);
 
-  // Al abrir el modal, inicializar placa por defecto si está vacía
+  // Al abrir el modal de nuevo registro, inicializar placa por defecto si está vacía
   const handleAbrirModal = () => {
     const primeraPlaca = listaUnidades[0]?.placa || 'BHF-821';
     const veh = listaUnidades.find((v) => v.placa === primeraPlaca);
@@ -62,6 +71,38 @@ export default function GestionMantenimiento() {
       observaciones: '',
     });
     setModalAbierto(true);
+  };
+
+  // Abrir modal de edición con los datos actuales de la fila
+  const handleAbrirActualizar = (item) => {
+    setMantenimientoAEditar(item);
+    setEditFormData({
+      estado: item?.estado || 'Completado',
+      observaciones: item?.observaciones || '',
+    });
+    setModalEditarAbierto(true);
+  };
+
+  // Guardar cambios de actualización de la fila
+  const handleGuardarActualizacion = async (e) => {
+    e.preventDefault();
+    if (!mantenimientoAEditar?.id) return;
+
+    setActualizando(true);
+    try {
+      await actualizarMantenimiento(mantenimientoAEditar.id, {
+        estado: editFormData.estado,
+        observaciones: editFormData.observaciones.trim(),
+      });
+      setNotif(`¡Mantenimiento de la unidad [${mantenimientoAEditar.placa}] actualizado con éxito!`);
+      setModalEditarAbierto(false);
+      setMantenimientoAEditar(null);
+      setTimeout(() => setNotif(''), 4000);
+    } catch (err) {
+      console.error('Error al actualizar mantenimiento:', err);
+    } finally {
+      setActualizando(false);
+    }
   };
 
   // Cuando cambia la placa en el selector, sugerir odómetro actual del vehículo
@@ -99,40 +140,41 @@ export default function GestionMantenimiento() {
 
   // Filtrado de la tabla de historial
   const historialFiltrado = useMemo(() => {
-    const term = (busqueda || '').toLowerCase().trim();
-
-    return (mantenimientos || []).filter((mnt) => {
+    return (mantenimientos || []).filter((item) => {
+      const term = (busqueda || '').toLowerCase().trim();
       const matchBusqueda =
         !term ||
-        (mnt?.placa || '').toLowerCase().includes(term) ||
-        (mnt?.tipoMantenimiento || '').toLowerCase().includes(term) ||
-        (mnt?.observaciones || '').toLowerCase().includes(term) ||
-        (mnt?.registradoPor || '').toLowerCase().includes(term);
+        (item?.placa || '').toLowerCase().includes(term) ||
+        (item?.tipoMantenimiento || '').toLowerCase().includes(term) ||
+        (item?.observaciones || '').toLowerCase().includes(term) ||
+        (item?.registradoPor || '').toLowerCase().includes(term);
 
-      const tipo = (mnt?.tipoMantenimiento || '').toLowerCase();
+      const tipo = (item?.tipoMantenimiento || '').toLowerCase();
       const matchTipo =
         filtroTipo === 'todos' ||
         (filtroTipo === 'preventivo' && tipo.includes('preventivo')) ||
-        (filtroTipo === 'correctivo' && (tipo.includes('correctivo') || tipo.includes('frenos') || tipo.includes('eléctrico') || tipo.includes('reparación'))) ||
+        (filtroTipo === 'correctivo' && (tipo.includes('correctivo') || tipo.includes('frenos') || tipo.includes('eléctrico'))) ||
         (filtroTipo === 'aceite' && (tipo.includes('aceite') || tipo.includes('filtros')));
 
-      const matchProp =
+      const prop = (item?.propietario || 'VIP CAR').toUpperCase();
+      const matchPropietario =
         filtroPropietario === 'todos' ||
-        (mnt?.propietario || '').toLowerCase() === filtroPropietario.toLowerCase();
+        (filtroPropietario === 'VIP CAR' && prop.includes('VIP CAR')) ||
+        (filtroPropietario === 'PROVEEDOR' && prop.includes('PROVEEDOR'));
 
-      return matchBusqueda && matchTipo && matchProp;
+      return matchBusqueda && matchTipo && matchPropietario;
     });
   }, [mantenimientos, busqueda, filtroTipo, filtroPropietario]);
 
-  // KPIs
+  // Contadores y KPIs de Mantenimiento
   const totalMantenimientos = (mantenimientos || []).length;
   const preventivosCount = (mantenimientos || []).filter((m) =>
     (m?.tipoMantenimiento || '').toLowerCase().includes('preventivo')
   ).length;
-  const correctivosCount = (mantenimientos || []).filter((m) => {
-    const t = (m?.tipoMantenimiento || '').toLowerCase();
-    return t.includes('correctivo') || t.includes('frenos') || t.includes('eléctrico');
-  }).length;
+  const correctivosCount = (mantenimientos || []).filter((m) =>
+    (m?.tipoMantenimiento || '').toLowerCase().includes('correctivo') ||
+    (m?.tipoMantenimiento || '').toLowerCase().includes('frenos')
+  ).length;
   const unidadesAtendidas = new Set((mantenimientos || []).map((m) => m?.placa)).size;
 
   return (
@@ -141,11 +183,11 @@ export default function GestionMantenimiento() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d0e14] text-[#ff6363] text-[10px] font-mono font-medium mb-1 border border-[#ff6363]/40">
-            [SUPERVISIÓN TÉCNICA // TALLER CENTRAL HUANCAYO]
+            SUPERVISIÓN MECÁNICA & MANTENIMIENTO OFICIAL
           </div>
           <h1 className="text-2xl sm:text-3xl font-medium text-white tracking-tight font-sans flex items-center gap-2.5">
             <Wrench className="w-7 h-7 text-[#ff6363]" />
-            Gestión de Mantenimiento de Flota
+            Mantenimiento de Flota
           </h1>
           <p className="text-xs text-[#6a6b6c] mt-0.5 font-mono">
             Control gerencial de servicios preventivos, correctivos y trazabilidad de kilometrajes en 30 unidades.
@@ -271,12 +313,13 @@ export default function GestionMantenimiento() {
                 <th className="py-3.5 px-4">Fecha / Hora</th>
                 <th className="py-3.5 px-4">Observaciones Detalladas</th>
                 <th className="py-3.5 px-4 text-center">Estado</th>
+                <th className="py-3.5 px-4 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.06]">
               {historialFiltrado.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="py-8 text-center text-xs text-[#6a6b6c] font-mono">
+                  <td colSpan="7" className="py-8 text-center text-xs text-[#6a6b6c] font-mono">
                     No se encontraron registros de mantenimiento con los filtros seleccionados.
                   </td>
                 </tr>
@@ -284,6 +327,7 @@ export default function GestionMantenimiento() {
                 historialFiltrado.map((item, idx) => {
                   const isPreventivo = (item?.tipoMantenimiento || '').toLowerCase().includes('preventivo');
                   const isCorrectivo = (item?.tipoMantenimiento || '').toLowerCase().includes('correctivo') || (item?.tipoMantenimiento || '').toLowerCase().includes('frenos');
+                  const estadoStr = item?.estado || 'Completado';
 
                   return (
                     <tr key={item.id || idx} className="hover:bg-white/[0.02] transition-colors">
@@ -335,11 +379,32 @@ export default function GestionMantenimiento() {
                         </p>
                       </td>
 
-                      {/* Estado */}
+                      {/* Estado con Badge dinámico */}
                       <td className="py-3.5 px-4 text-center">
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#59d499]/15 text-[#59d499] border border-[#59d499]/30">
-                          {item?.estado || 'Completado'}
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border inline-block ${
+                            estadoStr === 'En progreso'
+                              ? 'bg-[#f59e0b]/15 text-[#f59e0b] border-[#f59e0b]/35'
+                              : estadoStr === 'Programado' || estadoStr === 'Pendiente'
+                              ? 'bg-cyan-500/15 text-cyan-400 border-cyan-500/35'
+                              : 'bg-[#59d499]/15 text-[#59d499] border-[#59d499]/30'
+                          }`}
+                        >
+                          {estadoStr}
                         </span>
+                      </td>
+
+                      {/* Columna Acciones con botón 'Actualizar' */}
+                      <td className="py-3.5 px-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleAbrirActualizar(item)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold text-white bg-white/[0.06] hover:bg-white/[0.15] border border-white/[0.12] hover:border-white/[0.3] transition-all cursor-pointer shadow-xs active:scale-95"
+                          title="Actualizar estado y observaciones de este mantenimiento"
+                        >
+                          <Edit2 className="w-3.5 h-3.5 text-[#ff6363]" />
+                          <span>Actualizar</span>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -351,7 +416,128 @@ export default function GestionMantenimiento() {
       </div>
 
       {/* ========================================================================= */}
-      {/* MODAL "+ REGISTRAR MANTENIMIENTO" (ESTRICTAMENTE LOS 4 CAMPOS SOLICITADOS) */}
+      {/* MODAL 1: "ACTUALIZAR MANTENIMIENTO" (INTERACTIVIDAD DE TABLA SOLICITADA) */}
+      {/* ========================================================================= */}
+      {modalEditarAbierto && mantenimientoAEditar && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+          <div className="cockpit-panel w-full max-w-lg rounded-3xl border border-white/[0.15] shadow-2xl overflow-hidden bg-[#0a0d14]">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-[#ff6363]/15 border border-[#ff6363]/30 flex items-center justify-center text-[#ff6363]">
+                  <Wrench className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white font-sans flex items-center gap-2">
+                    <span>Actualizar Mantenimiento</span>
+                    <span className="px-2 py-0.5 rounded-full telemetry-well border border-[#ff6363]/40 text-[#ff6363] text-xs font-mono">
+                      {mantenimientoAEditar.placa}
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-[#6a6b6c] font-mono">
+                    Modifica el estado del servicio y registra las observaciones técnicas
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setModalEditarAbierto(false)}
+                className="p-1.5 rounded-full text-[#6a6b6c] hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleGuardarActualizacion} className="p-6 space-y-4">
+              {/* Resumen no editable de la fila */}
+              <div className="p-3.5 rounded-2xl bg-[#111317] border border-white/[0.06] grid grid-cols-2 gap-3 text-xs font-mono">
+                <div>
+                  <span className="text-[10px] text-[#6a6b6c] uppercase block font-bold">Tipo de Servicio</span>
+                  <span className="text-white font-medium">{mantenimientoAEditar.tipoMantenimiento || 'General'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#6a6b6c] uppercase block font-bold">Kilometraje</span>
+                  <span className="text-white font-medium">{mantenimientoAEditar.kilometraje?.toLocaleString() || '-'} km</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#6a6b6c] uppercase block font-bold">Fecha / Registro</span>
+                  <span className="text-[#9c9c9d]">{mantenimientoAEditar.fechaHora || 'Reciente'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#6a6b6c] uppercase block font-bold">Propietario / Centro</span>
+                  <span className="text-[#9c9c9d]">{mantenimientoAEditar.propietario || 'VIP CAR'} ({mantenimientoAEditar.centroCosto || 'UM'})</span>
+                </div>
+              </div>
+
+              {/* Campo Editable: Estado */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#6a6b6c]">
+                  Estado del Mantenimiento *
+                </label>
+                <select
+                  value={editFormData.estado}
+                  onChange={(e) => setEditFormData({ ...editFormData, estado: e.target.value })}
+                  className="w-full telemetry-well border border-white/[0.1] rounded-2xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#ff6363] font-mono cursor-pointer"
+                >
+                  <option value="En progreso" className="bg-[#0c0e12]">En progreso (En taller)</option>
+                  <option value="Completado" className="bg-[#0c0e12]">Completado (Liberado para operación)</option>
+                  <option value="Programado" className="bg-[#0c0e12]">Programado (Cita pendiente)</option>
+                  <option value="Pendiente repuestos" className="bg-[#0c0e12]">Pendiente repuestos</option>
+                </select>
+              </div>
+
+              {/* Campo Editable: Observaciones */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-mono font-bold uppercase tracking-wider text-[#6a6b6c]">
+                  Observaciones Detalladas *
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={editFormData.observaciones}
+                  onChange={(e) => setEditFormData({ ...editFormData, observaciones: e.target.value })}
+                  placeholder="Detalla los trabajos realizados, repuestos cambiados, estado de frenos, etc."
+                  className="w-full telemetry-well border border-white/[0.1] rounded-2xl p-3 text-xs text-white placeholder-[#6a6b6c] focus:outline-none focus:border-[#ff6363] font-mono leading-relaxed"
+                />
+              </div>
+
+              {/* Modal Footer */}
+              <div className="pt-3 border-t border-white/[0.08] flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setModalEditarAbierto(false)}
+                  className="px-4 py-2 rounded-full text-xs font-mono text-[#9c9c9d] hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={actualizando}
+                  className="btn-cockpit-action px-5 py-2.5 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-lg active:scale-98"
+                >
+                  {actualizando ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      <span>Guardando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Guardar Cambios</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 2: "+ REGISTRAR MANTENIMIENTO" (ESTRICTAMENTE LOS 4 CAMPOS SOLICITADOS) */}
       {/* ========================================================================= */}
       {modalAbierto && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">

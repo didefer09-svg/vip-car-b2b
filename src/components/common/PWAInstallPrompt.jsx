@@ -26,10 +26,14 @@ export default function PWAInstallPrompt() {
     <>
       {/* 1. Indicador de Conectividad Offline (Operaciones Mineras sin señal 4G) */}
       {isOffline && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-[#231908] border-b border-[#f59e0b]/40 px-4 py-1.5 text-center text-xs font-mono text-[#f59e0b] flex items-center justify-center gap-2 shadow-lg backdrop-blur-md">
-          <WifiOff className="w-3.5 h-3.5 animate-pulse" />
-          <span>
-            <strong>Modo Sin Conexión Activo:</strong> Operando con caché local y telemetría offline de campo.
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[#14161a]/95 border-b border-amber-500/40 px-4 py-2 text-center text-xs font-mono text-amber-400 flex items-center justify-center gap-2.5 shadow-xl backdrop-blur-md animate-in slide-in-from-top-1">
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <WifiOff className="w-3.5 h-3.5 text-amber-400" />
+          <span className="font-semibold tracking-wide">
+            Modo sin conexión activa
+          </span>
+          <span className="hidden sm:inline text-[11px] text-[#9c9c9d] border-l border-white/10 pl-2">
+            Interfaz cargada desde caché local
           </span>
         </div>
       )}

@@ -471,6 +471,23 @@ export async function firestoreSyncMantenimiento({ mantenimiento, vehicleId, veh
 }
 
 /**
+ * Actualiza el estado y observaciones de un mantenimiento en Firestore
+ */
+export async function firestoreUpdateMantenimiento(id, updates) {
+  if (!isConfigured || !db || !id) return;
+
+  try {
+    const docRef = doc(db, COLLECTIONS.MANTENIMIENTOS, id);
+    await updateDoc(docRef, {
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.warn('Error al actualizar mantenimiento en Firestore:', error);
+  }
+}
+
+/**
  * Elimina todos los registros de la colección 'bitacora' en Firestore
  */
 export async function firestoreClearBitacora() {

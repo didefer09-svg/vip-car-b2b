@@ -215,11 +215,11 @@ export default function DriverHome() {
               <span className="text-[11px]">Central de Emergencia 24/7:</span>
             </div>
             <a
-              href="tel:983592452"
+              href="tel:920738888"
               className="text-xs font-bold text-[#ff6363] hover:text-[#ff8080] hover:underline transition-colors"
-              title="Llamar al 983592452"
+              title="Llamar al 920738888"
             >
-              983592452
+              920738888
             </a>
           </div>
         </div>
