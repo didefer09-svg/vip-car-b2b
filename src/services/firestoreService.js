@@ -10,7 +10,7 @@ import {
   limit,
 } from 'firebase/firestore';
 import { db, isConfigured } from '../config/firebase';
-import { INITIAL_VEHICLES, INITIAL_CONTRATOS, INITIAL_BITACORA, INITIAL_MANTENIMIENTOS } from '../data/mockData';
+import { INITIAL_VEHICLES, INITIAL_CONTRATOS, INITIAL_BITACORA, INITIAL_MANTENIMIENTOS, OFICIAL_SERVICIOS } from '../data/mockData';
 import { obtenerIdentificadorB2B } from '../utils/plateMasker';
 
 export const COLLECTIONS = {
@@ -21,6 +21,7 @@ export const COLLECTIONS = {
   COTIZACIONES: 'cotizaciones',
   AVERIAS: 'averias',
   MANTENIMIENTOS: 'mantenimientos',
+  SERVICIOS: 'servicios',
 };
 
 /**
@@ -80,6 +81,17 @@ export async function seedVehiculosIfEmpty() {
         await setDoc(doc(db, COLLECTIONS.MANTENIMIENTOS, mnt.id), {
           ...mnt,
           timestamp: mnt.timestamp || new Date().toISOString(),
+        });
+      }
+    }
+
+    // Sembrado de servicios / proyectos oficiales
+    const srvSnapshot = await getDocs(query(collection(db, COLLECTIONS.SERVICIOS), limit(1)));
+    if (srvSnapshot.empty) {
+      for (const srv of OFICIAL_SERVICIOS) {
+        await setDoc(doc(db, COLLECTIONS.SERVICIOS, srv.id), {
+          ...srv,
+          updatedAt: new Date().toISOString(),
         });
       }
     }
@@ -502,5 +514,61 @@ export async function firestoreClearBitacora() {
   } catch (error) {
     console.warn('Error al vaciar colección bitácora en Firestore:', error);
     throw error;
+  }
+}
+
+/**
+ * Suscripción en tiempo real a la colección 'servicios'
+ */
+export function subscribeToServicios(onSuccess, onError) {
+  if (!isConfigured || !db) return () => {};
+
+  return onSnapshot(
+    collection(db, COLLECTIONS.SERVICIOS),
+    (snapshot) => {
+      if (!snapshot.empty) {
+        const serviciosList = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data(),
+        }));
+        onSuccess(serviciosList);
+      }
+    },
+    (error) => {
+      console.warn('Error en listener onSnapshot de servicios:', error);
+      if (onError) onError(error);
+    }
+  );
+}
+
+/**
+ * Agrega o sincroniza un nuevo servicio/proyecto en Firestore
+ */
+export async function firestoreSyncAddServicio(servicio) {
+  if (!isConfigured || !db || !servicio) return;
+
+  try {
+    const srvId = servicio.id || `srv-${Date.now()}`;
+    await setDoc(doc(db, COLLECTIONS.SERVICIOS, srvId), {
+      ...servicio,
+      id: srvId,
+      updatedAt: new Date().toISOString(),
+    });
+    console.log(`✅ Servicio/Proyecto [${servicio.cliente || servicio.nombre || srvId}] guardado en Firestore.`);
+  } catch (error) {
+    console.warn('Error al registrar servicio en Firestore:', error);
+  }
+}
+
+/**
+ * Elimina un servicio/proyecto de Firestore
+ */
+export async function firestoreSyncDeleteServicio(servicioId) {
+  if (!isConfigured || !db || !servicioId) return;
+
+  try {
+    await deleteDoc(doc(db, COLLECTIONS.SERVICIOS, servicioId));
+  } catch (error) {
+    console.warn('Error al eliminar servicio en Firestore:', error);
   }
 }

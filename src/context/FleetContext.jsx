@@ -16,6 +16,7 @@ import {
   subscribeToCotizaciones,
   subscribeToAverias,
   subscribeToMantenimientos,
+  subscribeToServicios,
   firestoreSyncMantenimiento,
   registrarOdometroFirestore,
   firestoreSyncCheckOut,
@@ -23,6 +24,8 @@ import {
   firestoreSyncCotizacion,
   firestoreSyncAddVehiculo,
   firestoreSyncDeleteVehiculo,
+  firestoreSyncAddServicio,
+  firestoreSyncDeleteServicio,
   firestoreClearBitacora,
   firestoreUpdateMantenimiento,
 } from '../services/firestoreService';
@@ -108,6 +111,20 @@ export function FleetProvider({ children }) {
     }
   });
 
+  const [servicios, setServicios] = useState(() => {
+    try {
+      const ver = localStorage.getItem('vipcar_fleet_version');
+      if (ver !== FLEET_STORAGE_VERSION) {
+        localStorage.setItem('vipcar_servicios', JSON.stringify(OFICIAL_SERVICIOS));
+        return OFICIAL_SERVICIOS;
+      }
+      const saved = localStorage.getItem('vipcar_servicios');
+      return saved ? JSON.parse(saved) : OFICIAL_SERVICIOS;
+    } catch {
+      return OFICIAL_SERVICIOS;
+    }
+  });
+
   // Estado de sincronización Cloud Firestore
   const [cloudStatus, setCloudStatus] = useState(() => (isConfigured ? 'syncing' : 'offline'));
 
@@ -165,6 +182,7 @@ export function FleetProvider({ children }) {
     let unsubCotizaciones = () => {};
     let unsubAverias = () => {};
     let unsubMantenimientos = () => {};
+    let unsubServicios = () => {};
 
     const initCloud = async () => {
       try {
@@ -216,6 +234,12 @@ export function FleetProvider({ children }) {
             setMantenimientos(cloudMantenimientos);
           }
         });
+
+        unsubServicios = subscribeToServicios((cloudServicios) => {
+          if (cloudServicios && cloudServicios.length > 0) {
+            setServicios(cloudServicios);
+          }
+        });
       } catch (error) {
         console.warn('Error inicializando listeners de Firestore:', error);
         setCloudStatus('offline');
@@ -231,6 +255,7 @@ export function FleetProvider({ children }) {
       unsubCotizaciones();
       unsubAverias();
       unsubMantenimientos();
+      unsubServicios();
     };
   }, []);
 
@@ -274,6 +299,14 @@ export function FleetProvider({ children }) {
       console.warn('Error saving averias to localStorage', e);
     }
   }, [averias]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('vipcar_servicios', JSON.stringify(servicios));
+    } catch (e) {
+      console.warn('Error saving servicios to localStorage', e);
+    }
+  }, [servicios]);
 
   /**
    * 3. Conecta el formulario del conductor (CheckIn.jsx) para que al guardar el kilometraje
@@ -554,15 +587,45 @@ export function FleetProvider({ children }) {
   };
 
   const agregarVehiculo = async (nuevoVehiculo) => {
+    const tipo = nuevoVehiculo.tipo || 'Camioneta';
+    const marcaDefault = nuevoVehiculo.marca || (tipo === 'Minivan' ? 'Hyundai' : tipo === 'Bus' ? 'Mercedes-Benz' : 'Toyota');
+    const modeloDefault = nuevoVehiculo.modelo || (
+      tipo === 'Combi' ? 'HiAce Minibús' :
+      tipo === 'Minivan' ? 'H-1 Minivan' :
+      tipo === 'Bus' ? 'Sprinter Pasajeros' :
+      tipo === 'Camioneta Cerrada' ? 'Fortuner 4x4' :
+      tipo === 'SUV 4x4' ? 'Fortuner 4x4' :
+      'Hilux 4x4 SRV Minera'
+    );
+
     const veh = {
       id: `veh-${Date.now()}`,
-      ...nuevoVehiculo,
+      placa: nuevoVehiculo.placa ? nuevoVehiculo.placa.toUpperCase() : 'VIP-000',
+      tipo,
+      marca: marcaDefault,
+      modelo: modeloDefault,
+      anio: nuevoVehiculo.anio || 2024,
+      traccion: nuevoVehiculo.traccion || (tipo === 'Camioneta' || tipo === 'Pick-up 4x4' ? '4x4' : '4x2'),
+      motor: nuevoVehiculo.motor || '2.8L Turbo Diesel',
+      capacidadCarga: nuevoVehiculo.capacidadCarga || (tipo === 'Combi' ? '12 Pasajeros' : tipo === 'Bus' ? '24 Pasajeros' : '1,000 kg'),
+      propietario: nuevoVehiculo.propietario || 'VIP CAR',
+      centroCosto: nuevoVehiculo.centroCosto || 'UM-01',
       odometroActual: Number(nuevoVehiculo.odometroActual) || 0,
+      ultimoMantenimiento: Number(nuevoVehiculo.ultimoMantenimiento) || 0,
+      intervaloMantenimiento: 5000,
+      estadoOperativo: nuevoVehiculo.estadoOperativo || 'Disponible',
+      empresaAsignada: nuevoVehiculo.empresaAsignada || 'Base Huancayo (Patio Central)',
+      conductorActual: nuevoVehiculo.conductorActual || 'Por Asignar',
+      tarifaDiariaUSD: nuevoVehiculo.tarifaDiariaUSD || 110,
+      certificaciones: nuevoVehiculo.certificaciones || ['Socavón', 'Superficie'],
+      equipamiento: nuevoVehiculo.equipamiento || ['Pértiga LED', 'Circulina Ámbar', 'Jaula Antivuelco Certificada', 'GPS Satelital'],
+      imagen: nuevoVehiculo.imagen || 'https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=800&q=80',
       documentos: {
         soat: 'Vigente 2026',
         poliza: 'Póliza Rimac Flotas',
         revisionTecnica: 'Aprobado MTC',
       },
+      ...nuevoVehiculo,
     };
     setVehicles((prev) => [veh, ...prev]);
 
@@ -578,6 +641,35 @@ export function FleetProvider({ children }) {
 
     if (isConfigured) {
       await firestoreSyncDeleteVehiculo(id);
+    }
+  };
+
+  const agregarServicio = async (nuevoServicio) => {
+    const srv = {
+      id: `srv-${Date.now()}`,
+      cliente: nuevoServicio.cliente || nuevoServicio.nombre || nuevoServicio.empresa || 'NUEVO CLIENTE / PROYECTO',
+      servicio: nuevoServicio.servicio || nuevoServicio.ruta || 'SERVICIO DE TRANSPORTE',
+      area: nuevoServicio.area || 'OPERACIONES',
+      sede: nuevoServicio.sede || 'HUANCAYO / REGIONAL',
+      centroCosto: nuevoServicio.centroCosto || `CC-${Math.floor(10 + Math.random() * 89)}`,
+      createdAt: new Date().toISOString(),
+      ...nuevoServicio,
+    };
+
+    setServicios((prev) => [srv, ...(prev || [])]);
+
+    if (isConfigured) {
+      await firestoreSyncAddServicio(srv);
+    }
+
+    return srv;
+  };
+
+  const eliminarServicio = async (id) => {
+    setServicios((prev) => (prev || []).filter((s) => s.id !== id));
+
+    if (isConfigured) {
+      await firestoreSyncDeleteServicio(id);
     }
   };
 
@@ -723,7 +815,7 @@ export function FleetProvider({ children }) {
         cotizaciones: cotizaciones || [],
         averias: averias || [],
         mantenimientos: mantenimientos || [],
-        servicios: OFICIAL_SERVICIOS || [],
+        servicios: servicios || [],
         cloudStatus,
         isCloudReady: cloudStatus === 'connected',
         registrarCheckIn,
@@ -733,6 +825,8 @@ export function FleetProvider({ children }) {
         agregarCotizacion,
         agregarVehiculo,
         eliminarVehiculo,
+        agregarServicio,
+        eliminarServicio,
         registrarMantenimiento,
         actualizarMantenimiento,
         limpiarBitacora,
