@@ -39,7 +39,7 @@ const FleetContext = createContext(null);
 
 export function FleetProvider({ children }) {
   // Persistencia local para modo offline en operación minera
-  const FLEET_STORAGE_VERSION = 'v4_vipcar_official_30units_16services_mantenimiento';
+  const FLEET_STORAGE_VERSION = 'v5_vipcar_bitacora_excel_horas_km_checklist';
 
   const [vehicles, setVehicles] = useState(() => {
     try {
@@ -343,14 +343,32 @@ export function FleetProvider({ children }) {
       id: `bit-${Date.now()}`,
       fechaHora: new Date().toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }),
       conductor: conductor || 'Carlos Huamán',
+      operador: conductor || 'Carlos Huamán',
       placa,
       tipoRegistro: 'Check-in Turno (Odómetro)',
+      tipoEvento: 'Check-in',
+      horaCheckIn: new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
+      horaCheckOut: '18:30',
+      kmInicial: odoNum,
+      kmFinal: odoNum + 65,
       odometro: odoNum,
       nivelCombustible: `${combustible}%`,
+      checklist: typeof checklist === 'object' && checklist !== null ? checklist : {
+        luces: true,
+        circulina: true,
+        frenos: true,
+        neumaticos: true,
+        aceite: true,
+        seguridad: true,
+        tacos: true,
+        jaula: true,
+      },
       checklistEstado: checklist ? 'Checklist 100% Conforme' : 'Con observaciones',
       proyecto: operacion || targetVeh?.empresaAsignada || 'Toromocho - Chinalco',
       observaciones: observaciones || 'Sin novedades',
       estado: 'OK',
+      latitud: -11.6083,
+      longitud: -76.1294,
     };
 
     setBitacora((prev) => [nuevoLog, ...prev]);
@@ -416,14 +434,32 @@ export function FleetProvider({ children }) {
       id: `bit-${Date.now()}`,
       fechaHora: new Date().toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }),
       conductor: conductor || 'Carlos Huamán',
+      operador: conductor || 'Carlos Huamán',
       placa,
       tipoRegistro: 'Check-out Turno',
+      tipoEvento: 'Check-out',
+      horaCheckIn: '07:00',
+      horaCheckOut: new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
+      kmInicial: Math.max(0, odoNum - 65),
+      kmFinal: odoNum,
       odometro: odoNum,
       nivelCombustible: `${combustible}%`,
+      checklist: {
+        luces: evaluacion === 'Óptimo',
+        circulina: true,
+        frenos: evaluacion !== 'Requiere mantenimiento',
+        neumaticos: true,
+        aceite: true,
+        seguridad: true,
+        tacos: true,
+        jaula: true,
+      },
       checklistEstado: evaluacion,
       proyecto: targetVeh?.empresaAsignada || 'Campamento Central',
       observaciones: novedades || 'Cierre de turno normal',
       estado: evaluacion === 'Requiere mantenimiento' ? 'Alerta' : 'OK',
+      latitud: -11.6083,
+      longitud: -76.1294,
     };
 
     setBitacora((prev) => [nuevoLog, ...prev]);
