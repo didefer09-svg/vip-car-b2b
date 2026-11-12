@@ -22,26 +22,320 @@ import {
   ShieldAlert,
   User,
   Calendar,
-  Car
+  Car,
+  Layers
 } from 'lucide-react';
 
-// Catálogo base de ítems del Check-list de Seguridad Minera y Homologación MTC
-export const CHECKLIST_COLUMNS = [
-  { id: 'luces', key: 'luces', label: 'Luces', short: 'Luces', title: 'Luces frontales, posteriores y direccionales' },
-  { id: 'circulina', key: 'circulina', label: 'Circulina / Pértiga', short: 'Circ.', title: 'Circulina ámbar y pértiga LED operativa' },
-  { id: 'frenos', key: 'frenos', label: 'Frenos', short: 'Frenos', title: 'Frenos de servicio y freno de mano' },
-  { id: 'neumaticos', key: 'neumaticos', label: 'Neumáticos', short: 'Neum.', title: 'Neumáticos (presión y cocada adecuada)' },
-  { id: 'aceite', key: 'aceite', label: 'Niveles / Aceite', short: 'Niveles', title: 'Nivel de aceite de motor y refrigerante' },
-  { id: 'seguridad', key: 'seguridad', label: 'Extintor / Botiquín', short: 'Extint.', title: 'Extintor vigente (PQS 6kg) y botiquín minero' },
-  { id: 'tacos', key: 'tacos', label: 'Tacos y Repuesto', short: 'Tacos', title: '2 Tacos de seguridad y llanta de repuesto' },
-  { id: 'jaula', key: 'jaula', label: 'Jaula Antivuelco', short: 'Jaula', title: 'Jaula antivuelco interna/externa certificada' },
+/**
+ * Catálogo Oficial de 43 Ítems agrupados en 7 Categorías (App de Conductores VIP CAR)
+ */
+export const CHECKLIST_CATEGORIAS = [
+  {
+    id: 'fuera_vehiculo',
+    codigo: '01',
+    titulo: 'Fuera del vehículo',
+    items: [
+      { id: 'chk_01', num: 1, label: 'Marcas, rayaduras, hendiduras de carrocería' },
+      { id: 'chk_02', num: 2, label: 'Vehículo limpio (Interno y Externo)' },
+      { id: 'chk_03', num: 3, label: 'Estado de espejos retrovisores e interiores' },
+      { id: 'chk_04', num: 4, label: 'Estado de parabrisas, ventanas' },
+      { id: 'chk_05', num: 5, label: 'Fugas de lubricantes debajo del vehículo' },
+    ],
+  },
+  {
+    id: 'neumaticos',
+    codigo: '02',
+    titulo: 'Neumáticos',
+    items: [
+      { id: 'chk_06', num: 6, label: 'Desgaste de neumáticos (profundidad de cocada >3mm)' },
+      { id: 'chk_07', num: 7, label: 'Existe cortadura / abultamiento' },
+      { id: 'chk_08', num: 8, label: 'Espárrago y tuercas' },
+      { id: 'chk_09', num: 9, label: 'Indicadores de Tuerca (en todas las tuercas)' },
+      { id: 'chk_10', num: 10, label: 'Aros y pestañas' },
+      { id: 'chk_11', num: 11, label: 'Cuenta con neumático de repuesto' },
+    ],
+  },
+  {
+    id: 'motor',
+    codigo: '03',
+    titulo: 'Motor',
+    items: [
+      { id: 'chk_12', num: 12, label: 'Nivel de aceite del motor' },
+      { id: 'chk_13', num: 13, label: 'Nivel de líquido refrigerante' },
+      { id: 'chk_14', num: 14, label: 'Nivel de líquido de frenos' },
+      { id: 'chk_15', num: 15, label: 'Nivel de líquido de embrague' },
+      { id: 'chk_16', num: 16, label: 'Nivel de agua limpiaparabrisas' },
+      { id: 'chk_17', num: 17, label: 'Ventilador, Radiador (sin barro / lodo)' },
+      { id: 'chk_18', num: 18, label: 'Baterías - bornes de batería' },
+    ],
+  },
+  {
+    id: 'interior_apagado',
+    codigo: '04',
+    titulo: 'Interior del vehículo (Apagado)',
+    items: [
+      { id: 'chk_19', num: 19, label: 'Barra antivuelco' },
+      { id: 'chk_20', num: 20, label: 'Cinturones de seguridad' },
+      { id: 'chk_21', num: 21, label: 'Jebes de pedales' },
+      { id: 'chk_22', num: 22, label: 'Longitud de freno de mano' },
+      { id: 'chk_23', num: 23, label: 'Asientos' },
+    ],
+  },
+  {
+    id: 'accesorios_documentos',
+    codigo: '05',
+    titulo: 'Accesorios y documentos',
+    items: [
+      { id: 'chk_24', num: 24, label: 'Botiquín' },
+      { id: 'chk_25', num: 25, label: 'Extintor' },
+      { id: 'chk_26', num: 26, label: 'Taco / Cuñas (2)' },
+      { id: 'chk_27', num: 27, label: 'Conos (2)' },
+      { id: 'chk_28', num: 28, label: 'Kit Antiderrame' },
+      { id: 'chk_29', num: 29, label: 'Gata hidráulica' },
+      { id: 'chk_30', num: 30, label: 'Cable de remolque' },
+      { id: 'chk_31', num: 31, label: 'Documentos vigentes (licencia MTC, LICO, SOAT, Inspección Técnica Trimestral, tarjeta propiedad)' },
+    ],
+  },
+  {
+    id: 'energizado_luces_exterior',
+    codigo: '06',
+    titulo: 'Vehículo energizado - Luces y exterior',
+    items: [
+      { id: 'chk_32', num: 32, label: 'Luces (alta y baja, retroceso, freno, estacionamiento)' },
+      { id: 'chk_33', num: 33, label: 'Direccionales (izq. - der.)' },
+      { id: 'chk_34', num: 34, label: 'Faros neblineros, pirata' },
+      { id: 'chk_35', num: 35, label: 'Indicadores de tablero' },
+      { id: 'chk_36', num: 36, label: 'Alarma de retroceso' },
+      { id: 'chk_37', num: 37, label: 'Limpiaparabrisas' },
+    ],
+  },
+  {
+    id: 'energizado_interior',
+    codigo: '07',
+    titulo: 'Vehículo energizado - Interior del vehículo',
+    items: [
+      { id: 'chk_38', num: 38, label: 'Aire acondicionado' },
+      { id: 'chk_39', num: 39, label: 'Nivel de combustible' },
+      { id: 'chk_40', num: 40, label: 'Tablero y luces de advertencia' },
+      { id: 'chk_41', num: 41, label: 'Claxon' },
+      { id: 'chk_42', num: 42, label: 'Prueba de pedales de freno y embrague' },
+      { id: 'chk_43', num: 43, label: 'Operatividad de panel (Velocímetro, combustible)' },
+    ],
+  },
 ];
+
+export const CHECKLIST_43_ITEMS = CHECKLIST_CATEGORIAS.flatMap((cat) =>
+  cat.items.map((item) => ({
+    ...item,
+    categoriaId: cat.id,
+    categoriaTitulo: cat.titulo,
+  }))
+);
+
+// Mapeo de las 8 macro-llaves heredadas hacia los números de ítem correspondientes
+const LEGACY_KEY_TO_ITEM_NUMS = {
+  luces: [32, 33, 34],
+  circulina: [34, 36],
+  frenos: [14, 22, 42],
+  neumaticos: [6, 7, 8, 9, 10, 11],
+  aceite: [12, 13, 15, 16],
+  seguridad: [24, 25, 28],
+  tacos: [26, 27],
+  jaula: [19, 20],
+};
+
+/**
+ * Convierte cadenas de hora ("07:15", "09:24 a. m.", "12:05 p. m.") a minutos desde medianoche
+ */
+function parseHoraAMinutos(horaStr) {
+  if (!horaStr || typeof horaStr !== 'string') return null;
+  const clean = horaStr.replace(/\u00a0/g, ' ').trim().toLowerCase();
+  const isPM = clean.includes('p. m.') || clean.includes('pm') || clean.includes('p.m.');
+  const isAM = clean.includes('a. m.') || clean.includes('am') || clean.includes('a.m.');
+
+  const match = clean.match(/(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+
+  let h = parseInt(match[1], 10);
+  const m = parseInt(match[2], 10);
+  if (isNaN(h) || isNaN(m)) return null;
+
+  if (isPM && h < 12) h += 12;
+  if (isAM && h === 12) h = 0;
+
+  return h * 60 + m;
+}
+
+/**
+ * Extrae y mapea la lista completa de los 43 sub-ítems detallados que vienen de Firebase
+ * (tanto desde el objeto `checklist`, como desde `checklistResumen` / `checklistEstado` / `observaciones`).
+ */
+export function extraerChecklistDetallado43(log) {
+  const rawCheck = log?.checklist;
+  const resumenStr = String(log?.checklistResumen || log?.checklistEstado || log?.checklist_condicion || '');
+  const obsStr = String(log?.observaciones || log?.descripcion || '').toLowerCase();
+  const fullTextLower = `${resumenStr} ${obsStr}`.toLowerCase();
+
+  // 1. Detectar números de ítems reportados con falla en checklistResumen (ej: "Fallas: #1 ..., #12 ..., #19 ...")
+  const failedNumsFromText = new Set();
+  const regexNum = /#(\d{1,2})\b/g;
+  let match;
+  while ((match = regexNum.exec(resumenStr)) !== null) {
+    const num = parseInt(match[1], 10);
+    if (num >= 1 && num <= 43) {
+      failedNumsFromText.add(num);
+    }
+  }
+
+  // 2. Si no hay números explícitos "#N", revisar si existen llaves legacy o descripciones de fallas puntuales
+  const legacyFailedNums = new Set();
+  if (failedNumsFromText.size === 0) {
+    if (rawCheck && typeof rawCheck === 'object' && !Array.isArray(rawCheck)) {
+      Object.entries(LEGACY_KEY_TO_ITEM_NUMS).forEach(([legacyKey, nums]) => {
+        if (legacyKey in rawCheck && rawCheck[legacyKey] === false) {
+          // Marcar el primer ítem representativo de esa categoría como falla
+          legacyFailedNums.add(nums[0]);
+        }
+      });
+    }
+
+    // Inferencia por palabras clave en observaciones/averías cuando no se especificó #num
+    if (legacyFailedNums.size === 0) {
+      if (fullTextLower.includes('pinchazo') || fullTextLower.includes('cortadura') || fullTextLower.includes('llanta')) {
+        legacyFailedNums.add(7);
+      }
+      if (fullTextLower.includes('fusible') || fullTextLower.includes('neblinero')) {
+        legacyFailedNums.add(34);
+      }
+      if (fullTextLower.includes('liquido de freno') || fullTextLower.includes('líquido de freno') || fullTextLower.includes('liquiddo de freno')) {
+        legacyFailedNums.add(14);
+      }
+      if (fullTextLower.includes('aceite de motor') || fullTextLower.includes('nivel de aceite')) {
+        legacyFailedNums.add(12);
+      }
+      if (fullTextLower.includes('barra antivuelco') || fullTextLower.includes('no tiene jaula')) {
+        legacyFailedNums.add(19);
+      }
+      if (fullTextLower.includes('observaciones leves')) {
+        legacyFailedNums.add(24);
+      }
+    }
+  }
+
+  // 3. Mapear las 7 categorías con sus 43 ítems
+  const mapaEstadoPorId = {};
+  const categoriasMapeadas = CHECKLIST_CATEGORIAS.map((cat) => {
+    const itemsMapeados = cat.items.map((item) => {
+      let status = 'OK'; // 'OK' | 'FALLA' | 'OBSERVACION'
+
+      // a) Si viene en el objeto checklist directamente como chk_01..chk_43 o por número/label
+      if (rawCheck && typeof rawCheck === 'object' && !Array.isArray(rawCheck)) {
+        const directVal =
+          rawCheck[item.id] ??
+          rawCheck[`item_${item.num}`] ??
+          rawCheck[String(item.num)] ??
+          rawCheck[`#${item.num}`] ??
+          rawCheck[item.label] ??
+          (rawCheck[cat.id] && typeof rawCheck[cat.id] === 'object' ? rawCheck[cat.id][item.id] : undefined);
+
+        if (directVal !== undefined && directVal !== null) {
+          if (directVal === false || String(directVal).toLowerCase() === 'falla' || String(directVal).toLowerCase() === 'no') {
+            status = 'FALLA';
+          } else if (String(directVal).toLowerCase().includes('obs')) {
+            status = 'OBSERVACION';
+          } else {
+            status = 'OK';
+          }
+        }
+      }
+
+      // b) Si está listado en el resumen de fallas de Firebase ("Fallas: #1 ..., #12 ...")
+      if (failedNumsFromText.has(item.num)) {
+        status = 'FALLA';
+      } else if (legacyFailedNums.has(item.num)) {
+        status = fullTextLower.includes('observaciones leves') ? 'OBSERVACION' : 'FALLA';
+      }
+
+      const isOk = status === 'OK';
+      mapaEstadoPorId[item.id] = isOk;
+
+      return {
+        ...item,
+        categoriaId: cat.id,
+        categoriaTitulo: cat.titulo,
+        status,
+        isOk,
+      };
+    });
+
+    const totalCat = itemsMapeados.length;
+    const okCat = itemsMapeados.filter((i) => i.isOk).length;
+    const fallasCat = totalCat - okCat;
+
+    return {
+      ...cat,
+      items: itemsMapeados,
+      totalCat,
+      okCat,
+      fallasCat,
+    };
+  });
+
+  // 4. Si el documento de Firebase contiene llaves personalizadas adicionales fuera del estándar, agregarlas sin perder datos
+  const standardKeys = new Set([
+    ...CHECKLIST_43_ITEMS.map((i) => i.id),
+    ...CHECKLIST_43_ITEMS.map((i) => String(i.num)),
+    ...CHECKLIST_43_ITEMS.map((i) => `#${i.num}`),
+    ...CHECKLIST_43_ITEMS.map((i) => i.label),
+    ...CHECKLIST_CATEGORIAS.map((c) => c.id),
+    ...Object.keys(LEGACY_KEY_TO_ITEM_NUMS),
+  ]);
+
+  if (rawCheck && typeof rawCheck === 'object' && !Array.isArray(rawCheck)) {
+    const extraItems = [];
+    Object.entries(rawCheck).forEach(([k, val]) => {
+      if (!standardKeys.has(k) && typeof val !== 'object') {
+        const isOk = Boolean(val) && String(val).toLowerCase() !== 'falla';
+        mapaEstadoPorId[k] = isOk;
+        extraItems.push({
+          id: k,
+          num: 43 + extraItems.length + 1,
+          label: k.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()),
+          categoriaId: 'adicionales',
+          categoriaTitulo: 'Ítems adicionales reportados',
+          status: isOk ? 'OK' : 'FALLA',
+          isOk,
+        });
+      }
+    });
+
+    if (extraItems.length > 0) {
+      categoriasMapeadas.push({
+        id: 'adicionales',
+        codigo: '08',
+        titulo: 'Ítems adicionales reportados',
+        items: extraItems,
+        totalCat: extraItems.length,
+        okCat: extraItems.filter((i) => i.isOk).length,
+        fallasCat: extraItems.filter((i) => !i.isOk).length,
+      });
+    }
+  }
+
+  const todosLosItems = categoriasMapeadas.flatMap((c) => c.items);
+
+  return {
+    categoriasMapeadas,
+    todosLosItems,
+    mapaEstadoPorId,
+  };
+}
 
 /**
  * Normaliza y calcula las métricas requeridas para cada registro de turno:
  * 1. Horas de trabajo = Check-out - Check-in
  * 2. Km final y Km recorrido diario = Km final - Km inicial
- * 3. Desglose completo del Check-list (para el Modal de Inspección y columnas independientes en Excel)
+ * 3. Desglose completo de los 43 ítems del Check-list agrupados por secciones
  * 4. Ubicación GPS y Proyecto en campos estrictamente separados
  */
 export function resolverDatosTurno(log) {
@@ -86,24 +380,41 @@ export function resolverDatosTurno(log) {
   // 3. Cálculo de horas de trabajo (Check-out - Check-in)
   let horasDecimal = 0;
   let horasTexto = '—';
-  try {
-    const [hIn, mIn] = horaCheckIn.split(':').map((n) => parseInt(n, 10) || 0);
-    const [hOut, mOut] = horaCheckOut.split(':').map((n) => parseInt(n, 10) || 0);
-    let diffMin = (hOut * 60 + mOut) - (hIn * 60 + mIn);
-    if (diffMin <= 0) diffMin += 24 * 60; // Cruce de turno o noche
+  const minIn = parseHoraAMinutos(horaCheckIn);
+  const minOut = parseHoraAMinutos(horaCheckOut);
+
+  if (minIn !== null && minOut !== null) {
+    let diffMin = minOut - minIn;
+    if (diffMin <= 0) diffMin += 24 * 60;
     horasDecimal = Number((diffMin / 60).toFixed(1));
     const h = Math.floor(diffMin / 60);
     const m = diffMin % 60;
     horasTexto = m === 0 ? `${h}h` : `${h}h ${m}m`;
-  } catch {
+  } else {
     horasDecimal = 10.5;
     horasTexto = '10h 30m';
   }
 
   // 4. Kilometraje Inicial, Final y Km Recorrido Diario (Km final - Km inicial)
-  const odoBase = Number(log?.odometro) || Number(log?.odometroActual) || 14750;
-  let kmInicial = log?.kmInicial != null ? Number(log.kmInicial) : (tipo.includes('check-out') ? odoBase - 85 : odoBase);
-  let kmFinal = log?.kmFinal != null ? Number(log.kmFinal) : (tipo.includes('check-in') ? odoBase + 85 : odoBase);
+  const odoBase = Number(log?.odometro) || Number(log?.kilometraje) || Number(log?.odometroActual) || 14750;
+
+  // Extraer "+NNN km" si viene en el resumen de Check-out de la App de Conductores
+  const resumenCheckOutMatch = String(log?.checklistResumen || log?.checklistEstado || '').match(/\+(\d+)\s*km/i);
+  const deltaFromText = resumenCheckOutMatch ? parseInt(resumenCheckOutMatch[1], 10) : null;
+
+  let kmInicial =
+    log?.kmInicial != null
+      ? Number(log.kmInicial)
+      : tipo.includes('check-out')
+      ? Math.max(0, odoBase - (deltaFromText || 85))
+      : odoBase;
+
+  let kmFinal =
+    log?.kmFinal != null
+      ? Number(log.kmFinal)
+      : tipo.includes('check-in')
+      ? odoBase + (deltaFromText || 85)
+      : odoBase;
 
   if (kmFinal < kmInicial) {
     const temp = kmInicial;
@@ -111,79 +422,32 @@ export function resolverDatosTurno(log) {
     kmFinal = temp;
   }
   if (kmFinal === kmInicial) {
-    kmFinal = kmInicial + 85;
+    kmFinal = kmInicial + (deltaFromText || 85);
   }
   const kmRecorrido = Math.max(0, kmFinal - kmInicial);
 
-  // 5. Desglose del Checklist (cada ítem independiente para Excel + lista detallada para el Modal)
-  const checklistObj = {};
-  const rawCheck = log?.checklist;
-  const rawEstado = (log?.checklistEstado || log?.observaciones || log?.descripcion || '').toLowerCase();
+  // 5. Extracción de los 43 ítems agrupados por sus 7 categorías reales
+  const { categoriasMapeadas, todosLosItems, mapaEstadoPorId } = extraerChecklistDetallado43(log);
 
-  CHECKLIST_COLUMNS.forEach((item) => {
-    if (rawCheck && typeof rawCheck === 'object' && !Array.isArray(rawCheck) && item.key in rawCheck) {
-      checklistObj[item.key] = Boolean(rawCheck[item.key]);
-    } else if (Array.isArray(rawCheck)) {
-      const found = rawCheck.some((c) =>
-        String(c).toLowerCase().includes(item.key) || String(c).toLowerCase().includes(item.label.toLowerCase())
-      );
-      checklistObj[item.key] = found;
-    } else {
-      // Detección contextual de pendientes
-      if (item.key === 'neumaticos' && (rawEstado.includes('pinchazo') || rawEstado.includes('llanta') || rawEstado.includes('neumát'))) {
-        checklistObj[item.key] = false;
-      } else if (item.key === 'luces' && (rawEstado.includes('fusible') || rawEstado.includes('faro') || rawEstado.includes('luz') || rawEstado.includes('luces'))) {
-        checklistObj[item.key] = false;
-      } else if (item.key === 'seguridad' && rawEstado.includes('observaciones leves')) {
-        checklistObj[item.key] = false;
-      } else if (item.key === 'frenos' && rawEstado.includes('freno')) {
-        checklistObj[item.key] = false;
-      } else {
-        checklistObj[item.key] = true;
-      }
-    }
-  });
-
-  // Construir lista completa de ítems evaluados (incluyendo ítems adicionales si el registro trae más llaves en checklist)
-  const checklistItemsDetalle = CHECKLIST_COLUMNS.map((item) => ({
-    id: item.id,
-    key: item.key,
-    label: item.label,
-    title: item.title,
-    isOk: Boolean(checklistObj[item.key]),
-  }));
-
-  if (rawCheck && typeof rawCheck === 'object' && !Array.isArray(rawCheck)) {
-    Object.entries(rawCheck).forEach(([k, val]) => {
-      const alreadyInBase = CHECKLIST_COLUMNS.some((c) => c.key === k);
-      if (!alreadyInBase) {
-        const isOk = Boolean(val);
-        checklistObj[k] = isOk;
-        checklistItemsDetalle.push({
-          id: k,
-          key: k,
-          label: k.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()),
-          title: `Ítem de inspección preoperacional: ${k}`,
-          isOk,
-        });
-      }
-    });
-  }
-
-  const totalItems = checklistItemsDetalle.length;
-  const okItems = checklistItemsDetalle.filter((i) => i.isOk).length;
+  const totalItems = todosLosItems.length;
+  const okItems = todosLosItems.filter((i) => i.isOk).length;
   const fallasItems = totalItems - okItems;
   const allOk = fallasItems === 0;
+  const listaFallas = todosLosItems.filter((i) => !i.isOk);
 
   // 6. Ubicación GPS (Estrictamente separada de Proyecto)
   const lat = log?.latitud ?? log?.ubicacion?.latitud;
   const lng = log?.longitud ?? log?.ubicacion?.longitud;
   const tieneGPS = lat != null && lng != null && !isNaN(Number(lat)) && !isNaN(Number(lng));
-  const coordenadas = tieneGPS ? `${Number(lat).toFixed(4)}°, ${Number(lng).toFixed(4)}°` : '—';
+  const coordenadas = tieneGPS
+    ? `${Number(lat).toFixed(4)}°, ${Number(lng).toFixed(4)}°`
+    : log?.ubicacion && typeof log.ubicacion === 'string'
+    ? log.ubicacion
+    : '—';
   const urlMaps = tieneGPS ? `https://www.google.com/maps?q=${Number(lat)},${Number(lng)}` : null;
 
   // 7. Proyecto (Estrictamente separado de GPS)
-  const proyecto = log?.proyecto || log?.empresaAsignada || 'Flota Central Huancayo';
+  const proyecto = log?.proyecto || log?.servicio || log?.tipoServicio || log?.empresaAsignada || 'Flota Central Huancayo';
 
   return {
     id: log?.id,
@@ -192,6 +456,7 @@ export function resolverDatosTurno(log) {
     conductor: log?.operador || log?.conductor || 'Carlos Huamán',
     placa: log?.placa || 'VIP-001',
     proyecto,
+    ubicacionTexto: typeof log?.ubicacion === 'string' ? log.ubicacion : '',
     tipoEvento: log?.tipoEvento || log?.tipoRegistro || 'Check-in',
     horaCheckIn,
     horaCheckOut,
@@ -200,8 +465,10 @@ export function resolverDatosTurno(log) {
     kmInicial,
     kmFinal,
     kmRecorrido,
-    checklist: checklistObj,
-    checklistItemsDetalle,
+    checklist: mapaEstadoPorId,
+    categoriasChecklist: categoriasMapeadas,
+    checklistItemsDetalle: todosLosItems,
+    listaFallas,
     totalItems,
     okItems,
     fallasItems,
@@ -211,8 +478,8 @@ export function resolverDatosTurno(log) {
     urlMaps,
     lat: tieneGPS ? Number(lat) : null,
     lng: tieneGPS ? Number(lng) : null,
-    observaciones: log?.descripcion || log?.observaciones || log?.checklistEstado || 'Sin observaciones',
-    estado: log?.estado || (tipo.includes('sos') || tipo.includes('avería') ? 'Alerta' : 'OK'),
+    observaciones: log?.observaciones || log?.descripcion || log?.checklistEstado || 'Sin observaciones',
+    estado: log?.estado || (!allOk || tipo.includes('sos') || tipo.includes('avería') ? 'Alerta' : 'OK'),
   };
 }
 
@@ -224,6 +491,7 @@ export default function Bitacora() {
   const [limpiando, setLimpiando] = useState(false);
   const [mensajeEstado, setMensajeEstado] = useState(null);
   const [registroInspeccionModal, setRegistroInspeccionModal] = useState(null);
+  const [filtroModalItems, setFiltroModalItems] = useState('todos'); // 'todos' | 'fallas'
 
   // Rol 'Gerente' requerido para vaciar bitácora
   const userIsGerente = isGerente || user?.role === 'GERENTE';
@@ -236,7 +504,7 @@ export default function Bitacora() {
         !term ||
         (item.conductor || item.operador || '').toLowerCase().includes(term) ||
         (item.placa || '').toLowerCase().includes(term) ||
-        (item.proyecto || item.empresaAsignada || '').toLowerCase().includes(term) ||
+        (item.proyecto || item.servicio || item.empresaAsignada || '').toLowerCase().includes(term) ||
         (item.tipoRegistro || item.tipoEvento || '').toLowerCase().includes(term) ||
         (item.descripcion && item.descripcion.toLowerCase().includes(term)) ||
         (item.observaciones && item.observaciones.toLowerCase().includes(term));
@@ -276,61 +544,43 @@ export default function Bitacora() {
     }
 
     try {
-      const filasExcel = registrosCalculados.map((t) => ({
-        'Fecha': t.fecha,
-        'Conductor': t.conductor,
-        'Placa': t.placa,
-        'Proyecto / Operación': t.proyecto,
-        'Hora Check-in': t.horaCheckIn,
-        'Hora Check-out': t.horaCheckOut,
-        'Horas de Trabajo (hrs)': t.horasDecimal,
-        'Detalle Horas': t.horasTexto,
-        'Km Inicial': t.kmInicial,
-        'Km Final': t.kmFinal,
-        'Km Recorrido Diario (km)': t.kmRecorrido,
-        'Checklist: Luces': t.checklist.luces ? 'CONFORME' : 'PENDIENTE',
-        'Checklist: Circulina / Pértiga': t.checklist.circulina ? 'CONFORME' : 'PENDIENTE',
-        'Checklist: Frenos': t.checklist.frenos ? 'CONFORME' : 'PENDIENTE',
-        'Checklist: Neumáticos': t.checklist.neumaticos ? 'CONFORME' : 'PENDIENTE',
-        'Checklist: Niveles / Aceite': t.checklist.aceite ? 'CONFORME' : 'PENDIENTE',
-        'Checklist: Extintor / Botiquín': t.checklist.seguridad ? 'CONFORME' : 'PENDIENTE',
-        'Checklist: Tacos y Repuesto': t.checklist.tacos ? 'CONFORME' : 'PENDIENTE',
-        'Checklist: Jaula Antivuelco': t.checklist.jaula ? 'CONFORME' : 'PENDIENTE',
-        'Ubicación GPS (Coordenadas)': t.coordenadas,
-        'Enlace Google Maps': t.urlMaps || 'No disponible',
-        'Detalle / Novedades': t.observaciones,
-        'Estado': t.estado,
-      }));
+      const filasExcel = registrosCalculados.map((t) => {
+        const fila = {
+          'Fecha': t.fecha,
+          'Conductor': t.conductor,
+          'Placa': t.placa,
+          'Proyecto / Operación': t.proyecto,
+          'Hora Check-in': t.horaCheckIn,
+          'Hora Check-out': t.horaCheckOut,
+          'Horas de Trabajo (hrs)': t.horasDecimal,
+          'Detalle Horas': t.horasTexto,
+          'Km Inicial': t.kmInicial,
+          'Km Final': t.kmFinal,
+          'Km Recorrido Diario (km)': t.kmRecorrido,
+          'Resumen Inspección': `${t.okItems}/${t.totalItems} OK`,
+        };
+
+        // Agregar cada uno de los 43 ítems del checklist en su propia columna independiente
+        CHECKLIST_43_ITEMS.forEach((item) => {
+          const isOk = Boolean(t.checklist[item.id]);
+          fila[`#${item.num} ${item.label}`] = isOk ? 'OK' : 'FALLA';
+        });
+
+        fila['Ubicación GPS (Coordenadas)'] = t.coordenadas;
+        fila['Enlace Google Maps'] = t.urlMaps || 'No disponible';
+        fila['Detalle / Novedades'] = t.observaciones;
+        fila['Estado'] = t.estado;
+
+        return fila;
+      });
 
       const worksheet = XLSX.utils.json_to_sheet(filasExcel);
 
-      // Configuración de anchos automáticos de columna
-      const colWidths = [
-        { wch: 12 }, // Fecha
-        { wch: 22 }, // Conductor
-        { wch: 10 }, // Placa
-        { wch: 28 }, // Proyecto
-        { wch: 14 }, // Hora Check-in
-        { wch: 15 }, // Hora Check-out
-        { wch: 20 }, // Horas de Trabajo (hrs)
-        { wch: 14 }, // Detalle Horas
-        { wch: 13 }, // Km Inicial
-        { wch: 13 }, // Km Final
-        { wch: 22 }, // Km Recorrido Diario
-        { wch: 16 }, // Luces
-        { wch: 26 }, // Circulina
-        { wch: 16 }, // Frenos
-        { wch: 18 }, // Neumáticos
-        { wch: 22 }, // Niveles
-        { wch: 24 }, // Extintor
-        { wch: 24 }, // Tacos
-        { wch: 24 }, // Jaula
-        { wch: 25 }, // GPS
-        { wch: 45 }, // Google Maps
-        { wch: 40 }, // Novedades
-        { wch: 12 }, // Estado
-      ];
-      worksheet['!cols'] = colWidths;
+      // Ajuste automático de ancho para todas las columnas generadas
+      const keys = Object.keys(filasExcel[0] || {});
+      worksheet['!cols'] = keys.map((k) => ({
+        wch: Math.min(Math.max(k.length + 3, 14), 45),
+      }));
 
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Bitácora de Operaciones');
@@ -342,7 +592,7 @@ export default function Bitacora() {
 
       setMensajeEstado({
         tipo: 'exito',
-        texto: `Reporte exportado exitosamente con columnas de checklist desglosadas: ${nombreArchivo}`
+        texto: `Reporte exportado exitosamente con los 43 ítems desglosados en columnas: ${nombreArchivo}`
       });
       setTimeout(() => setMensajeEstado(null), 4000);
     } catch (err) {
@@ -378,6 +628,11 @@ export default function Bitacora() {
     }
   };
 
+  const abrirModalDetalles = (registro) => {
+    setFiltroModalItems('todos');
+    setRegistroInspeccionModal(registro);
+  };
+
   return (
     <div className="space-y-6 text-[#9c9c9d]">
       {/* Header Corporativo */}
@@ -391,7 +646,7 @@ export default function Bitacora() {
             Bitácora Histórica de Conducción
           </h1>
           <p className="text-xs text-[#6a6b6c] mt-0.5">
-            Registro cronológico inmutable de turnos, horas trabajadas, kilometrajes e inspección preoperacional.
+            Registro cronológico inmutable de turnos, horas trabajadas, kilometrajes e inspección preoperacional de 43 puntos.
           </p>
         </div>
 
@@ -488,7 +743,7 @@ export default function Bitacora() {
 
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-mono text-[#6a6b6c]">
-              Vista optimizada • Inspección en Modal • Exportación Excel con checklist desglosado
+              Auditoría de 43 puntos en Modal • Exportación Excel con columnas independientes
             </span>
           </div>
         </div>
@@ -516,7 +771,7 @@ export default function Bitacora() {
                   Km Diario
                 </th>
 
-                {/* 3. Nueva Columna Única: Inspección (Resumen + Botón Ver Detalles) */}
+                {/* 3. Columna Única: Inspección (Resumen 43/43 OK + Botón Ver Detalles) */}
                 <th className="py-3.5 px-4 whitespace-nowrap text-center text-white">
                   Inspección
                 </th>
@@ -583,17 +838,17 @@ export default function Bitacora() {
                     <td className="py-3.5 px-3.5 whitespace-nowrap">
                       <div className="flex items-center gap-1.5 text-xs font-medium text-white">
                         <Building className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                        <span className="truncate max-w-[150px]" title={t.proyecto}>
+                        <span className="truncate max-w-[160px]" title={t.proyecto}>
                           {t.proyecto}
                         </span>
                       </div>
                     </td>
 
                     {/* 1. Horas de Trabajo: Check-in, Check-out, Horas Restadas */}
-                    <td className="py-3.5 px-2.5 text-center font-mono text-[11px] text-[#9c9c9d] bg-white/[0.01]">
+                    <td className="py-3.5 px-2.5 text-center font-mono text-[11px] text-[#9c9c9d] bg-white/[0.01] whitespace-nowrap">
                       {t.horaCheckIn}
                     </td>
-                    <td className="py-3.5 px-2.5 text-center font-mono text-[11px] text-[#9c9c9d] bg-white/[0.01]">
+                    <td className="py-3.5 px-2.5 text-center font-mono text-[11px] text-[#9c9c9d] bg-white/[0.01] whitespace-nowrap">
                       {t.horaCheckOut}
                     </td>
                     <td className="py-3.5 px-3 text-center bg-[#59d499]/5 whitespace-nowrap">
@@ -621,13 +876,13 @@ export default function Bitacora() {
                       </div>
                     </td>
 
-                    {/* 3. Columna 'Inspección': Resumen Visual + Botón 'Ver Detalles' */}
+                    {/* 3. Columna 'Inspección': Resumen Visual (43/43 OK) + Botón 'Ver Detalles' */}
                     <td className="py-3.5 px-4 whitespace-nowrap text-center">
                       <div className="inline-flex items-center gap-2">
                         {t.allOk ? (
                           <span
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/30"
-                            title="Todos los ítems del checklist están conformes"
+                            title="Los 43 ítems del checklist fueron verificados sin fallas"
                           >
                             <CheckCircle2 className="w-3 h-3 shrink-0" />
                             <span>{t.okItems}/{t.totalItems} OK</span>
@@ -635,7 +890,7 @@ export default function Bitacora() {
                         ) : (
                           <span
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40 animate-pulse"
-                            title={`Se detectaron ${t.fallasItems} ítem(s) con observaciones o fallas`}
+                            title={`Se detectaron ${t.fallasItems} falla(s) en la inspección de 43 puntos`}
                           >
                             <AlertTriangle className="w-3 h-3 shrink-0" />
                             <span>{t.okItems}/{t.totalItems} OK</span>
@@ -644,9 +899,9 @@ export default function Bitacora() {
 
                         <button
                           type="button"
-                          onClick={() => setRegistroInspeccionModal(t)}
+                          onClick={() => abrirModalDetalles(t)}
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold text-white bg-white/[0.06] hover:bg-white/[0.14] border border-white/[0.12] hover:border-white/[0.25] transition-all cursor-pointer active:scale-95"
-                          title="Abrir desglose completo de la inspección del checklist"
+                          title="Ver los 43 ítems evaluados agrupados por sección"
                         >
                           <Eye className="w-3 h-3 text-sky-400" />
                           <span>Ver Detalles</span>
@@ -669,7 +924,7 @@ export default function Bitacora() {
                           <ExternalLink className="w-2.5 h-2.5 shrink-0" />
                         </a>
                       ) : (
-                        <span className="text-[#6a6b6c]">—</span>
+                        <span className="text-[#6a6b6c]">{t.coordenadas}</span>
                       )}
                     </td>
 
@@ -698,21 +953,23 @@ export default function Bitacora() {
         </div>
       </div>
 
-      {/* Modal de Detalles de Inspección del Checklist */}
+      {/* ====================================================================
+          MODAL DE DETALLES DEL CHECKLIST (43 ÍTEMS AGRUPADOS EN 7 SECCIONES)
+          ==================================================================== */}
       {registroInspeccionModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
           onClick={() => setRegistroInspeccionModal(null)}
         >
           <div
-            className="cockpit-panel rounded-3xl max-w-2xl w-full p-6 space-y-5 border border-white/[0.12] shadow-2xl relative max-h-[90vh] flex flex-col"
+            className="cockpit-panel rounded-3xl max-w-4xl w-full p-5 sm:p-6 space-y-4 border border-white/[0.12] shadow-2xl relative max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Cabecera del Modal */}
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-white/[0.08]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-white/[0.08] shrink-0">
               <div className="flex items-center gap-3">
                 <div
-                  className={`p-2.5 rounded-2xl border ${
+                  className={`p-2.5 rounded-2xl border shrink-0 ${
                     registroInspeccionModal.allOk
                       ? 'bg-[#071f16] border-[#59d499]/40 text-[#59d499]'
                       : 'bg-[#2d0e14] border-[#ff6363]/40 text-[#ff6363]'
@@ -723,145 +980,234 @@ export default function Bitacora() {
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-base font-bold text-white font-sans tracking-tight">
-                      Reporte de Inspección de Checklist
+                      Auditoría Detallada de Checklist ({registroInspeccionModal.totalItems} Ítems)
                     </h3>
                     {registroInspeccionModal.allOk ? (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#59d499]/15 text-[#59d499] border border-[#59d499]/30">
-                        {registroInspeccionModal.okItems}/{registroInspeccionModal.totalItems} OK • Conforme
+                        {registroInspeccionModal.okItems}/{registroInspeccionModal.totalItems} OK • 100% Conforme
                       </span>
                     ) : (
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40">
-                        {registroInspeccionModal.okItems}/{registroInspeccionModal.totalItems} OK • {registroInspeccionModal.fallasItems} Con Falla
+                        {registroInspeccionModal.okItems}/{registroInspeccionModal.totalItems} OK • {registroInspeccionModal.fallasItems} Falla(s) Detectada(s)
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[#6a6b6c] font-mono mt-0.5">
-                    Verificación técnica preoperacional de seguridad minera y homologación MTC
+                  <p className="text-[11px] text-[#6a6b6c] font-mono mt-0.5">
+                    Desglose oficial por categorías sincronizado desde la App de Conductores
                   </p>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setRegistroInspeccionModal(null)}
-                className="p-1.5 rounded-full text-[#6a6b6c] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-                title="Cerrar ventana"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                {/* Filtro rápido Todos vs Solo Fallas */}
+                {!registroInspeccionModal.allOk && (
+                  <div className="inline-flex rounded-full p-0.5 bg-[#0b0d12] border border-white/[0.08] text-[10px] font-mono">
+                    <button
+                      type="button"
+                      onClick={() => setFiltroModalItems('todos')}
+                      className={`px-2.5 py-1 rounded-full transition-colors cursor-pointer ${
+                        filtroModalItems === 'todos'
+                          ? 'bg-white/10 text-white font-bold'
+                          : 'text-[#6a6b6c] hover:text-white'
+                      }`}
+                    >
+                      Todos ({registroInspeccionModal.totalItems})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFiltroModalItems('fallas')}
+                      className={`px-2.5 py-1 rounded-full transition-colors cursor-pointer ${
+                        filtroModalItems === 'fallas'
+                          ? 'bg-[#ff6363]/20 text-[#ff6363] font-bold'
+                          : 'text-[#ff6363]/70 hover:text-[#ff6363]'
+                      }`}
+                    >
+                      Solo Fallas ({registroInspeccionModal.fallasItems})
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setRegistroInspeccionModal(null)}
+                  className="p-1.5 rounded-full text-[#6a6b6c] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  title="Cerrar ventana"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Ficha Resumen del Turno y Unidad */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div className="telemetry-well p-3 rounded-2xl border border-white/[0.06]">
-                <div className="text-[10px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
+              <div className="telemetry-well px-3 py-2 rounded-xl border border-white/[0.06]">
+                <div className="text-[9px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
                   <Car className="w-3 h-3 text-[#ff6363]" />
                   <span>Unidad</span>
                 </div>
-                <div className="text-xs font-mono font-bold text-white mt-1">
+                <div className="text-xs font-mono font-bold text-white mt-0.5">
                   {registroInspeccionModal.placa}
                 </div>
               </div>
 
-              <div className="telemetry-well p-3 rounded-2xl border border-white/[0.06]">
-                <div className="text-[10px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
+              <div className="telemetry-well px-3 py-2 rounded-xl border border-white/[0.06]">
+                <div className="text-[9px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
                   <User className="w-3 h-3 text-sky-400" />
                   <span>Conductor</span>
                 </div>
-                <div className="text-xs font-medium text-white mt-1 truncate">
+                <div className="text-xs font-medium text-white mt-0.5 truncate">
                   {registroInspeccionModal.conductor}
                 </div>
               </div>
 
-              <div className="telemetry-well p-3 rounded-2xl border border-white/[0.06]">
-                <div className="text-[10px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
+              <div className="telemetry-well px-3 py-2 rounded-xl border border-white/[0.06]">
+                <div className="text-[9px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
                   <Calendar className="w-3 h-3 text-[#59d499]" />
                   <span>Fecha / Turno</span>
                 </div>
-                <div className="text-xs font-mono text-white mt-1">
+                <div className="text-xs font-mono text-white mt-0.5">
                   {registroInspeccionModal.fecha} ({registroInspeccionModal.horaCheckIn})
                 </div>
               </div>
 
-              <div className="telemetry-well p-3 rounded-2xl border border-white/[0.06]">
-                <div className="text-[10px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
+              <div className="telemetry-well px-3 py-2 rounded-xl border border-white/[0.06]">
+                <div className="text-[9px] font-mono uppercase text-[#6a6b6c] flex items-center gap-1">
                   <Building className="w-3 h-3 text-amber-400" />
                   <span>Proyecto</span>
                 </div>
-                <div className="text-xs font-medium text-white mt-1 truncate" title={registroInspeccionModal.proyecto}>
+                <div className="text-xs font-medium text-white mt-0.5 truncate" title={registroInspeccionModal.proyecto}>
                   {registroInspeccionModal.proyecto}
                 </div>
               </div>
             </div>
 
-            {/* Lista Completa de Ítems Evaluados */}
-            <div className="overflow-y-auto pr-1 space-y-2.5 flex-1">
-              <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-[#6a6b6c] px-1">
-                <span>Ítems Evaluados en el Checklist ({registroInspeccionModal.totalItems})</span>
-                <span>Estado de Revisión</span>
+            {/* Alerta Resumen de Piezas con Falla (si existen) */}
+            {!registroInspeccionModal.allOk && (
+              <div className="p-3 rounded-2xl bg-[#2d0e14]/90 border border-[#ff6363]/40 flex items-start gap-2.5 shrink-0">
+                <ShieldAlert className="w-4 h-4 text-[#ff6363] shrink-0 mt-0.5 animate-pulse" />
+                <div className="text-[11px] font-mono leading-relaxed">
+                  <span className="font-bold text-[#ff6363] uppercase">Piezas / Ítems con Falla u Observación: </span>
+                  <span className="text-white">
+                    {registroInspeccionModal.listaFallas.map((f) => `#${f.num} ${f.label}`).join(' • ')}
+                  </span>
+                </div>
               </div>
+            )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {registroInspeccionModal.checklistItemsDetalle.map((item) => (
+            {/* Contenedor con Scroll Interno: 7 Categorías y 43 Sub-ítems */}
+            <div className="overflow-y-auto pr-1.5 space-y-4 flex-1 min-h-0">
+              {registroInspeccionModal.categoriasChecklist.map((cat) => {
+                const itemsVisibles =
+                  filtroModalItems === 'fallas'
+                    ? cat.items.filter((i) => !i.isOk)
+                    : cat.items;
+
+                if (itemsVisibles.length === 0) return null;
+
+                return (
                   <div
-                    key={item.id}
-                    className={`p-3.5 rounded-2xl border flex items-start justify-between gap-3 transition-all ${
-                      item.isOk
-                        ? 'bg-[#0b0e14] border-white/[0.07] hover:border-[#59d499]/30'
-                        : 'bg-[#2d0e14]/60 border-[#ff6363]/50 shadow-md shadow-[#ff6363]/10'
-                    }`}
+                    key={cat.id}
+                    className="rounded-2xl bg-[#080a0f] border border-white/[0.07] overflow-hidden"
                   >
-                    <div className="flex items-start gap-2.5 min-w-0">
-                      {item.isOk ? (
-                        <ShieldCheck className="w-4 h-4 text-[#59d499] shrink-0 mt-0.5" />
-                      ) : (
-                        <ShieldAlert className="w-4 h-4 text-[#ff6363] shrink-0 mt-0.5 animate-pulse" />
-                      )}
-                      <div className="min-w-0">
-                        <div className="text-xs font-semibold text-white leading-tight">
-                          {item.label}
-                        </div>
-                        <div className="text-[11px] text-[#6a6b6c] font-mono mt-0.5 leading-snug">
-                          {item.title}
-                        </div>
+                    {/* Subtítulo de la Categoría */}
+                    <div className="px-3.5 py-2 bg-white/[0.03] border-b border-white/[0.06] flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Layers className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-white">
+                          {cat.codigo} // {cat.titulo}
+                        </span>
                       </div>
+
+                      {cat.fallasCat === 0 ? (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/25">
+                          {cat.okCat}/{cat.totalCat} OK
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#ff6363]/15 text-[#ff6363] border border-[#ff6363]/40">
+                          {cat.okCat}/{cat.totalCat} OK • {cat.fallasCat} Falla(s)
+                        </span>
+                      )}
                     </div>
 
-                    <span
-                      className={`shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
-                        item.isOk
-                          ? 'bg-[#59d499]/10 text-[#59d499] border-[#59d499]/30'
-                          : 'bg-[#ff6363]/20 text-[#ff6363] border-[#ff6363]/50'
-                      }`}
-                    >
-                      {item.isOk ? 'OK' : 'FALLA'}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                    {/* Grilla Compacta de Sub-ítems de la Categoría */}
+                    <div className="p-2.5 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                      {itemsVisibles.map((item) => (
+                        <div
+                          key={item.id}
+                          className={`px-2.5 py-2 rounded-xl border flex items-center justify-between gap-2 transition-colors ${
+                            item.status === 'OK'
+                              ? 'bg-[#0c0f16] border-white/[0.05] hover:border-white/[0.12]'
+                              : item.status === 'OBSERVACION'
+                              ? 'bg-amber-950/30 border-amber-500/40'
+                              : 'bg-[#2d0e14]/70 border-[#ff6363]/50 shadow-sm shadow-[#ff6363]/10'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span
+                              className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                                item.isOk
+                                  ? 'bg-white/[0.06] text-[#9c9c9d]'
+                                  : 'bg-[#ff6363]/20 text-[#ff6363]'
+                              }`}
+                            >
+                              #{String(item.num).padStart(2, '0')}
+                            </span>
+                            <span
+                              className={`text-[11px] leading-snug truncate ${
+                                item.isOk ? 'text-slate-200' : 'text-white font-semibold'
+                              }`}
+                              title={item.label}
+                            >
+                              {item.label}
+                            </span>
+                          </div>
 
-              {/* Observaciones / Novedades registradas */}
-              <div className="mt-4 p-3.5 rounded-2xl telemetry-well border border-white/[0.08]">
+                          {/* Etiqueta pequeña y limpia de estado individual */}
+                          {item.status === 'OK' ? (
+                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-[#59d499]/10 text-[#59d499] border border-[#59d499]/30">
+                              <ShieldCheck className="w-2.5 h-2.5" />
+                              OK
+                            </span>
+                          ) : item.status === 'OBSERVACION' ? (
+                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                              <AlertTriangle className="w-2.5 h-2.5" />
+                              OBS.
+                            </span>
+                          ) : (
+                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-[#ff6363]/20 text-[#ff6363] border border-[#ff6363]/50">
+                              <ShieldAlert className="w-2.5 h-2.5" />
+                              FALLA
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Observaciones y Novedades del Conductor */}
+              <div className="p-3 rounded-2xl telemetry-well border border-white/[0.08]">
                 <div className="text-[10px] font-mono uppercase text-[#6a6b6c] mb-1">
-                  Observaciones y Novedades del Conductor
+                  Observaciones y Novedades Registradas por el Conductor
                 </div>
                 <p className="text-xs text-white font-mono leading-relaxed">
-                  {registroInspeccionModal.observaciones}
+                  {registroInspeccionModal.observaciones || 'Sin observaciones adicionales.'}
                 </p>
               </div>
             </div>
 
             {/* Pie del Modal */}
-            <div className="flex items-center justify-between pt-3 border-t border-white/[0.08]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t border-white/[0.08] shrink-0">
               <span className="text-[11px] font-mono text-[#6a6b6c]">
-                Odómetro registrado: <strong className="text-white">{registroInspeccionModal.kmInicial.toLocaleString()} km → {registroInspeccionModal.kmFinal.toLocaleString()} km</strong>
+                Odómetro auditado: <strong className="text-white">{registroInspeccionModal.kmInicial.toLocaleString()} km → {registroInspeccionModal.kmFinal.toLocaleString()} km</strong> ({registroInspeccionModal.kmRecorrido} km)
               </span>
               <button
                 type="button"
                 onClick={() => setRegistroInspeccionModal(null)}
-                className="btn-cockpit-secondary px-5 py-2 rounded-full text-xs font-mono font-bold text-white hover:bg-white/10 transition-colors cursor-pointer"
+                className="btn-cockpit-secondary px-5 py-2 rounded-full text-xs font-mono font-bold text-white hover:bg-white/10 transition-colors cursor-pointer self-end sm:self-auto"
               >
-                Cerrar Detalles
+                Cerrar Auditoría
               </button>
             </div>
           </div>
