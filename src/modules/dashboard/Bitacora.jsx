@@ -490,6 +490,7 @@ export default function Bitacora() {
   const [busqueda, setBusqueda] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [limpiando, setLimpiando] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [mensajeEstado, setMensajeEstado] = useState(null);
   const [registroInspeccionModal, setRegistroInspeccionModal] = useState(null);
   const [filtroModalItems, setFiltroModalItems] = useState('todos'); // 'todos' | 'fallas'
@@ -538,13 +539,17 @@ export default function Bitacora() {
   }, [filtrados]);
 
   // Exportación a Excel: Mantiene CADA ÍTEM del checklist en su propia columna independiente
-  const handleExportarExcel = () => {
+  const handleExportarExcel = async () => {
+    if (isExporting) return;
     if (!registrosCalculados || registrosCalculados.length === 0) {
       toast.warning('No hay registros en la tabla para exportar.');
       return;
     }
 
+    setIsExporting(true);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 350));
+
       const filasExcel = registrosCalculados.map((t) => {
         const fila = {
           'Fecha': t.fecha,
@@ -604,6 +609,8 @@ export default function Bitacora() {
         tipo: 'error',
         texto: 'Hubo un error al generar el archivo Excel. Inténtalo de nuevo.'
       });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -660,12 +667,24 @@ export default function Bitacora() {
           <button
             type="button"
             onClick={handleExportarExcel}
-            disabled={registrosCalculados.length === 0}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono font-bold text-white bg-emerald-600 hover:bg-emerald-700 border border-emerald-400/40 hover:border-emerald-300/70 transition-all duration-300 hover:shadow-md hover:scale-[1.02] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-emerald-950/50 active:scale-98"
+            disabled={isExporting || registrosCalculados.length === 0}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono font-bold text-white bg-emerald-600 hover:bg-emerald-700 border border-emerald-400/40 hover:border-emerald-300/70 transition-all duration-300 hover:shadow-md hover:scale-[1.02] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-emerald-950/50 active:scale-98"
             title="Exportar registros a formato Excel (.xlsx) con cada ítem del checklist en su propia columna"
           >
-            <FileSpreadsheet className="w-4 h-4 text-white" />
-            <span>Exportar a Excel</span>
+            {isExporting ? (
+              <>
+                <svg className="w-4 h-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                <span>Exportando...</span>
+              </>
+            ) : (
+              <>
+                <FileSpreadsheet className="w-4 h-4 text-white" />
+                <span>Exportar a Excel</span>
+              </>
+            )}
           </button>
 
           {/* Botón Limpiar Bitácora para Gerente */}
@@ -674,11 +693,23 @@ export default function Bitacora() {
               type="button"
               onClick={handleLimpiarBitacora}
               disabled={limpiando || (bitacora || []).length === 0}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-mono font-bold text-[#ff6363] hover:text-white bg-[#ff6363]/10 hover:bg-[#ff6363]/30 border border-[#ff6363]/30 hover:border-[#ff6363]/60 transition-all duration-300 hover:shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-98"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-mono font-bold text-[#ff6363] hover:text-white bg-[#ff6363]/10 hover:bg-[#ff6363]/30 border border-[#ff6363]/30 hover:border-[#ff6363]/60 transition-all duration-300 hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-98"
               title="Vaciar todos los registros de la bitácora (Solo Gerente)"
             >
-              <Trash2 className="w-3.5 h-3.5 text-[#ff6363]" />
-              <span>{limpiando ? 'Vaciando...' : 'Limpiar Bitácora'}</span>
+              {limpiando ? (
+                <>
+                  <svg className="w-3.5 h-3.5 animate-spin text-[#ff6363]" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  <span>Vaciando...</span>
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-3.5 h-3.5 text-[#ff6363]" />
+                  <span>Limpiar Bitácora</span>
+                </>
+              )}
             </button>
           )}
 

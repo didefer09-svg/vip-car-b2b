@@ -32,9 +32,11 @@ export default function GestionFlota() {
   const [busqueda, setBusqueda] = useState('');
   const [alerta, setAlerta] = useState('');
 
-  // Modales
+  // Modales y estados de carga (Spinners para evitar clics duplicados)
   const [modalUnidadAbierto, setModalUnidadAbierto] = useState(false);
   const [modalServicioAbierto, setModalServicioAbierto] = useState(false);
+  const [isLoadingUnidad, setIsLoadingUnidad] = useState(false);
+  const [isLoadingServicio, setIsLoadingServicio] = useState(false);
 
   // Formulario Nueva Unidad: Tipo de Vehículo (Combi, Camioneta, etc.) y Placa
   const [unidadForm, setUnidadForm] = useState({
@@ -80,8 +82,9 @@ export default function GestionFlota() {
   // Guardar Nueva Unidad
   const handleGuardarUnidad = async (e) => {
     e.preventDefault();
-    if (!unidadForm.placa.trim()) return;
+    if (isLoadingUnidad || !unidadForm.placa.trim()) return;
 
+    setIsLoadingUnidad(true);
     const placaLimpia = unidadForm.placa.trim().toUpperCase();
     const tipoFinal = unidadForm.tipo === 'Otro' && unidadForm.tipoPersonalizado.trim()
       ? unidadForm.tipoPersonalizado.trim()
@@ -157,17 +160,21 @@ export default function GestionFlota() {
     } catch (err) {
       console.error('Error al registrar unidad:', err);
       toast.error(`Error al guardar la unidad [${placaLimpia}] en Firebase.`);
+    } finally {
+      setIsLoadingUnidad(false);
     }
   };
 
   // Guardar Nuevo Servicio/Proyecto
   const handleGuardarServicio = async (e) => {
     e.preventDefault();
+    if (isLoadingServicio) return;
     if (!servicioForm.nombreEmpresaRuta.trim()) {
       toast.warning('Por favor ingresa el nombre de la empresa o ruta.');
       return;
     }
 
+    setIsLoadingServicio(true);
     const nombreLimpio = servicioForm.nombreEmpresaRuta.trim().toUpperCase();
 
     const nuevoServicio = {
@@ -198,6 +205,8 @@ export default function GestionFlota() {
     } catch (err) {
       console.error('Error al registrar servicio:', err);
       toast.error(`Error al registrar el proyecto [${nombreLimpio}] en Firebase.`);
+    } finally {
+      setIsLoadingServicio(false);
     }
   };
 
@@ -612,16 +621,28 @@ export default function GestionFlota() {
               <div className="flex justify-end gap-2.5 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
+                  disabled={isLoadingUnidad}
                   onClick={() => setModalUnidadAbierto(false)}
-                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer transition-all duration-300 hover:bg-white/[0.1] hover:shadow-md"
+                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer transition-all duration-300 hover:bg-white/[0.1] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="btn-cockpit-action px-6 py-2 rounded-full text-xs font-mono font-bold cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
+                  disabled={isLoadingUnidad}
+                  className="btn-cockpit-action px-6 py-2 rounded-full text-xs font-mono font-bold flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Guardar
+                  {isLoadingUnidad ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 animate-spin text-black" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      </svg>
+                      <span>Guardando...</span>
+                    </>
+                  ) : (
+                    <span>Guardar</span>
+                  )}
                 </button>
               </div>
             </form>
@@ -707,16 +728,28 @@ export default function GestionFlota() {
               <div className="flex justify-end gap-2.5 pt-3 border-t border-white/[0.08]">
                 <button
                   type="button"
+                  disabled={isLoadingServicio}
                   onClick={() => setModalServicioAbierto(false)}
-                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer transition-all duration-300 hover:bg-white/[0.1] hover:shadow-md"
+                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer transition-all duration-300 hover:bg-white/[0.1] hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-full bg-sky-600 hover:bg-sky-700 text-white font-mono font-bold text-xs cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] shadow-md shadow-sky-900/40"
+                  disabled={isLoadingServicio}
+                  className="px-6 py-2 rounded-full bg-sky-600 hover:bg-sky-700 text-white font-mono font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] shadow-md shadow-sky-900/40 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Guardar
+                  {isLoadingServicio ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      </svg>
+                      <span>Guardando...</span>
+                    </>
+                  ) : (
+                    <span>Guardar</span>
+                  )}
                 </button>
               </div>
             </form>

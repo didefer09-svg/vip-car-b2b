@@ -46,6 +46,7 @@ export default function SolicitudCotizacion() {
   });
 
   const [enviado, setEnviado] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleEquip = (key) => {
     setFormData((prev) => ({
@@ -54,10 +55,13 @@ export default function SolicitudCotizacion() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+
+    setIsLoading(true);
     try {
-      agregarCotizacion(formData);
+      await agregarCotizacion(formData);
       toast.success('¡Requerimiento corporativo recibido con éxito! Emitiremos su propuesta en menos de 2 horas.');
       setEnviado(true);
       setTimeout(() => {
@@ -66,6 +70,8 @@ export default function SolicitudCotizacion() {
     } catch (err) {
       console.error('Error al enviar cotización:', err);
       toast.error('Error al enviar la solicitud de cotización.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -318,10 +324,23 @@ export default function SolicitudCotizacion() {
         {/* Botón Submit Cockpit Action en Cápsula */}
         <button
           type="submit"
-          className="btn-cockpit-action w-full py-4 px-6 flex items-center justify-center gap-2 text-sm uppercase font-bold tracking-wider rounded-full transition-all duration-300 hover:scale-[1.01] hover:shadow-md active:scale-98 cursor-pointer shadow-xl font-mono"
+          disabled={isLoading || enviado}
+          className="btn-cockpit-action w-full py-4 px-6 flex items-center justify-center gap-2 text-sm uppercase font-bold tracking-wider rounded-full transition-all duration-300 hover:scale-[1.01] hover:shadow-md active:scale-98 cursor-pointer shadow-xl font-mono disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <Send className="w-4 h-4 text-black stroke-[2.5]" />
-          <span>ENVIAR REQUERIMIENTO CORPORATIVO</span>
+          {isLoading ? (
+            <>
+              <svg className="w-4 h-4 animate-spin text-black" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+              <span>ENVIANDO...</span>
+            </>
+          ) : (
+            <>
+              <Send className="w-4 h-4 text-black stroke-[2.5]" />
+              <span>ENVIAR REQUERIMIENTO CORPORATIVO</span>
+            </>
+          )}
         </button>
       </form>
     </div>

@@ -586,17 +586,28 @@ export default function SemaforoMantenimiento() {
               <div className="pt-3 flex items-center justify-end gap-3 border-t border-white/[0.08]">
                 <button
                   type="button"
+                  disabled={guardando}
                   onClick={() => setModalAbierto(false)}
-                  className="px-4 py-2 rounded-full telemetry-well text-xs font-mono text-[#9c9c9d] hover:text-white hover:bg-white/[0.08] cursor-pointer transition-all duration-300 hover:shadow-md"
+                  className="px-4 py-2 rounded-full telemetry-well text-xs font-mono text-[#9c9c9d] hover:text-white hover:bg-white/[0.08] cursor-pointer transition-all duration-300 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={guardando}
-                  className="btn-cockpit-action px-6 py-2.5 rounded-full text-xs font-mono font-bold text-black cursor-pointer shadow-lg disabled:opacity-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-98"
+                  className="btn-cockpit-action px-6 py-2.5 rounded-full text-xs font-mono font-bold text-black flex items-center justify-center gap-2 cursor-pointer shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-98"
                 >
-                  {guardando ? 'Guardando en Firestore...' : 'Guardar Mantenimiento'}
+                  {guardando ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 animate-spin text-black" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      </svg>
+                      <span>Guardando...</span>
+                    </>
+                  ) : (
+                    <span>Guardar Mantenimiento</span>
+                  )}
                 </button>
               </div>
             </form>
