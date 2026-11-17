@@ -47,7 +47,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Carlos Huamán',
     nivelCombustible: 75,
     tarifaDiariaUSD: 110,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/07/toyota-hilux.jpg',
     documentos: { soat: 'Vigente hasta 12/2026 (Rimac)', poliza: 'Rimac Todo Riesgo Minero #982314', revisionTecnica: 'Aprobado MTC Junín 03/2026' }
   },
   {
@@ -122,7 +122,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Edwin Palomino',
     nivelCombustible: 85,
     tarifaDiariaUSD: 160,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/mercedes-benz-sprinter-21.jpg',
     documentos: { soat: 'Vigente hasta 07/2026 (Rimac)', poliza: 'Rimac Transporte Pasajeros #339102', revisionTecnica: 'Aprobado MTC 05/2026' }
   },
   {
@@ -147,7 +147,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Carlos Huamán',
     nivelCombustible: 65,
     tarifaDiariaUSD: 105,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://commons.wikimedia.org/wiki/Special:FilePath/2020_Toyota_Hilux_Revo_4x4_Double-Cab_2.8_Rocco.jpg?width=800',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Proveedor Flota', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -172,7 +172,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Jorge Quispe',
     nivelCombustible: 72,
     tarifaDiariaUSD: 100,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/portada-alquiler-4x4-1.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Flota Minera', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -197,7 +197,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Fernando Orihuela',
     nivelCombustible: 90,
     tarifaDiariaUSD: 110,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/mitsubishi-l200.jpg',
+    imagen: 'https://wsrv.nl/?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fc%2Fc4%2FMitsubishi_Triton_L200_%2528Brunei_2024%2529.jpg&w=900&q=85',
     documentos: { soat: 'Vigente 2026', poliza: 'Pacífico Seguros #918233', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -222,7 +222,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Manuel Alanya',
     nivelCombustible: 60,
     tarifaDiariaUSD: 105,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://commons.wikimedia.org/wiki/Special:FilePath/2021_Toyota_Hilux_Revo_Z-Edition_Double-Cab_2.4_Mid.jpg?width=800',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Rimac Seguros', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -247,7 +247,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Raúl Córdova',
     nivelCombustible: 80,
     tarifaDiariaUSD: 115,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/nissan-frontier.jpg',
+    imagen: 'https://commons.wikimedia.org/wiki/Special:FilePath/2023_Nissan_Frontier_2.3_Pro_4X_(Argentina).jpg?width=800',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Corporativa Mapfre', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -272,7 +272,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Edwin Palomino',
     nivelCombustible: 75,
     tarifaDiariaUSD: 120,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/hyundai-h1.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Pacífico Seguros #881299', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -347,7 +347,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Fernando Orihuela',
     nivelCombustible: 90,
     tarifaDiariaUSD: 220,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2020/11/bus-mercedez.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Mapfre Corporativo Bus', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -372,7 +372,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Jorge Quispe',
     nivelCombustible: 65,
     tarifaDiariaUSD: 105,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://commons.wikimedia.org/wiki/Special:FilePath/2021_Toyota_Hilux_Revo_Z-Edition_Double-Cab_2.4_Mid.jpg?width=800',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Minera Rimac', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -397,7 +397,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Manuel Alanya',
     nivelCombustible: 75,
     tarifaDiariaUSD: 115,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://wsrv.nl/?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2F2%2F28%2FFord_Ranger_%2528T6%252C_P703%2529_Wildtrak_IMG_7320.jpg&w=900&q=85',
     documentos: { soat: 'Vigente 2026', poliza: 'Pacífico Flota #551922', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -422,7 +422,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Raúl Córdova',
     nivelCombustible: 85,
     tarifaDiariaUSD: 250,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2025/01/bus01.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Scania Pasajeros', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -447,7 +447,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Edwin Palomino',
     nivelCombustible: 80,
     tarifaDiariaUSD: 140,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://wsrv.nl/?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2F7%2F75%2FHyundai_Staria_1X7A0321.jpg&w=900&q=85',
     documentos: { soat: 'Vigente 2026', poliza: 'Rimac Pasajeros #994012', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -497,7 +497,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Fernando Orihuela',
     nivelCombustible: 75,
     tarifaDiariaUSD: 105,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://commons.wikimedia.org/wiki/Special:FilePath/2021_Toyota_Hilux_Revo_Z-Edition_Double-Cab_2.4_Mid.jpg?width=800',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Flota Proveedor', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -522,7 +522,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Jorge Quispe',
     nivelCombustible: 80,
     tarifaDiariaUSD: 110,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/mitsubishi-l200.jpg',
+    imagen: 'https://wsrv.nl/?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2F7%2F75%2FMitsubishi_L200_Double_Cab.jpg&w=900&q=85',
     documentos: { soat: 'Vigente 2026', poliza: 'Pacífico Flota #771201', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -547,7 +547,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Marcos Mendoza',
     nivelCombustible: 68,
     tarifaDiariaUSD: 105,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2022/05/WhatsApp-Image-2022-01-20-at-9.19.21-PM-1.jpeg',
     documentos: { soat: 'Vigente 2026', poliza: 'Rimac Seguros Flota', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -572,7 +572,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Manuel Alanya',
     nivelCombustible: 90,
     tarifaDiariaUSD: 110,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://commons.wikimedia.org/wiki/Special:FilePath/2021_Toyota_Hilux_Revo_Z-Edition_Double-Cab_2.4_Mid.jpg?width=800',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Rimac #990123', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -597,7 +597,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Raúl Córdova',
     nivelCombustible: 75,
     tarifaDiariaUSD: 105,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/nissan-frontier.jpg',
+    imagen: 'https://wsrv.nl/?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Ff%2Ff4%2FNISSAN_NAVARA_D23_China.jpg&w=900&q=85',
     documentos: { soat: 'Vigente 2026', poliza: 'Mapfre Flota #339100', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -647,7 +647,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Fernando Orihuela',
     nivelCombustible: 70,
     tarifaDiariaUSD: 105,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://commons.wikimedia.org/wiki/Special:FilePath/2021_Toyota_Hilux_Revo_Z-Edition_Double-Cab_2.4_Mid.jpg?width=800',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Proveedor #44102', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -672,7 +672,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Jorge Quispe',
     nivelCombustible: 60,
     tarifaDiariaUSD: 100,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/toyota-hilux-4x4-1.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/portada-alquiler-4x4-1.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Pacífico Seguros #881299', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -697,7 +697,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Edwin Palomino',
     nivelCombustible: 80,
     tarifaDiariaUSD: 230,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/bus-45-marcolopo-flota.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Póliza Interprovincial Rimac', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -722,7 +722,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Marcos Mendoza',
     nivelCombustible: 75,
     tarifaDiariaUSD: 170,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/coaster-30-p.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Rimac Pasajeros #192039', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -747,7 +747,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Manuel Alanya',
     nivelCombustible: 85,
     tarifaDiariaUSD: 165,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/08/coaster-hyundai.jpg',
     documentos: { soat: 'Vigente 2026', poliza: 'Pacífico Pasajeros #441029', revisionTecnica: 'Aprobado MTC 2026' }
   },
   {
@@ -772,7 +772,7 @@ export const INITIAL_VEHICLES = [
     conductorActual: 'Raúl Córdova',
     nivelCombustible: 90,
     tarifaDiariaUSD: 260,
-    imagen: 'https://vipcarhuancayo.com/wp-content/uploads/2021/10/toyota-hiace.jpg',
+    imagen: 'https://wsrv.nl/?url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fe%2Fe5%2FK7TCT_Taylors_Coach_Travel_Scania_K410CB6_with_Irizar_i6s_bodywork.jpg&w=900&q=85',
     documentos: { soat: 'Vigente 2026', poliza: 'Scania Todo Riesgo Pasajeros #881923', revisionTecnica: 'Aprobado MTC 2026' }
   }
 ];

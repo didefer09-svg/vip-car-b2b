@@ -14,6 +14,7 @@ import {
   Tag
 } from 'lucide-react';
 import SemaforoBadge from '../../components/common/SemaforoBadge';
+import { obtenerImagenPorMarcaModelo } from '../../components/b2b/VehicleCard';
 
 export default function GestionFlota() {
   const {
@@ -131,6 +132,7 @@ export default function GestionFlota() {
       propietario: 'VIP CAR',
       centroCosto: 'UM-01',
       tarifaDiariaUSD: 110,
+      imagen: obtenerImagenPorMarcaModelo({ marca, modelo, tipo: tipoFinal }),
       certificaciones: ['Socavón', 'Superficie'],
       equipamiento: ['Pértiga LED', 'Circulina Ámbar', 'Jaula Antivuelco Certificada', 'GPS Satelital'],
     };

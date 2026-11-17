@@ -9,7 +9,11 @@ import {
   Check
 } from 'lucide-react';
 import MiningClientsStrip from '../../components/b2b/MiningClientsStrip';
-import VehicleCard from '../../components/b2b/VehicleCard';
+import VehicleCard, {
+  obtenerImagenVehiculo,
+  obtenerImagenPorMarcaModelo,
+  VEHICLE_IMAGE_DICTIONARY,
+} from '../../components/b2b/VehicleCard';
 import { obtenerIdentificadorB2B } from '../../utils/plateMasker';
 
 export default function CatalogoCorporativo() {
@@ -21,6 +25,7 @@ export default function CatalogoCorporativo() {
 
   const enrichedVehicles = (vehicles || []).map((veh, index) => ({
     ...veh,
+    imagen: obtenerImagenVehiculo(veh),
     identificadorB2B: obtenerIdentificadorB2B(veh, index),
   }));
 
@@ -208,7 +213,11 @@ export default function CatalogoCorporativo() {
                   alt={flagshipVehicle.modelo}
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = '/logo-vipcar.png';
+                    const fallback = obtenerImagenPorMarcaModelo(flagshipVehicle);
+                    e.target.src =
+                      e.target.src !== fallback
+                        ? fallback
+                        : VEHICLE_IMAGE_DICTIONARY.DEFAULT;
                   }}
                   className="w-full h-full object-cover filter contrast-105 group-hover:scale-103 transition-transform duration-500"
                 />

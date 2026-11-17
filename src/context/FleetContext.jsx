@@ -39,7 +39,7 @@ const FleetContext = createContext(null);
 
 export function FleetProvider({ children }) {
   // Persistencia local para modo offline en operación minera
-  const FLEET_STORAGE_VERSION = 'v5_vipcar_bitacora_excel_horas_km_checklist';
+  const FLEET_STORAGE_VERSION = 'v6_vipcar_unique_verified_model_images';
 
   const [vehicles, setVehicles] = useState(() => {
     try {
