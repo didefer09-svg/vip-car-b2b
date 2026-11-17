@@ -197,7 +197,7 @@ export default function GestionMantenimiento() {
         {/* Botón Principal "+ Registrar Mantenimiento" */}
         <button
           onClick={handleAbrirModal}
-          className="btn-cockpit-action py-3 px-6 rounded-full flex items-center justify-center gap-2 text-xs font-mono font-bold cursor-pointer self-start sm:self-auto shadow-xl active:scale-98"
+          className="btn-cockpit-action py-3 px-6 rounded-full flex items-center justify-center gap-2 text-xs font-mono font-bold cursor-pointer self-start sm:self-auto transition-all duration-300 hover:scale-[1.02] hover:shadow-md shadow-xl active:scale-98"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>+ REGISTRAR MANTENIMIENTO</span>
@@ -399,7 +399,7 @@ export default function GestionMantenimiento() {
                         <button
                           type="button"
                           onClick={() => handleAbrirActualizar(item)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold text-white bg-white/[0.06] hover:bg-white/[0.15] border border-white/[0.12] hover:border-white/[0.3] transition-all cursor-pointer shadow-xs active:scale-95"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-bold text-white bg-white/[0.06] hover:bg-white/[0.16] border border-white/[0.12] hover:border-white/[0.3] transition-all duration-300 hover:shadow-md cursor-pointer shadow-xs active:scale-95"
                           title="Actualizar estado y observaciones de este mantenimiento"
                         >
                           <Edit2 className="w-3.5 h-3.5 text-[#ff6363]" />
@@ -508,7 +508,7 @@ export default function GestionMantenimiento() {
                 <button
                   type="button"
                   onClick={() => setModalEditarAbierto(false)}
-                  className="px-4 py-2 rounded-full text-xs font-mono text-[#9c9c9d] hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full text-xs font-mono text-[#9c9c9d] hover:text-white hover:bg-white/[0.08] transition-all duration-300 hover:shadow-md cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -516,7 +516,7 @@ export default function GestionMantenimiento() {
                 <button
                   type="submit"
                   disabled={actualizando}
-                  className="btn-cockpit-action px-5 py-2.5 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-lg active:scale-98"
+                  className="btn-cockpit-action px-5 py-2.5 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-md shadow-lg active:scale-98"
                 >
                   {actualizando ? (
                     <>
@@ -651,14 +651,14 @@ export default function GestionMantenimiento() {
                 <button
                   type="button"
                   onClick={() => setModalAbierto(false)}
-                  className="px-4 py-2 rounded-full telemetry-well text-xs font-mono text-[#9c9c9d] hover:text-white cursor-pointer"
+                  className="px-4 py-2 rounded-full telemetry-well text-xs font-mono text-[#9c9c9d] hover:text-white hover:bg-white/[0.08] transition-all duration-300 hover:shadow-md cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={guardando}
-                  className="btn-cockpit-action px-6 py-2.5 rounded-full text-xs font-mono font-bold text-black cursor-pointer shadow-lg disabled:opacity-50"
+                  className="btn-cockpit-action px-6 py-2.5 rounded-full text-xs font-mono font-bold text-black cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md shadow-lg disabled:opacity-50"
                 >
                   {guardando ? 'Guardando en Firebase...' : 'GUARDAR MANTENIMIENTO'}
                 </button>

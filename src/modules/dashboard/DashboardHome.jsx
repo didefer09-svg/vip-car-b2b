@@ -51,7 +51,7 @@ export default function DashboardHome() {
 
         <Link
           to="/dashboard/semaforo"
-          className="btn-raycast-primary self-start md:self-auto py-2.5 px-5 rounded-full flex items-center gap-1.5 text-xs active:scale-98 cursor-pointer"
+          className="btn-raycast-primary self-start md:self-auto py-2.5 px-5 rounded-full flex items-center gap-1.5 text-xs transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-98 cursor-pointer"
         >
           <TrafficCone className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Ver Semáforo Preventivo</span>
@@ -79,7 +79,7 @@ export default function DashboardHome() {
           </div>
           <Link
             to="/dashboard/semaforo"
-            className="px-4 py-2 rounded-full bg-[#ff6363] hover:bg-[#ff4d4d] text-black font-bold text-xs self-start sm:self-auto transition-colors font-mono cursor-pointer"
+            className="px-4 py-2 rounded-full bg-[#ff6363] hover:bg-[#e64c4c] text-black font-bold text-xs self-start sm:self-auto transition-all duration-300 hover:shadow-md font-mono cursor-pointer"
           >
             Revisar Unidades
           </Link>

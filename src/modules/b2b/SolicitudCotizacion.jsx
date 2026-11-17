@@ -311,7 +311,7 @@ export default function SolicitudCotizacion() {
         {/* Botón Submit Cockpit Action en Cápsula */}
         <button
           type="submit"
-          className="btn-cockpit-action w-full py-4 px-6 flex items-center justify-center gap-2 text-sm uppercase font-bold tracking-wider rounded-full active:scale-98 cursor-pointer shadow-xl font-mono"
+          className="btn-cockpit-action w-full py-4 px-6 flex items-center justify-center gap-2 text-sm uppercase font-bold tracking-wider rounded-full transition-all duration-300 hover:scale-[1.01] hover:shadow-md active:scale-98 cursor-pointer shadow-xl font-mono"
         >
           <Send className="w-4 h-4 text-black stroke-[2.5]" />
           <span>ENVIAR REQUERIMIENTO CORPORATIVO</span>

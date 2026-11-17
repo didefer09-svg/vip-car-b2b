@@ -656,10 +656,10 @@ export default function Bitacora() {
             type="button"
             onClick={handleExportarExcel}
             disabled={registrosCalculados.length === 0}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono font-bold text-[#59d499] hover:text-white bg-[#071f16] hover:bg-[#59d499]/20 border border-[#59d499]/40 hover:border-[#59d499]/70 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-[#59d499]/10 active:scale-98"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-mono font-bold text-white bg-emerald-600 hover:bg-emerald-700 border border-emerald-400/40 hover:border-emerald-300/70 transition-all duration-300 hover:shadow-md hover:scale-[1.02] cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-emerald-950/50 active:scale-98"
             title="Exportar registros a formato Excel (.xlsx) con cada ítem del checklist en su propia columna"
           >
-            <FileSpreadsheet className="w-4 h-4 text-[#59d499]" />
+            <FileSpreadsheet className="w-4 h-4 text-white" />
             <span>Exportar a Excel</span>
           </button>
 
@@ -669,7 +669,7 @@ export default function Bitacora() {
               type="button"
               onClick={handleLimpiarBitacora}
               disabled={limpiando || (bitacora || []).length === 0}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-mono font-bold text-[#ff6363] hover:text-white bg-[#ff6363]/10 hover:bg-[#ff6363]/25 border border-[#ff6363]/30 hover:border-[#ff6363]/60 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-98"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-mono font-bold text-[#ff6363] hover:text-white bg-[#ff6363]/10 hover:bg-[#ff6363]/30 border border-[#ff6363]/30 hover:border-[#ff6363]/60 transition-all duration-300 hover:shadow-md cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-sm active:scale-98"
               title="Vaciar todos los registros de la bitácora (Solo Gerente)"
             >
               <Trash2 className="w-3.5 h-3.5 text-[#ff6363]" />
@@ -900,7 +900,7 @@ export default function Bitacora() {
                         <button
                           type="button"
                           onClick={() => abrirModalDetalles(t)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold text-white bg-white/[0.06] hover:bg-white/[0.14] border border-white/[0.12] hover:border-white/[0.25] transition-all cursor-pointer active:scale-95"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold text-white bg-white/[0.06] hover:bg-white/[0.16] border border-white/[0.12] hover:border-white/[0.3] transition-all duration-300 hover:shadow-md cursor-pointer active:scale-95"
                           title="Ver los 43 ítems evaluados agrupados por sección"
                         >
                           <Eye className="w-3 h-3 text-sky-400" />
@@ -1205,7 +1205,7 @@ export default function Bitacora() {
               <button
                 type="button"
                 onClick={() => setRegistroInspeccionModal(null)}
-                className="btn-cockpit-secondary px-5 py-2 rounded-full text-xs font-mono font-bold text-white hover:bg-white/10 transition-colors cursor-pointer self-end sm:self-auto"
+                className="btn-cockpit-secondary px-5 py-2 rounded-full text-xs font-mono font-bold text-white hover:bg-white/10 transition-all duration-300 hover:shadow-md cursor-pointer self-end sm:self-auto"
               >
                 Cerrar Auditoría
               </button>

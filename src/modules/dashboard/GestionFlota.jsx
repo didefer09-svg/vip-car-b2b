@@ -218,7 +218,7 @@ export default function GestionFlota() {
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => setModalUnidadAbierto(true)}
-            className="btn-cockpit-action py-2.5 px-4 sm:px-5 rounded-full flex items-center justify-center gap-2 text-xs font-mono font-bold cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-[#ff6363]/20"
+            className="btn-cockpit-action py-2.5 px-4 sm:px-5 rounded-full flex items-center justify-center gap-2 text-xs font-mono font-bold cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] shadow-lg shadow-[#ff6363]/20"
             title="Registrar nueva unidad (Combi, Camioneta, etc.) y placa"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -227,7 +227,7 @@ export default function GestionFlota() {
 
           <button
             onClick={() => setModalServicioAbierto(true)}
-            className="py-2.5 px-4 sm:px-5 rounded-full bg-[#121c2e] hover:bg-[#1a2942] border border-sky-500/40 text-sky-300 flex items-center justify-center gap-2 text-xs font-mono font-bold cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-sky-950/40"
+            className="py-2.5 px-4 sm:px-5 rounded-full bg-sky-600/20 hover:bg-sky-600/35 border border-sky-500/40 hover:border-sky-400/70 text-sky-300 hover:text-white flex items-center justify-center gap-2 text-xs font-mono font-bold cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] shadow-lg shadow-sky-950/40"
             title="Registrar nuevo servicio o proyecto minero / ruta"
           >
             <Plus className="w-4 h-4 stroke-[2.5] text-sky-400" />
@@ -591,13 +591,13 @@ export default function GestionFlota() {
                 <button
                   type="button"
                   onClick={() => setModalUnidadAbierto(false)}
-                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer"
+                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer transition-all duration-300 hover:bg-white/[0.1] hover:shadow-md"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="btn-cockpit-action px-6 py-2 rounded-full text-xs font-mono font-bold cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="btn-cockpit-action px-6 py-2 rounded-full text-xs font-mono font-bold cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98]"
                 >
                   Guardar
                 </button>
@@ -686,13 +686,13 @@ export default function GestionFlota() {
                 <button
                   type="button"
                   onClick={() => setModalServicioAbierto(false)}
-                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer"
+                  className="btn-cockpit-secondary px-4 py-2 rounded-full text-xs font-mono cursor-pointer transition-all duration-300 hover:bg-white/[0.1] hover:shadow-md"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-full bg-sky-600 hover:bg-sky-500 text-white font-mono font-bold text-xs cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-sky-900/40"
+                  className="px-6 py-2 rounded-full bg-sky-600 hover:bg-sky-700 text-white font-mono font-bold text-xs cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-[0.98] shadow-md shadow-sky-900/40"
                 >
                   Guardar
                 </button>

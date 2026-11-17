@@ -334,7 +334,7 @@ export default function GestionContratos() {
                                 <div className="flex flex-wrap gap-2">
                                   <button
                                     onClick={() => handleDownload('SOAT Vigente', veh.placa, veh)}
-                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono"
+                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono transition-all duration-300 hover:shadow-md"
                                   >
                                     <FileText className="w-3 h-3 text-[#ff6363]" />
                                     <span>SOAT</span>
@@ -343,7 +343,7 @@ export default function GestionContratos() {
 
                                   <button
                                     onClick={() => handleDownload('Póliza Todo Riesgo Rimac', veh.placa, veh)}
-                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono"
+                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono transition-all duration-300 hover:shadow-md"
                                   >
                                     <FileText className="w-3 h-3 text-[#59d499]" />
                                     <span>Póliza</span>
@@ -352,7 +352,7 @@ export default function GestionContratos() {
 
                                   <button
                                     onClick={() => handleDownload('Revisión Técnica MTC', veh.placa, veh)}
-                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono"
+                                    className="btn-cockpit-secondary px-3 py-1 text-[10px] rounded-full flex items-center gap-1.5 cursor-pointer font-mono transition-all duration-300 hover:shadow-md"
                                   >
                                     <FileText className="w-3 h-3 text-sky-400" />
                                     <span>Rev. Técnica</span>

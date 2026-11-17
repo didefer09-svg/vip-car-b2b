@@ -649,7 +649,7 @@ export default function AlertaCriticaCockpit() {
                     href={getGoogleMapsUrl(selectedAlert)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 py-2 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-black flex items-center gap-1.5 transition-colors shadow-lg cursor-pointer"
+                    className="px-4 py-2 rounded-2xl bg-cyan-600 hover:bg-cyan-700 text-white font-mono text-xs font-black flex items-center gap-1.5 transition-all duration-300 hover:shadow-md shadow-lg cursor-pointer"
                   >
                     <Navigation className="w-3.5 h-3.5" />
                     <span>Abrir en Google Maps</span>
@@ -659,7 +659,7 @@ export default function AlertaCriticaCockpit() {
                   <button
                     type="button"
                     onClick={() => setModalAbierto(false)}
-                    className="px-4 py-2 rounded-2xl bg-white/[0.06] hover:bg-white/[0.15] text-slate-300 font-mono text-xs font-bold transition-colors cursor-pointer"
+                    className="px-4 py-2 rounded-2xl bg-white/[0.06] hover:bg-white/[0.15] text-slate-300 font-mono text-xs font-bold transition-all duration-300 hover:shadow-md cursor-pointer"
                   >
                     Cerrar
                   </button>

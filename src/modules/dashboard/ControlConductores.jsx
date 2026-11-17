@@ -315,7 +315,7 @@ export default function ControlConductores() {
                       <td className="py-3.5 px-4 text-right">
                         <button
                           type="button"
-                          className="px-3 py-1 rounded-full telemetry-well border border-white/[0.08] hover:border-[#ff6363]/40 text-[#9c9c9d] hover:text-white text-xs font-mono inline-flex items-center gap-1 transition-colors"
+                          className="px-3 py-1 rounded-full telemetry-well border border-white/[0.08] hover:border-[#ff6363]/50 hover:bg-white/[0.08] text-[#9c9c9d] hover:text-white text-xs font-mono inline-flex items-center gap-1 transition-all duration-300 hover:shadow-md"
                         >
                           <span>Historial</span>
                           <ChevronRight className="w-3.5 h-3.5 text-[#ff6363]" />
@@ -498,7 +498,7 @@ export default function ControlConductores() {
               </span>
               <button
                 onClick={() => setSelectedConductor(null)}
-                className="btn-cockpit-action px-5 py-2 rounded-full font-bold text-black cursor-pointer shadow-md"
+                className="btn-cockpit-action px-5 py-2 rounded-full font-bold text-black cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md shadow-md"
               >
                 Cerrar Expediente
               </button>

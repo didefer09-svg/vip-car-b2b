@@ -194,7 +194,7 @@ export default function Navbar() {
             {/* Primary Action Button Cápsula */}
             <Link
               to="/b2b/cotizar"
-              className="btn-cockpit-action hidden sm:inline-flex items-center gap-1.5 py-2 px-4 rounded-full font-mono font-bold text-xs transition-all shadow-md active:scale-98 cursor-pointer"
+              className="btn-cockpit-action hidden sm:inline-flex items-center gap-1.5 py-2 px-4 rounded-full font-mono font-bold text-xs transition-all duration-300 hover:scale-[1.02] hover:shadow-md shadow-md active:scale-98 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Solicitar Flota</span>

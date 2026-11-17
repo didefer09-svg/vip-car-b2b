@@ -113,7 +113,7 @@ export default function VehicleCard({ vehicle }) {
 
           <Link
             to={`/b2b/cotizar?modelo=${encodeURIComponent(vehicle.modelo)}`}
-            className="w-full sm:w-auto py-3 px-6 rounded-full bg-red-600 hover:bg-red-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-950/40 active:scale-98 font-sans"
+            className="w-full sm:w-auto py-3 px-6 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all duration-300 hover:shadow-md hover:scale-[1.02] cursor-pointer shadow-lg shadow-red-950/40 active:scale-98 font-sans"
           >
             <span>Cotizar {vehicle.identificadorB2B?.codigo || 'Unidad'}</span>
             <ArrowRight className="w-3.5 h-3.5 text-white" />

@@ -201,7 +201,7 @@ export default function SemaforoMantenimiento() {
           <button
             type="button"
             onClick={() => handleAbrirModal(null, 'Preventivo 5,000 km')}
-            className="btn-cockpit-action py-2 px-4 rounded-full flex items-center justify-center gap-1.5 text-xs font-mono font-bold cursor-pointer"
+            className="btn-cockpit-action py-2 px-4 rounded-full flex items-center justify-center gap-1.5 text-xs font-mono font-bold cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-md"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>+ PROGRAMAR MANTENIMIENTO</span>
@@ -324,7 +324,7 @@ export default function SemaforoMantenimiento() {
 
                   <button
                     onClick={() => handleAbrirModal(veh, 'Correctivo Frenos')}
-                    className="w-full py-2.5 px-4 rounded-full bg-[#ff6363] hover:bg-[#ff4d4d] text-black font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-xs active:scale-98 font-mono cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-full bg-[#ff6363] hover:bg-[#e64c4c] text-black font-bold text-xs transition-all duration-300 hover:shadow-md flex items-center justify-center gap-1.5 shadow-xs active:scale-98 font-mono cursor-pointer"
                   >
                     <Wrench className="w-3.5 h-3.5" />
                     <span>Inhabilitar y Ordenar Taller</span>
@@ -390,7 +390,7 @@ export default function SemaforoMantenimiento() {
 
                   <button
                     onClick={() => handleAbrirModal(veh, 'Preventivo 5,000 km')}
-                    className="btn-cockpit-secondary w-full py-2.5 px-4 rounded-full text-xs flex items-center justify-center gap-1.5 text-[#f59e0b] hover:text-white border-[#f59e0b]/40 active:scale-98 font-mono cursor-pointer"
+                    className="btn-cockpit-secondary w-full py-2.5 px-4 rounded-full text-xs flex items-center justify-center gap-1.5 text-[#f59e0b] hover:text-white border-[#f59e0b]/40 transition-all duration-300 hover:shadow-md active:scale-98 font-mono cursor-pointer"
                   >
                     <Calendar className="w-3.5 h-3.5" />
                     <span>Programar Taller Preventivo</span>
@@ -582,14 +582,14 @@ export default function SemaforoMantenimiento() {
                 <button
                   type="button"
                   onClick={() => setModalAbierto(false)}
-                  className="px-4 py-2 rounded-full telemetry-well text-xs font-mono text-[#9c9c9d] hover:text-white cursor-pointer transition-colors"
+                  className="px-4 py-2 rounded-full telemetry-well text-xs font-mono text-[#9c9c9d] hover:text-white hover:bg-white/[0.08] cursor-pointer transition-all duration-300 hover:shadow-md"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={guardando}
-                  className="btn-cockpit-action px-6 py-2.5 rounded-full text-xs font-mono font-bold text-black cursor-pointer shadow-lg disabled:opacity-50 transition-transform active:scale-98"
+                  className="btn-cockpit-action px-6 py-2.5 rounded-full text-xs font-mono font-bold text-black cursor-pointer shadow-lg disabled:opacity-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-md active:scale-98"
                 >
                   {guardando ? 'Guardando en Firestore...' : 'Guardar Mantenimiento'}
                 </button>
