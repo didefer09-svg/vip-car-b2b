@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import {
   ClipboardX,
@@ -58,19 +59,25 @@ export default function CheckOut() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    registrarCheckOut({
-      placa: assignedVehicle.placa,
-      odometro: Number(odometro),
-      combustible,
-      novedades: novedades.trim(),
-      evaluacion,
-      conductor: 'Carlos Huamán',
-    });
+    try {
+      registrarCheckOut({
+        placa: assignedVehicle.placa,
+        odometro: Number(odometro),
+        combustible,
+        novedades: novedades.trim(),
+        evaluacion,
+        conductor: 'Carlos Huamán',
+      });
 
-    setSuccess(true);
-    setTimeout(() => {
-      navigate('/conductor');
-    }, 1500);
+      toast.success(`¡Turno cerrado con éxito! Kilómetros de [${assignedVehicle.placa}] archivados en bitácora.`);
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/conductor');
+      }, 1500);
+    } catch (err) {
+      console.error('Error al guardar Check-out:', err);
+      toast.error('Error al registrar el cierre de turno en Firebase.');
+    }
   };
 
   return (

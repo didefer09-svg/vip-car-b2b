@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import * as XLSX from 'xlsx';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -539,7 +540,7 @@ export default function Bitacora() {
   // Exportación a Excel: Mantiene CADA ÍTEM del checklist en su propia columna independiente
   const handleExportarExcel = () => {
     if (!registrosCalculados || registrosCalculados.length === 0) {
-      alert('No hay registros en la tabla para exportar.');
+      toast.warning('No hay registros en la tabla para exportar.');
       return;
     }
 
@@ -590,6 +591,7 @@ export default function Bitacora() {
 
       XLSX.writeFile(workbook, nombreArchivo);
 
+      toast.success(`Reporte Excel exportado: ${nombreArchivo}`);
       setMensajeEstado({
         tipo: 'exito',
         texto: `Reporte exportado exitosamente con los 43 ítems desglosados en columnas: ${nombreArchivo}`
@@ -597,6 +599,7 @@ export default function Bitacora() {
       setTimeout(() => setMensajeEstado(null), 4000);
     } catch (err) {
       console.error('Error al exportar a Excel:', err);
+      toast.error('Hubo un error al generar el archivo Excel. Inténtalo de nuevo.');
       setMensajeEstado({
         tipo: 'error',
         texto: 'Hubo un error al generar el archivo Excel. Inténtalo de nuevo.'
@@ -612,6 +615,7 @@ export default function Bitacora() {
     setLimpiando(true);
     try {
       await limpiarBitacora();
+      toast.success('La bitácora de conductores ha sido vaciada exitosamente.');
       setMensajeEstado({
         tipo: 'exito',
         texto: 'La bitácora de conductores ha sido vaciada exitosamente.'
@@ -619,6 +623,7 @@ export default function Bitacora() {
       setTimeout(() => setMensajeEstado(null), 4000);
     } catch (err) {
       console.error('Error al vaciar la bitácora:', err);
+      toast.error('Hubo un inconveniente al vaciar la bitácora en Firebase.');
       setMensajeEstado({
         tipo: 'error',
         texto: 'Hubo un inconveniente al vaciar la bitácora. Inténtalo de nuevo.'

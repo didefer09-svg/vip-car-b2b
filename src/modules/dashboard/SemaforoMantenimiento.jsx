@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import { subscribeToVehiculos } from '../../services/firestoreService';
 import { isConfigured } from '../../config/firebase';
@@ -136,12 +137,16 @@ export default function SemaforoMantenimiento() {
         });
       }
 
-      setNotif(`¡Mantenimiento para la unidad [${formData.placa}] guardado exitosamente en Firestore!`);
+      const msg = `¡Mantenimiento para la unidad [${formData.placa}] guardado exitosamente en Firestore!`;
+      toast.success(msg);
+      setNotif(msg);
       setModalAbierto(false);
       setTimeout(() => setNotif(''), 4500);
     } catch (err) {
       console.error('Error al guardar mantenimiento en Firestore:', err);
-      setNotif(`Error al guardar mantenimiento para [${formData.placa}].`);
+      const errMsg = `Error al guardar mantenimiento para [${formData.placa}] en Firebase.`;
+      toast.error(errMsg);
+      setNotif(errMsg);
       setTimeout(() => setNotif(''), 4500);
     } finally {
       setGuardando(false);

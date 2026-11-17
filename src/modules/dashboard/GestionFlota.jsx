@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import {
   Car,
@@ -137,25 +138,35 @@ export default function GestionFlota() {
       equipamiento: ['Pértiga LED', 'Circulina Ámbar', 'Jaula Antivuelco Certificada', 'GPS Satelital'],
     };
 
-    await agregarVehiculo(nuevaUnidad);
+    try {
+      await agregarVehiculo(nuevaUnidad);
 
-    setAlerta(`Unidad [${placaLimpia}] (${tipoFinal}) registrada e incorporada a la flota correctamente.`);
-    setModalUnidadAbierto(false);
-    setVistaActiva('unidades');
-    setUnidadForm({
-      tipo: 'Camioneta',
-      tipoPersonalizado: '',
-      placa: '',
-      proyecto: '',
-    });
+      const msg = `Unidad [${placaLimpia}] (${tipoFinal}) registrada e incorporada a la flota correctamente.`;
+      toast.success(msg);
+      setAlerta(msg);
+      setModalUnidadAbierto(false);
+      setVistaActiva('unidades');
+      setUnidadForm({
+        tipo: 'Camioneta',
+        tipoPersonalizado: '',
+        placa: '',
+        proyecto: '',
+      });
 
-    setTimeout(() => setAlerta(''), 4000);
+      setTimeout(() => setAlerta(''), 4000);
+    } catch (err) {
+      console.error('Error al registrar unidad:', err);
+      toast.error(`Error al guardar la unidad [${placaLimpia}] en Firebase.`);
+    }
   };
 
   // Guardar Nuevo Servicio/Proyecto
   const handleGuardarServicio = async (e) => {
     e.preventDefault();
-    if (!servicioForm.nombreEmpresaRuta.trim()) return;
+    if (!servicioForm.nombreEmpresaRuta.trim()) {
+      toast.warning('Por favor ingresa el nombre de la empresa o ruta.');
+      return;
+    }
 
     const nombreLimpio = servicioForm.nombreEmpresaRuta.trim().toUpperCase();
 
@@ -169,23 +180,31 @@ export default function GestionFlota() {
       fechaRegistro: new Date().toLocaleDateString('es-PE'),
     };
 
-    await agregarServicio(nuevoServicio);
+    try {
+      await agregarServicio(nuevoServicio);
 
-    setAlerta(`Servicio / Proyecto [${nombreLimpio}] registrado con éxito en la base de datos.`);
-    setModalServicioAbierto(false);
-    setVistaActiva('servicios');
-    setServicioForm({
-      nombreEmpresaRuta: '',
-      tipoServicio: 'Transporte de Personal',
-      sede: 'Huancayo / Junín',
-    });
+      const msg = `Servicio / Proyecto [${nombreLimpio}] registrado con éxito en la base de datos.`;
+      toast.success(msg);
+      setAlerta(msg);
+      setModalServicioAbierto(false);
+      setVistaActiva('servicios');
+      setServicioForm({
+        nombreEmpresaRuta: '',
+        tipoServicio: 'Transporte de Personal',
+        sede: 'Huancayo / Junín',
+      });
 
-    setTimeout(() => setAlerta(''), 4000);
+      setTimeout(() => setAlerta(''), 4000);
+    } catch (err) {
+      console.error('Error al registrar servicio:', err);
+      toast.error(`Error al registrar el proyecto [${nombreLimpio}] en Firebase.`);
+    }
   };
 
   const handleEliminarUnidad = (id, placa) => {
     if (confirm(`¿Confirma dar de baja la unidad ${placa}?`)) {
       eliminarVehiculo(id);
+      toast.success(`Unidad [${placa}] dada de baja de la flota.`);
       setAlerta(`Unidad ${placa} dada de baja.`);
       setTimeout(() => setAlerta(''), 3000);
     }
@@ -194,6 +213,7 @@ export default function GestionFlota() {
   const handleEliminarServicio = (id, cliente) => {
     if (confirm(`¿Confirma retirar el servicio / proyecto ${cliente}?`)) {
       eliminarServicio(id);
+      toast.success(`Servicio / Proyecto [${cliente}] retirado correctamente.`);
       setAlerta(`Servicio ${cliente} retirado.`);
       setTimeout(() => setAlerta(''), 3000);
     }

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { toast } from 'sonner';
 import {
   AlertOctagon,
   MapPin,
@@ -118,6 +119,7 @@ export default function AlertaCriticaCockpit() {
   const handleCopiarCoords = (item) => {
     const { lat, lng } = getCoordenadas(item);
     navigator.clipboard.writeText(`${lat}, ${lng}`);
+    toast.success(`Coordenadas GPS (${lat}, ${lng}) copiadas al portapapeles.`);
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2000);
   };
@@ -147,6 +149,10 @@ export default function AlertaCriticaCockpit() {
         longitud: Number((-76.1294 + (Math.random() - 0.5) * 0.05).toFixed(5)),
         severidad: 'Crítica',
       });
+      toast.warning(`Alerta crítica [${chosenTipo}] transmitida para la unidad ${placasDemo[randomIdx]}.`);
+    } catch (err) {
+      console.error('Error al simular alerta crítica:', err);
+      toast.error('Error al emitir señal de alerta en Firebase.');
     } finally {
       setSimulando(false);
     }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import {
   FileCheck,
@@ -65,8 +66,11 @@ export default function ContratosActivos() {
     if (match) {
       setContratoActivo(match);
       setErrorMessage('');
+      toast.success(`Expediente corporativo [${match.id}] validado correctamente.`);
     } else {
-      setErrorMessage('Credenciales no encontradas. Verifique el RUC y Código de Contrato provistos en su orden de servicio.');
+      const errMsg = 'Credenciales no encontradas. Verifique el RUC y Código de Contrato provistos en su orden de servicio.';
+      setErrorMessage(errMsg);
+      toast.error(errMsg);
     }
   };
 
@@ -79,7 +83,9 @@ export default function ContratosActivos() {
   };
 
   const handleDownload = (docName, identificador) => {
-    setDownloadMsg(`Generando certificado oficial de ${docName} para la ${identificador.codigo} [${identificador.enmascarada}] (PDF homologado MTC)...`);
+    const msg = `Generando certificado oficial de ${docName} para la ${identificador.codigo} [${identificador.enmascarada}] (PDF homologado MTC)...`;
+    toast.success(msg);
+    setDownloadMsg(msg);
     setTimeout(() => {
       setDownloadMsg('');
     }, 2500);

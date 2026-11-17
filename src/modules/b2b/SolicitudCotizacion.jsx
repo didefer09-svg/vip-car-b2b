@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import { OFICIAL_SERVICIOS } from '../../data/mockData';
 import {
@@ -55,11 +56,17 @@ export default function SolicitudCotizacion() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    agregarCotizacion(formData);
-    setEnviado(true);
-    setTimeout(() => {
-      navigate('/b2b/contratos');
-    }, 2000);
+    try {
+      agregarCotizacion(formData);
+      toast.success('¡Requerimiento corporativo recibido con éxito! Emitiremos su propuesta en menos de 2 horas.');
+      setEnviado(true);
+      setTimeout(() => {
+        navigate('/b2b/contratos');
+      }, 2000);
+    } catch (err) {
+      console.error('Error al enviar cotización:', err);
+      toast.error('Error al enviar la solicitud de cotización.');
+    }
   };
 
   return (

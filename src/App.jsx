@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { AuthProvider } from './context/AuthContext';
 import { FleetProvider } from './context/FleetContext';
 import { PWAProvider } from './context/PWAContext';
@@ -39,6 +40,21 @@ export default function App() {
       <AuthProvider>
         <FleetProvider>
           <BrowserRouter>
+            <Toaster
+              position="top-right"
+              theme="dark"
+              richColors
+              closeButton
+              toastOptions={{
+                style: {
+                  background: '#0d1016',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  color: '#ffffff',
+                  fontFamily: 'JetBrains Mono, Inter, sans-serif',
+                  fontSize: '12px',
+                },
+              }}
+            />
             <div className="min-h-screen bg-[#040506] text-[#9c9c9d] flex flex-col font-sans selection:bg-[#ff6363] selection:text-white">
               {/* Notificación de Instalación PWA y Alerta Offline */}
               <PWAInstallPrompt />

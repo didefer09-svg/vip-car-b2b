@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import {
   FileCheck,
@@ -33,7 +34,9 @@ export default function GestionContratos() {
   };
 
   const handleDownload = (docName, placa, vehiculo) => {
-    setDownloadMsg(`Generando descarga de ${docName} para la unidad ${placa} (${vehiculo?.marca || ''} ${vehiculo?.modelo || ''})...`);
+    const msg = `Generando descarga de ${docName} para la unidad ${placa} (${vehiculo?.marca || ''} ${vehiculo?.modelo || ''})...`;
+    toast.success(msg);
+    setDownloadMsg(msg);
     setTimeout(() => {
       setDownloadMsg('');
     }, 2500);

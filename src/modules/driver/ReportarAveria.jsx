@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import {
   AlertOctagon,
@@ -69,23 +70,33 @@ export default function ReportarAveria() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    reportarAveriaEmergencia({
-      placa: assignedVehicle.placa,
-      tipoFalla,
-      severidad: tipoEvento === 'SOS' ? 'Crítica' : severidad,
-      descripcion: descripcion.trim() || (tipoEvento === 'SOS' ? 'SEÑAL DE AUXILIO SOS INMEDIATO EN OPERACIÓN' : 'Reporte de avería'),
-      conductor: 'Carlos Huamán',
-      operador: 'Carlos Huamán',
-      foto: fotoPreview,
-      latitud: coords.lat,
-      longitud: coords.lng,
-      tipoEvento,
-    });
+    try {
+      reportarAveriaEmergencia({
+        placa: assignedVehicle.placa,
+        tipoFalla,
+        severidad: tipoEvento === 'SOS' ? 'Crítica' : severidad,
+        descripcion: descripcion.trim() || (tipoEvento === 'SOS' ? 'SEÑAL DE AUXILIO SOS INMEDIATO EN OPERACIÓN' : 'Reporte de avería'),
+        conductor: 'Carlos Huamán',
+        operador: 'Carlos Huamán',
+        foto: fotoPreview,
+        latitud: coords.lat,
+        longitud: coords.lng,
+        tipoEvento,
+      });
 
-    setSuccess(true);
-    setTimeout(() => {
-      navigate('/conductor');
-    }, 2000);
+      toast.error(
+        tipoEvento === 'SOS'
+          ? `¡Señal SOS transmitida en tiempo real para la unidad [${assignedVehicle.placa}]!`
+          : `¡Reporte de avería registrado para la unidad [${assignedVehicle.placa}]!`
+      );
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/conductor');
+      }, 2000);
+    } catch (err) {
+      console.error('Error al reportar avería:', err);
+      toast.error('Error al transmitir el reporte a Firebase.');
+    }
   };
 
   return (

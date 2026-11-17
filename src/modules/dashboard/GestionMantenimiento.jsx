@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import {
   Wrench,
@@ -94,12 +95,15 @@ export default function GestionMantenimiento() {
         estado: editFormData.estado,
         observaciones: editFormData.observaciones.trim(),
       });
-      setNotif(`¡Mantenimiento de la unidad [${mantenimientoAEditar.placa}] actualizado con éxito!`);
+      const msg = `¡Mantenimiento de la unidad [${mantenimientoAEditar.placa}] actualizado con éxito!`;
+      toast.success(msg);
+      setNotif(msg);
       setModalEditarAbierto(false);
       setMantenimientoAEditar(null);
       setTimeout(() => setNotif(''), 4000);
     } catch (err) {
       console.error('Error al actualizar mantenimiento:', err);
+      toast.error('Error al actualizar el mantenimiento en Firebase.');
     } finally {
       setActualizando(false);
     }
@@ -128,11 +132,14 @@ export default function GestionMantenimiento() {
         observaciones: formData.observaciones.trim() || 'Servicio de mantenimiento registrado por gerencia.',
       });
 
-      setNotif(`¡Mantenimiento para [${formData.placa}] registrado y sincronizado en tiempo real con Firebase!`);
+      const msg = `¡Mantenimiento para [${formData.placa}] registrado y sincronizado en tiempo real con Firebase!`;
+      toast.success(msg);
+      setNotif(msg);
       setModalAbierto(false);
       setTimeout(() => setNotif(''), 4000);
     } catch (err) {
       console.error('Error al registrar mantenimiento:', err);
+      toast.error(`Error al registrar el mantenimiento para [${formData.placa}] en Firebase.`);
     } finally {
       setGuardando(false);
     }

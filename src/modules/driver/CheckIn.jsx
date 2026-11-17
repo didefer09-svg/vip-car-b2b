@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useFleet } from '../../context/FleetContext';
 import {
   ClipboardCheck,
@@ -108,13 +109,20 @@ export default function CheckIn() {
         operacion: assignedVehicle.empresaAsignada || 'Toromocho - Junín',
       });
 
-      setIsOfflineRecord(Boolean(!navigator.onLine || res?.guardadoEnSocavon));
+      const offline = Boolean(!navigator.onLine || res?.guardadoEnSocavon);
+      setIsOfflineRecord(offline);
       setSuccess(true);
+      toast.success(
+        offline
+          ? `¡Check-in guardado en Socavón! Unidad [${assignedVehicle.placa}] registrada localmente.`
+          : `¡Check-in registrado! Unidad [${assignedVehicle.placa}] sincronizada en Firestore.`
+      );
       setTimeout(() => {
         navigate('/conductor');
       }, 1600);
     } catch (err) {
       console.error('Error al guardar Check-in:', err);
+      toast.error('Error al registrar el Check-in en Firebase.');
     } finally {
       setLoading(false);
     }
