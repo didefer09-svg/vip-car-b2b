@@ -24,7 +24,8 @@ import {
   User,
   Calendar,
   Car,
-  Layers
+  Layers,
+  RefreshCw
 } from 'lucide-react';
 
 /**
@@ -333,155 +334,475 @@ export function extraerChecklistDetallado43(log) {
 }
 
 /**
- * Normaliza y calcula las métricas requeridas para cada registro de turno:
- * 1. Horas de trabajo = Check-out - Check-in
- * 2. Km final y Km recorrido diario = Km final - Km inicial
- * 3. Desglose completo de los 43 ítems del Check-list agrupados por secciones
- * 4. Ubicación GPS y Proyecto en campos estrictamente separados
+ * Convierte un valor de timestamp (ISO string, número epoch o Firestore Timestamp) a objeto Date válido
+ */
+function parseTimestampADate(ts) {
+  if (ts == null) return null;
+  if (ts instanceof Date) return isNaN(ts.getTime()) ? null : ts;
+  if (typeof ts?.toDate === 'function') {
+    const d = ts.toDate();
+    return d instanceof Date && !isNaN(d.getTime()) ? d : null;
+  }
+  if (typeof ts === 'object' && typeof ts.seconds === 'number') {
+    const d = new Date(ts.seconds * 1000);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(ts);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * Convierte una cadena DD/MM/YYYY, D/M/YY o YYYY-MM-DD en objeto Date real (medianoche local)
+ * y su representación estandarizada DD/MM/YYYY.
+ */
+function parseFechaString(rawStr) {
+  if (!rawStr || typeof rawStr !== 'string') return null;
+  const clean = rawStr.trim();
+
+  // Formato DD/MM/YYYY o D/M/YY (o con guiones)
+  const dmyMatch = clean.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/);
+  if (dmyMatch) {
+    const day = parseInt(dmyMatch[1], 10);
+    const month = parseInt(dmyMatch[2], 10);
+    let year = parseInt(dmyMatch[3], 10);
+    if (year < 100) year += 2000;
+    if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+      const dateObj = new Date(year, month - 1, day);
+      if (!isNaN(dateObj.getTime())) {
+        const dd = String(day).padStart(2, '0');
+        const mm = String(month).padStart(2, '0');
+        return { fechaStr: `${dd}/${mm}/${year}`, dateObj };
+      }
+    }
+  }
+
+  // Formato ISO YYYY-MM-DD
+  const ymdMatch = clean.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (ymdMatch) {
+    const year = parseInt(ymdMatch[1], 10);
+    const month = parseInt(ymdMatch[2], 10);
+    const day = parseInt(ymdMatch[3], 10);
+    if (day >= 1 && day <= 31 && month >= 1 && month <= 12) {
+      const dateObj = new Date(year, month - 1, day);
+      if (!isNaN(dateObj.getTime())) {
+        const dd = String(day).padStart(2, '0');
+        const mm = String(month).padStart(2, '0');
+        return { fechaStr: `${dd}/${mm}/${year}`, dateObj };
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extrae y normaliza la fecha real del registro a DD/MM/YYYY + Date real para ordenamiento
+ */
+function extraerFechaReal(log) {
+  const fromFecha = parseFechaString(log?.fecha);
+  if (fromFecha) return fromFecha;
+
+  if (log?.fechaHora && typeof log.fechaHora === 'string') {
+    const datePart = log.fechaHora.includes(',')
+      ? log.fechaHora.split(',')[0].trim()
+      : log.fechaHora.trim();
+    const fromFechaHora = parseFechaString(datePart);
+    if (fromFechaHora) return fromFechaHora;
+  }
+
+  const tsDate = parseTimestampADate(log?.timestamp);
+  if (tsDate) {
+    const day = tsDate.getDate();
+    const month = tsDate.getMonth() + 1;
+    const year = tsDate.getFullYear();
+    const dd = String(day).padStart(2, '0');
+    const mm = String(month).padStart(2, '0');
+    return {
+      fechaStr: `${dd}/${mm}/${year}`,
+      dateObj: new Date(year, month - 1, day),
+    };
+  }
+
+  return { fechaStr: '—', dateObj: new Date(0) };
+}
+
+/**
+ * Extrae la hora real del registro sin inventar valores por defecto (PROHIBIDO 07:00 / 18:30)
+ */
+function extraerHoraReal(log, kind = 'generic') {
+  if (kind === 'in' && log?.horaCheckIn && String(log.horaCheckIn).trim()) {
+    return String(log.horaCheckIn).trim();
+  }
+  if (kind === 'out' && log?.horaCheckOut && String(log.horaCheckOut).trim()) {
+    return String(log.horaCheckOut).trim();
+  }
+  if (log?.hora && String(log.hora).trim()) {
+    return String(log.hora).trim();
+  }
+  if (log?.fechaHora && typeof log.fechaHora === 'string') {
+    if (log.fechaHora.includes(',')) {
+      const part = log.fechaHora.split(',').slice(1).join(',').trim();
+      if (part && /\d{1,2}:\d{2}/.test(part)) return part;
+    }
+    const timeMatch = log.fechaHora.match(/\b(\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]\.?\s*m\.?)?)/i);
+    if (timeMatch) return timeMatch[1].trim();
+  }
+  const tsDate = parseTimestampADate(log?.timestamp);
+  if (tsDate) {
+    const hh = String(tsDate.getHours()).padStart(2, '0');
+    const mm = String(tsDate.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+  return null;
+}
+
+/**
+ * Extrae un valor numérico real de odómetro/kilometraje sin inventar deltas (+85 km)
+ */
+function parseNumeroKm(val) {
+  if (val === null || val === undefined || val === '') return null;
+  const num = Number(val);
+  return Number.isFinite(num) && num >= 0 ? num : null;
+}
+
+function extraerKmReal(log, kind = 'generic') {
+  if (!log) return null;
+  if (kind === 'in') {
+    return (
+      parseNumeroKm(log.kmInicial) ??
+      parseNumeroKm(log.odometroInicial) ??
+      parseNumeroKm(log.odometro) ??
+      parseNumeroKm(log.kilometraje) ??
+      parseNumeroKm(log.odometroActual)
+    );
+  }
+  if (kind === 'out') {
+    return (
+      parseNumeroKm(log.kmFinal) ??
+      parseNumeroKm(log.odometroFinal) ??
+      parseNumeroKm(log.odometro) ??
+      parseNumeroKm(log.kilometraje) ??
+      parseNumeroKm(log.odometroActual)
+    );
+  }
+  return (
+    parseNumeroKm(log.odometro) ??
+    parseNumeroKm(log.kilometraje) ??
+    parseNumeroKm(log.odometroActual)
+  );
+}
+
+/**
+ * Clasifica el tipo de evento real de un registro de bitácora
+ */
+function clasificarEvento(log) {
+  const tipoRaw = `${log?.tipoEvento || ''} ${log?.tipoRegistro || ''}`.toLowerCase();
+  const isSos =
+    tipoRaw.includes('sos') ||
+    tipoRaw.includes('avería') ||
+    tipoRaw.includes('averia') ||
+    tipoRaw.includes('emergencia');
+  const isCheckOut =
+    !isSos &&
+    (tipoRaw.includes('check-out') ||
+      tipoRaw.includes('checkout') ||
+      tipoRaw.includes('salida') ||
+      tipoRaw.includes('cierre'));
+  const isCheckIn =
+    !isSos &&
+    !isCheckOut &&
+    (tipoRaw.includes('check-in') ||
+      tipoRaw.includes('checkin') ||
+      tipoRaw.includes('ingreso') ||
+      tipoRaw.includes('inicio'));
+
+  return { isCheckIn, isCheckOut, isSos };
+}
+
+/**
+ * Obtiene un valor numérico cronológico (ms) para ordenar eventos dentro de un mismo día
+ */
+function obtenerOrdenCronologicoMs(log, fechaDateObj) {
+  const tsDate = parseTimestampADate(log?.timestamp);
+  if (tsDate) return tsDate.getTime();
+  const horaStr = extraerHoraReal(log);
+  const mins = parseHoraAMinutos(horaStr);
+  const baseMs = fechaDateObj ? fechaDateObj.getTime() : 0;
+  return baseMs + (mins !== null ? mins * 60 * 1000 : 0);
+}
+
+/**
+ * Agrupa los registros de bitácora por Fecha (DD/MM/YYYY) + Placa + Conductor
+ * en una sola fila por jornada, usando estrictamente datos reales de Check-in y Check-out,
+ * sin fabricar horas (07:00/18:30) ni kilometrajes (+85 km), y ordena de más reciente a más antigua.
+ */
+export function consolidarJornadasBitacora(logs) {
+  if (!Array.isArray(logs) || logs.length === 0) return [];
+
+  const grupos = new Map();
+
+  logs.forEach((log) => {
+    const { fechaStr, dateObj } = extraerFechaReal(log);
+    const placaNorm = String(log?.placa || 'SIN-PLACA').trim().toUpperCase();
+    const conductorRaw = String(log?.operador || log?.conductor || 'Sin asignar').trim();
+    const conductorKey = conductorRaw.toLowerCase();
+
+    const groupKey = `${fechaStr}__${placaNorm}__${conductorKey}`;
+
+    if (!grupos.has(groupKey)) {
+      grupos.set(groupKey, {
+        key: groupKey,
+        fechaStr,
+        dateObj,
+        placa: placaNorm,
+        conductor: conductorRaw,
+        logs: [],
+      });
+    }
+
+    grupos.get(groupKey).logs.push(log);
+  });
+
+  const jornadas = Array.from(grupos.values()).map((grupo) => {
+    const { fechaStr, dateObj, placa, conductor } = grupo;
+
+    // Ordenar eventos dentro de la jornada cronológicamente (ascendente)
+    const eventosOrdenados = [...grupo.logs].sort(
+      (a, b) => obtenerOrdenCronologicoMs(a, dateObj) - obtenerOrdenCronologicoMs(b, dateObj)
+    );
+
+    const checkInLogs = [];
+    const checkOutLogs = [];
+    const sosLogs = [];
+
+    eventosOrdenados.forEach((ev) => {
+      const { isCheckIn, isCheckOut, isSos } = clasificarEvento(ev);
+      if (isSos) sosLogs.push(ev);
+      else if (isCheckOut) checkOutLogs.push(ev);
+      else if (isCheckIn) checkInLogs.push(ev);
+    });
+
+    // Evento Check-in real (más temprano del día) y Check-out real (más tardío del día)
+    const checkInLog = checkInLogs[0] || null;
+    const checkOutLog = checkOutLogs[checkOutLogs.length - 1] || null;
+
+    // También soportar si un único documento ya contiene ambos campos explícitos
+    const docConHoraIn = checkInLog || eventosOrdenados.find((e) => e?.horaCheckIn);
+    const docConHoraOut = checkOutLog || eventosOrdenados.find((e) => e?.horaCheckOut);
+    const docConKmIn = checkInLog || eventosOrdenados.find((e) => parseNumeroKm(e?.kmInicial) !== null);
+    const docConKmOut = checkOutLog || eventosOrdenados.find((e) => parseNumeroKm(e?.kmFinal) !== null);
+
+    const horaCheckInReal = docConHoraIn ? extraerHoraReal(docConHoraIn, 'in') : null;
+    const horaCheckOutReal = docConHoraOut ? extraerHoraReal(docConHoraOut, 'out') : null;
+
+    const kmInicialReal = docConKmIn ? extraerKmReal(docConKmIn, 'in') : null;
+    const kmFinalReal = docConKmOut ? extraerKmReal(docConKmOut, 'out') : null;
+
+    const hasCheckIn = Boolean(checkInLog || horaCheckInReal || kmInicialReal !== null);
+    const hasCheckOut = Boolean(checkOutLog || horaCheckOutReal || kmFinalReal !== null);
+    const hasSOS = sosLogs.length > 0;
+
+    // 1. Horas Check-in / Check-out y cálculo real de Horas de Trabajo
+    const horaCheckIn = horaCheckInReal || '—';
+    const horaCheckOut = horaCheckOutReal || (hasCheckIn ? 'En curso' : '—');
+
+    let horasDecimal = hasCheckIn && !hasCheckOut ? 'En curso' : '—';
+    let horasTexto = '—';
+
+    if (horaCheckInReal && horaCheckOutReal) {
+      const minIn = parseHoraAMinutos(horaCheckInReal);
+      const minOut = parseHoraAMinutos(horaCheckOutReal);
+      if (minIn !== null && minOut !== null) {
+        let diffMin = minOut - minIn;
+        if (diffMin < 0) diffMin += 24 * 60;
+        horasDecimal = Number((diffMin / 60).toFixed(2));
+        const h = Math.floor(diffMin / 60);
+        const m = diffMin % 60;
+        horasTexto = m === 0 ? `${h}h` : `${h}h ${m}m`;
+      }
+    }
+
+    // 2. Km Inicial, Km Final y cálculo real de Km Recorrido Diario
+    const kmInicial = kmInicialReal !== null ? kmInicialReal : '—';
+    const kmFinal = kmFinalReal !== null ? kmFinalReal : hasCheckIn ? 'En curso' : '—';
+
+    let kmRecorrido = hasCheckIn && !hasCheckOut ? 'En curso' : '—';
+    if (kmInicialReal !== null && kmFinalReal !== null) {
+      kmRecorrido = Math.max(0, kmFinalReal - kmInicialReal);
+    }
+
+    // 3. Checklist de 43 ítems: tomado del evento Check-in real
+    const checklistSource =
+      checkInLogs.find((e) => e?.checklist || e?.checklistResumen) ||
+      checkInLog ||
+      eventosOrdenados.find((e) => e?.checklist || e?.checklistResumen) ||
+      eventosOrdenados[0];
+
+    const { categoriasMapeadas, todosLosItems, mapaEstadoPorId } =
+      extraerChecklistDetallado43(checklistSource);
+
+    const totalItems = todosLosItems.length;
+    const okItems = todosLosItems.filter((i) => i.isOk).length;
+    const fallasItems = totalItems - okItems;
+    const allOk = fallasItems === 0;
+    const listaFallas = todosLosItems.filter((i) => !i.isOk);
+
+    // 4. Ubicación GPS (prioriza Check-in, luego Check-out o cualquier evento con GPS real)
+    const gpsSource =
+      [checkInLog, checkOutLog, ...eventosOrdenados].find((ev) => {
+        const lat = ev?.latitud ?? ev?.ubicacion?.latitud;
+        const lng = ev?.longitud ?? ev?.ubicacion?.longitud;
+        return lat != null && lng != null && !isNaN(Number(lat)) && !isNaN(Number(lng));
+      }) || checkInLog || eventosOrdenados[0];
+
+    const lat = gpsSource?.latitud ?? gpsSource?.ubicacion?.latitud;
+    const lng = gpsSource?.longitud ?? gpsSource?.ubicacion?.longitud;
+    const tieneGPS = lat != null && lng != null && !isNaN(Number(lat)) && !isNaN(Number(lng));
+    const coordenadas = tieneGPS
+      ? `${Number(lat).toFixed(4)}°, ${Number(lng).toFixed(4)}°`
+      : gpsSource?.ubicacion && typeof gpsSource.ubicacion === 'string'
+      ? gpsSource.ubicacion
+      : '—';
+    const urlMaps = tieneGPS ? `https://www.google.com/maps?q=${Number(lat)},${Number(lng)}` : null;
+
+    // 5. Proyecto (Estrictamente separado de GPS)
+    const proyectoSource =
+      [checkInLog, checkOutLog, ...eventosOrdenados].find(
+        (ev) => ev?.proyecto || ev?.servicio || ev?.tipoServicio || ev?.empresaAsignada
+      ) || eventosOrdenados[0];
+    const proyecto =
+      proyectoSource?.proyecto ||
+      proyectoSource?.servicio ||
+      proyectoSource?.tipoServicio ||
+      proyectoSource?.empresaAsignada ||
+      'Flota Central Huancayo';
+
+    // 6. Observaciones combinadas sin duplicados ni relleno artificial
+    const obsSet = new Set();
+    eventosOrdenados.forEach((ev) => {
+      const texto = String(ev?.observaciones || ev?.descripcion || '').trim();
+      if (texto && texto.toLowerCase() !== 'sin observaciones') {
+        obsSet.add(texto);
+      }
+    });
+    const observaciones =
+      obsSet.size > 0
+        ? Array.from(obsSet).join(' | ')
+        : checkInLog?.checklistEstado || checkOutLog?.checklistEstado || 'Sin observaciones';
+
+    // 7. Etiqueta de tipo de evento consolidado y Estado
+    let tipoEvento = 'Check-in';
+    if (hasSOS) {
+      tipoEvento = sosLogs[0]?.tipoEvento || sosLogs[0]?.tipoRegistro || 'SOS';
+    } else if (hasCheckIn && hasCheckOut) {
+      tipoEvento = 'Check-in / Check-out';
+    } else if (hasCheckOut && !hasCheckIn) {
+      tipoEvento = 'Check-out';
+    } else if (hasCheckIn) {
+      tipoEvento = 'Check-in';
+    } else {
+      tipoEvento = eventosOrdenados[0]?.tipoEvento || eventosOrdenados[0]?.tipoRegistro || 'Registro';
+    }
+
+    const tieneAlertaEstado = eventosOrdenados.some((ev) => ev?.estado === 'Alerta');
+    const estado = !allOk || hasSOS || tieneAlertaEstado ? 'Alerta' : 'OK';
+
+    // 8. Marca temporal para desempate dentro de la misma fecha
+    const sortTimeMs = Math.max(
+      ...eventosOrdenados.map((ev) => obtenerOrdenCronologicoMs(ev, dateObj))
+    );
+
+    return {
+      id: grupo.key,
+      fecha: fechaStr,
+      fechaDateMs: dateObj ? dateObj.getTime() : 0,
+      sortTimeMs,
+      fechaHoraCompleta: `${fechaStr}, ${horaCheckIn}`,
+      conductor,
+      placa,
+      proyecto,
+      ubicacionTexto: typeof gpsSource?.ubicacion === 'string' ? gpsSource.ubicacion : '',
+      tipoEvento,
+      hasCheckIn,
+      hasCheckOut,
+      hasSOS,
+      horaCheckIn,
+      horaCheckOut,
+      horasDecimal,
+      horasTexto,
+      kmInicial,
+      kmFinal,
+      kmRecorrido,
+      checklist: mapaEstadoPorId,
+      categoriasChecklist: categoriasMapeadas,
+      checklistItemsDetalle: todosLosItems,
+      listaFallas,
+      totalItems,
+      okItems,
+      fallasItems,
+      allOk,
+      tieneGPS,
+      coordenadas,
+      urlMaps,
+      lat: tieneGPS ? Number(lat) : null,
+      lng: tieneGPS ? Number(lng) : null,
+      observaciones,
+      estado,
+    };
+  });
+
+  // Ordenar de más reciente a más antigua por fecha real (objeto Date), y por hora del día en empate
+  return jornadas.sort((a, b) => {
+    if (b.fechaDateMs !== a.fechaDateMs) {
+      return b.fechaDateMs - a.fechaDateMs;
+    }
+    return b.sortTimeMs - a.sortTimeMs;
+  });
+}
+
+/**
+ * Helper de compatibilidad para normalizar un registro individual
  */
 export function resolverDatosTurno(log) {
-  // 1. Fecha
-  let fecha = '';
-  if (log?.fecha) {
-    fecha = log.fecha;
-  } else if (log?.fechaHora && log.fechaHora.includes(',')) {
-    fecha = log.fechaHora.split(',')[0].trim();
-  } else if (log?.timestamp) {
-    try {
-      fecha = new Date(log.timestamp).toLocaleDateString('es-PE');
-    } catch {
-      fecha = '28/10/2026';
-    }
-  } else {
-    fecha = '28/10/2026';
-  }
+  return consolidarJornadasBitacora([log])[0];
+}
 
-  const tipo = (log?.tipoEvento || log?.tipoRegistro || '').toLowerCase();
+const GOOGLE_SHEET_SYNC_URL =
+  'https://script.google.com/macros/s/AKfycbwwBpUfVNMZrTw0Fl7X3wJaQ_6xYNtYSL4wzhXP3EFMOZXQkZ1DwQskKSuaQpFFgPCW4Q/exec';
 
-  // 2. Horas Check-in y Check-out
-  let horaCheckIn = log?.horaCheckIn || '';
-  let horaCheckOut = log?.horaCheckOut || '';
+/**
+ * Construye exactamente las mismas 59 columnas consolidadas usadas para Excel y Google Sheets
+ */
+function construirFilasBitacora59(registros) {
+  return (registros || []).map((t) => {
+    const fila = {
+      'Fecha': t.fecha,
+      'Conductor': t.conductor,
+      'Placa': t.placa,
+      'Proyecto / Operación': t.proyecto,
+      'Hora Check-in': t.horaCheckIn,
+      'Hora Check-out': t.horaCheckOut,
+      'Horas de Trabajo (hrs)': t.horasDecimal,
+      'Detalle Horas': t.horasTexto,
+      'Km Inicial': t.kmInicial,
+      'Km Final': t.kmFinal,
+      'Km Recorrido Diario (km)': t.kmRecorrido,
+      'Resumen Inspección': `${t.okItems}/${t.totalItems} OK`,
+    };
 
-  if (!horaCheckIn) {
-    if (tipo.includes('check-in') && log?.fechaHora?.includes(',')) {
-      horaCheckIn = log.fechaHora.split(',')[1].trim();
-    } else {
-      horaCheckIn = '07:00';
-    }
-  }
+    // Agregar cada uno de los 43 ítems del checklist en su propia columna independiente
+    CHECKLIST_43_ITEMS.forEach((item) => {
+      const isOk = Boolean(t.checklist[item.id]);
+      fila[`#${item.num} ${item.label}`] = isOk ? 'OK' : 'FALLA';
+    });
 
-  if (!horaCheckOut) {
-    if (tipo.includes('check-out') && log?.fechaHora?.includes(',')) {
-      horaCheckOut = log.fechaHora.split(',')[1].trim();
-    } else {
-      horaCheckOut = '18:30';
-    }
-  }
+    fila['Ubicación GPS (Coordenadas)'] = t.coordenadas;
+    fila['Enlace Google Maps'] = t.urlMaps || 'No disponible';
+    fila['Detalle / Novedades'] = t.observaciones;
+    fila['Estado'] = t.estado;
 
-  // 3. Cálculo de horas de trabajo (Check-out - Check-in)
-  let horasDecimal = 0;
-  let horasTexto = '—';
-  const minIn = parseHoraAMinutos(horaCheckIn);
-  const minOut = parseHoraAMinutos(horaCheckOut);
-
-  if (minIn !== null && minOut !== null) {
-    let diffMin = minOut - minIn;
-    if (diffMin <= 0) diffMin += 24 * 60;
-    horasDecimal = Number((diffMin / 60).toFixed(1));
-    const h = Math.floor(diffMin / 60);
-    const m = diffMin % 60;
-    horasTexto = m === 0 ? `${h}h` : `${h}h ${m}m`;
-  } else {
-    horasDecimal = 10.5;
-    horasTexto = '10h 30m';
-  }
-
-  // 4. Kilometraje Inicial, Final y Km Recorrido Diario (Km final - Km inicial)
-  const odoBase = Number(log?.odometro) || Number(log?.kilometraje) || Number(log?.odometroActual) || 14750;
-
-  // Extraer "+NNN km" si viene en el resumen de Check-out de la App de Conductores
-  const resumenCheckOutMatch = String(log?.checklistResumen || log?.checklistEstado || '').match(/\+(\d+)\s*km/i);
-  const deltaFromText = resumenCheckOutMatch ? parseInt(resumenCheckOutMatch[1], 10) : null;
-
-  let kmInicial =
-    log?.kmInicial != null
-      ? Number(log.kmInicial)
-      : tipo.includes('check-out')
-      ? Math.max(0, odoBase - (deltaFromText || 85))
-      : odoBase;
-
-  let kmFinal =
-    log?.kmFinal != null
-      ? Number(log.kmFinal)
-      : tipo.includes('check-in')
-      ? odoBase + (deltaFromText || 85)
-      : odoBase;
-
-  if (kmFinal < kmInicial) {
-    const temp = kmInicial;
-    kmInicial = kmFinal;
-    kmFinal = temp;
-  }
-  if (kmFinal === kmInicial) {
-    kmFinal = kmInicial + (deltaFromText || 85);
-  }
-  const kmRecorrido = Math.max(0, kmFinal - kmInicial);
-
-  // 5. Extracción de los 43 ítems agrupados por sus 7 categorías reales
-  const { categoriasMapeadas, todosLosItems, mapaEstadoPorId } = extraerChecklistDetallado43(log);
-
-  const totalItems = todosLosItems.length;
-  const okItems = todosLosItems.filter((i) => i.isOk).length;
-  const fallasItems = totalItems - okItems;
-  const allOk = fallasItems === 0;
-  const listaFallas = todosLosItems.filter((i) => !i.isOk);
-
-  // 6. Ubicación GPS (Estrictamente separada de Proyecto)
-  const lat = log?.latitud ?? log?.ubicacion?.latitud;
-  const lng = log?.longitud ?? log?.ubicacion?.longitud;
-  const tieneGPS = lat != null && lng != null && !isNaN(Number(lat)) && !isNaN(Number(lng));
-  const coordenadas = tieneGPS
-    ? `${Number(lat).toFixed(4)}°, ${Number(lng).toFixed(4)}°`
-    : log?.ubicacion && typeof log.ubicacion === 'string'
-    ? log.ubicacion
-    : '—';
-  const urlMaps = tieneGPS ? `https://www.google.com/maps?q=${Number(lat)},${Number(lng)}` : null;
-
-  // 7. Proyecto (Estrictamente separado de GPS)
-  const proyecto = log?.proyecto || log?.servicio || log?.tipoServicio || log?.empresaAsignada || 'Flota Central Huancayo';
-
-  return {
-    id: log?.id,
-    fecha,
-    fechaHoraCompleta: log?.fechaHora || `${fecha}, ${horaCheckIn}`,
-    conductor: log?.operador || log?.conductor || 'Carlos Huamán',
-    placa: log?.placa || 'VIP-001',
-    proyecto,
-    ubicacionTexto: typeof log?.ubicacion === 'string' ? log.ubicacion : '',
-    tipoEvento: log?.tipoEvento || log?.tipoRegistro || 'Check-in',
-    horaCheckIn,
-    horaCheckOut,
-    horasDecimal,
-    horasTexto,
-    kmInicial,
-    kmFinal,
-    kmRecorrido,
-    checklist: mapaEstadoPorId,
-    categoriasChecklist: categoriasMapeadas,
-    checklistItemsDetalle: todosLosItems,
-    listaFallas,
-    totalItems,
-    okItems,
-    fallasItems,
-    allOk,
-    tieneGPS,
-    coordenadas,
-    urlMaps,
-    lat: tieneGPS ? Number(lat) : null,
-    lng: tieneGPS ? Number(lng) : null,
-    observaciones: log?.observaciones || log?.descripcion || log?.checklistEstado || 'Sin observaciones',
-    estado: log?.estado || (!allOk || tipo.includes('sos') || tipo.includes('avería') ? 'Alerta' : 'OK'),
-  };
+    return fila;
+  });
 }
 
 export default function Bitacora() {
@@ -491,6 +812,7 @@ export default function Bitacora() {
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [limpiando, setLimpiando] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isSyncingSheet, setIsSyncingSheet] = useState(false);
   const [mensajeEstado, setMensajeEstado] = useState(null);
   const [registroInspeccionModal, setRegistroInspeccionModal] = useState(null);
   const [filtroModalItems, setFiltroModalItems] = useState('todos'); // 'todos' | 'fallas'
@@ -498,45 +820,33 @@ export default function Bitacora() {
   // Rol 'Gerente' requerido para vaciar bitácora
   const userIsGerente = isGerente || user?.role === 'GERENTE';
 
-  // Filtrado reactivo de registros
-  const filtrados = useMemo(() => {
-    return (bitacora || []).filter((item) => {
-      const term = busqueda.toLowerCase().trim();
+  // 1. Consolidar jornadas por Fecha (DD/MM/YYYY) + Placa + Conductor y ordenar de más reciente a más antigua
+  const jornadasConsolidadas = useMemo(() => {
+    return consolidarJornadasBitacora(bitacora || []);
+  }, [bitacora]);
+
+  // 2. Filtrado reactivo sobre las jornadas consolidadas
+  const registrosCalculados = useMemo(() => {
+    const term = busqueda.toLowerCase().trim();
+    return jornadasConsolidadas.filter((item) => {
       const matchesBusqueda =
         !term ||
-        (item.conductor || item.operador || '').toLowerCase().includes(term) ||
+        (item.conductor || '').toLowerCase().includes(term) ||
         (item.placa || '').toLowerCase().includes(term) ||
-        (item.proyecto || item.servicio || item.empresaAsignada || '').toLowerCase().includes(term) ||
-        (item.tipoRegistro || item.tipoEvento || '').toLowerCase().includes(term) ||
-        (item.descripcion && item.descripcion.toLowerCase().includes(term)) ||
-        (item.observaciones && item.observaciones.toLowerCase().includes(term));
-
-      const tipo = (item.tipoEvento || '').trim();
-      const reg = (item.tipoRegistro || '').toLowerCase();
+        (item.proyecto || '').toLowerCase().includes(term) ||
+        (item.tipoEvento || '').toLowerCase().includes(term) ||
+        (item.fecha || '').toLowerCase().includes(term) ||
+        (item.observaciones || '').toLowerCase().includes(term);
 
       const matchesTipo =
         filtroTipo === 'todos' ||
-        (filtroTipo === 'Check-in' && (tipo === 'Check-in' || reg.includes('check-in'))) ||
-        (filtroTipo === 'Check-out' && (tipo === 'Check-out' || reg.includes('check-out'))) ||
-        (filtroTipo === 'SOS' && (
-          tipo === 'SOS' ||
-          tipo === 'Avería' ||
-          tipo === 'Averia' ||
-          reg.includes('sos') ||
-          reg.includes('avería') ||
-          reg.includes('averia') ||
-          reg.includes('emergencia') ||
-          item.estado === 'Alerta'
-        ));
+        (filtroTipo === 'Check-in' && item.hasCheckIn) ||
+        (filtroTipo === 'Check-out' && item.hasCheckOut) ||
+        (filtroTipo === 'SOS' && (item.hasSOS || item.estado === 'Alerta'));
 
       return matchesBusqueda && matchesTipo;
     });
-  }, [bitacora, busqueda, filtroTipo]);
-
-  // Registros normalizados con todas las columnas calculadas
-  const registrosCalculados = useMemo(() => {
-    return filtrados.map(resolverDatosTurno);
-  }, [filtrados]);
+  }, [jornadasConsolidadas, busqueda, filtroTipo]);
 
   // Exportación a Excel: Mantiene CADA ÍTEM del checklist en su propia columna independiente
   const handleExportarExcel = async () => {
@@ -550,35 +860,7 @@ export default function Bitacora() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 350));
 
-      const filasExcel = registrosCalculados.map((t) => {
-        const fila = {
-          'Fecha': t.fecha,
-          'Conductor': t.conductor,
-          'Placa': t.placa,
-          'Proyecto / Operación': t.proyecto,
-          'Hora Check-in': t.horaCheckIn,
-          'Hora Check-out': t.horaCheckOut,
-          'Horas de Trabajo (hrs)': t.horasDecimal,
-          'Detalle Horas': t.horasTexto,
-          'Km Inicial': t.kmInicial,
-          'Km Final': t.kmFinal,
-          'Km Recorrido Diario (km)': t.kmRecorrido,
-          'Resumen Inspección': `${t.okItems}/${t.totalItems} OK`,
-        };
-
-        // Agregar cada uno de los 43 ítems del checklist en su propia columna independiente
-        CHECKLIST_43_ITEMS.forEach((item) => {
-          const isOk = Boolean(t.checklist[item.id]);
-          fila[`#${item.num} ${item.label}`] = isOk ? 'OK' : 'FALLA';
-        });
-
-        fila['Ubicación GPS (Coordenadas)'] = t.coordenadas;
-        fila['Enlace Google Maps'] = t.urlMaps || 'No disponible';
-        fila['Detalle / Novedades'] = t.observaciones;
-        fila['Estado'] = t.estado;
-
-        return fila;
-      });
+      const filasExcel = construirFilasBitacora59(registrosCalculados);
 
       const worksheet = XLSX.utils.json_to_sheet(filasExcel);
 
@@ -611,6 +893,44 @@ export default function Bitacora() {
       });
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  // Sincronización con Google Sheet usando exactamente las mismas 59 columnas consolidadas
+  const handleSincronizarGoogleSheet = async () => {
+    if (isSyncingSheet) return;
+    if (!registrosCalculados || registrosCalculados.length === 0) {
+      toast.warning('No hay registros consolidados para sincronizar con Google Sheet.');
+      return;
+    }
+
+    setIsSyncingSheet(true);
+    try {
+      const filasObjetos = construirFilasBitacora59(registrosCalculados);
+      const columnasArray = Object.keys(filasObjetos[0] || {});
+      const filasArray = filasObjetos.map((fila) =>
+        columnasArray.map((col) => (fila[col] !== undefined && fila[col] !== null ? fila[col] : ''))
+      );
+
+      await fetch(GOOGLE_SHEET_SYNC_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'sync_bitacora',
+          headers: columnasArray,
+          rows: filasArray,
+        }),
+      });
+
+      toast.success(
+        `Google Sheet sincronizado (${filasArray.length} jornadas y ${columnasArray.length} columnas).`
+      );
+    } catch (err) {
+      console.error('Error al sincronizar con Google Sheet:', err);
+      toast.error('No se pudo sincronizar con Google Sheet. Verifica tu conexión e inténtalo de nuevo.');
+    } finally {
+      setIsSyncingSheet(false);
     }
   };
 
@@ -685,6 +1005,18 @@ export default function Bitacora() {
                 <span>Exportar a Excel</span>
               </>
             )}
+          </button>
+
+          {/* Botón Discreto: Sincronizar Google Sheet */}
+          <button
+            type="button"
+            onClick={handleSincronizarGoogleSheet}
+            disabled={isSyncingSheet || registrosCalculados.length === 0}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-mono font-semibold text-gray-200 hover:text-white bg-white/[0.05] hover:bg-white/[0.12] border border-white/[0.14] hover:border-white/[0.3] transition-all duration-300 hover:shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-98"
+            title="Sincronizar las 59 columnas consolidadas de la bitácora con Google Sheet"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-emerald-400 ${isSyncingSheet ? 'animate-spin' : ''}`} />
+            <span>{isSyncingSheet ? 'Sincronizando...' : 'Sincronizar Google Sheet'}</span>
           </button>
 
           {/* Botón Limpiar Bitácora para Gerente */}
@@ -889,7 +1221,7 @@ export default function Bitacora() {
                     </td>
                     <td className="py-3.5 px-3 text-center bg-[#59d499]/5 whitespace-nowrap">
                       <div className="font-mono font-bold text-xs text-[#59d499]">
-                        {t.horasDecimal} hrs
+                        {typeof t.horasDecimal === 'number' ? `${t.horasDecimal} hrs` : t.horasDecimal}
                       </div>
                       <div className="text-[9px] font-mono text-[#6a6b6c]">
                         {t.horasTexto}
@@ -898,14 +1230,14 @@ export default function Bitacora() {
 
                     {/* 2. Km Inicial, Km Final y Km Recorrido Diario */}
                     <td className="py-3.5 px-2.5 text-right font-mono text-xs text-[#9c9c9d] bg-white/[0.01] whitespace-nowrap">
-                      {t.kmInicial.toLocaleString()} km
+                      {typeof t.kmInicial === 'number' ? `${t.kmInicial.toLocaleString()} km` : t.kmInicial}
                     </td>
                     <td className="py-3.5 px-2.5 text-right font-mono text-xs font-bold text-white bg-white/[0.01] whitespace-nowrap">
-                      {t.kmFinal.toLocaleString()} km
+                      {typeof t.kmFinal === 'number' ? `${t.kmFinal.toLocaleString()} km` : t.kmFinal}
                     </td>
                     <td className="py-3.5 px-3 text-right bg-[#ff6363]/5 whitespace-nowrap">
                       <div className="font-mono font-bold text-xs text-[#ff6363]">
-                        {t.kmRecorrido} km
+                        {typeof t.kmRecorrido === 'number' ? `${t.kmRecorrido.toLocaleString()} km` : t.kmRecorrido}
                       </div>
                       <div className="text-[9px] font-mono text-[#6a6b6c]">
                         Recorrido
@@ -1236,7 +1568,7 @@ export default function Bitacora() {
             {/* Pie del Modal */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t border-white/[0.08] shrink-0">
               <span className="text-[11px] font-mono text-[#6a6b6c]">
-                Odómetro auditado: <strong className="text-white">{registroInspeccionModal.kmInicial.toLocaleString()} km → {registroInspeccionModal.kmFinal.toLocaleString()} km</strong> ({registroInspeccionModal.kmRecorrido} km)
+                Odómetro auditado: <strong className="text-white">{typeof registroInspeccionModal.kmInicial === 'number' ? `${registroInspeccionModal.kmInicial.toLocaleString()} km` : registroInspeccionModal.kmInicial} → {typeof registroInspeccionModal.kmFinal === 'number' ? `${registroInspeccionModal.kmFinal.toLocaleString()} km` : registroInspeccionModal.kmFinal}</strong> ({typeof registroInspeccionModal.kmRecorrido === 'number' ? `${registroInspeccionModal.kmRecorrido.toLocaleString()} km` : registroInspeccionModal.kmRecorrido})
               </span>
               <button
                 type="button"
